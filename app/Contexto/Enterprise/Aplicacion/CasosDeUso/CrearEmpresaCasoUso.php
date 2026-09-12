@@ -51,21 +51,30 @@ class CrearEmpresaCasoUso
 
     /**
      * Crea la base de datos PostgreSQL del tenant.
+     * Usa una conexion PDO directa (fuera del pool de Laravel) porque
+     * CREATE DATABASE no puede ejecutarse dentro de un bloque de transaccion.
      *
      * @param  string  $dbName
      * @return void
      */
     private function crearBaseDeDatosTenant(string $dbName): void
     {
-        // Sanitizar el nombre de la DB (solo alfanuméricos y guion bajo).
+        // Sanitizar el nombre de la DB (solo alfanumericos y guion bajo).
         $dbName = preg_replace('/[^a-zA-Z0-9_]/', '', $dbName);
 
-        // Crear la base de datos si no existe.
-        $existe = DB::connection('pgsql')
-            ->select("SELECT 1 FROM pg_database WHERE datname = ?", [$dbName]);
+        // Obtener configuracion de la conexion pgsql.
+        $config = config('database.connections.pgsql');
+        $dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
 
-        if (empty($existe)) {
-            DB::connection('pgsql')->statement("CREATE DATABASE \"{$dbName}\"");
+        // Conexion PDO directa fuera del pool de Laravel (no hereda transacciones).
+        $pdo = new \PDO($dsn, $config['username'], $config['password']);
+
+        // Verificar si la base de datos ya existe.
+        $stmt = $pdo->prepare("SELECT 1 FROM pg_database WHERE datname = ?");
+        $stmt->execute([$dbName]);
+
+        if ($stmt->fetch() === false) {
+            $pdo->exec("CREATE DATABASE \"{$dbName}\"");
         }
     }
 }
