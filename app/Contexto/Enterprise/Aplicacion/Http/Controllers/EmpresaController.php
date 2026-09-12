@@ -6,10 +6,13 @@ use App\Contexto\Enterprise\Aplicacion\CasosDeUso\CrearEmpresaCasoUso;
 use App\Contexto\Enterprise\Aplicacion\CasosDeUso\ListarEmpresasCasoUso;
 use App\Contexto\Enterprise\Aplicacion\Http\Requests\CrearEmpresaRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
 class EmpresaController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(
         private CrearEmpresaCasoUso $crearEmpresaCasoUso,
         private ListarEmpresasCasoUso $listarEmpresasCasoUso,
@@ -23,7 +26,7 @@ class EmpresaController extends Controller
     {
         $dto = CrearEmpresaRequest::toDTO($request->validated());
 
-        return response()->json($this->crearEmpresaCasoUso->ejecutar($dto), 201);
+        return $this->successResponse($this->crearEmpresaCasoUso->ejecutar($dto), 201);
     }
 
     /**
@@ -32,6 +35,6 @@ class EmpresaController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json($this->listarEmpresasCasoUso->ejecutar());
+        return $this->successResponse($this->listarEmpresasCasoUso->ejecutar());
     }
 }

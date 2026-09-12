@@ -9,11 +9,14 @@ use App\Contexto\Menu\Aplicacion\CasosDeUso\ObtenerMenusPorRolCasoUso;
 use App\Contexto\Menu\Aplicacion\Http\Requests\AsignarMenuRolRequest;
 use App\Contexto\Menu\Aplicacion\Http\Requests\CrearMenuRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(
         private CrearMenuCasoUso $crearMenuCasoUso,
         private ListarMenusCasoUso $listarMenusCasoUso,
@@ -29,7 +32,7 @@ class MenuController extends Controller
     {
         $dto = CrearMenuRequest::toDTO($request->validated());
 
-        return response()->json($this->crearMenuCasoUso->ejecutar($dto), 201);
+        return $this->successResponse($this->crearMenuCasoUso->ejecutar($dto), 201);
     }
 
     /**
@@ -38,7 +41,7 @@ class MenuController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json($this->listarMenusCasoUso->ejecutar());
+        return $this->successResponse($this->listarMenusCasoUso->ejecutar());
     }
 
     /**
@@ -49,7 +52,7 @@ class MenuController extends Controller
     {
         $this->asignarMenuRolCasoUso->ejecutar($id, $request->validated()['rol_id']);
 
-        return response()->json(['message' => 'Menu asignado al rol correctamente.']);
+        return $this->successResponse('Menu asignado al rol correctamente.');
     }
 
     /**
@@ -60,6 +63,6 @@ class MenuController extends Controller
     {
         $usuarioId = $request->user()->id;
 
-        return response()->json($this->obtenerMenusPorRolCasoUso->ejecutar($usuarioId));
+        return $this->successResponse($this->obtenerMenusPorRolCasoUso->ejecutar($usuarioId));
     }
 }

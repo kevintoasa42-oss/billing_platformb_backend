@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 // --- Autenticacion (sin auth) ---
+Route::post('/auth/login', [AuthController::class, 'loginInicial']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // --- Rutas protegidas (auth:sanctum) ---

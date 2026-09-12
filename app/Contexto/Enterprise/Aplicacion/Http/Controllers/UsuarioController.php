@@ -9,10 +9,13 @@ use App\Contexto\Enterprise\Aplicacion\Http\Requests\AsignarEmpresaRequest;
 use App\Contexto\Enterprise\Aplicacion\Http\Requests\AsignarRolRequest;
 use App\Contexto\Enterprise\Aplicacion\Http\Requests\CrearUsuarioRequest;
 use App\Http\Controllers\Controller;
+use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
 class UsuarioController extends Controller
 {
+    use ApiResponse;
+
     public function __construct(
         private CrearUsuarioCasoUso $crearUsuarioCasoUso,
         private AsignarRolAUsuarioCasoUso $asignarRolCasoUso,
@@ -27,7 +30,7 @@ class UsuarioController extends Controller
     {
         $dto = CrearUsuarioRequest::toDTO($request->validated());
 
-        return response()->json($this->crearUsuarioCasoUso->ejecutar($dto), 201);
+        return $this->successResponse($this->crearUsuarioCasoUso->ejecutar($dto), 201);
     }
 
     /**
@@ -38,7 +41,7 @@ class UsuarioController extends Controller
     {
         $this->asignarRolCasoUso->ejecutar($id, $request->validated()['rol_id']);
 
-        return response()->json(['message' => 'Rol asignado correctamente.']);
+        return $this->successResponse('Rol asignado correctamente.');
     }
 
     /**
@@ -49,6 +52,6 @@ class UsuarioController extends Controller
     {
         $this->asignarEmpresaCasoUso->ejecutar($id, $request->validated()['enterprise_id']);
 
-        return response()->json(['message' => 'Empresa asignada correctamente.']);
+        return $this->successResponse('Empresa asignada correctamente.');
     }
 }
