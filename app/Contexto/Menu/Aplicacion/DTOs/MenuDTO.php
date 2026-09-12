@@ -2,7 +2,7 @@
 
 namespace App\Contexto\Menu\Aplicacion\DTOs;
 
-class MenuDTO
+class MenuDTO implements \JsonSerializable
 {
     public function __construct(
         public ?int $id = null,
@@ -34,7 +34,8 @@ class MenuDTO
     }
 
     /**
-     * Convierte el DTO a array (incluye hijos recursivamente).
+     * Convierte el DTO a array con el formato que el frontend necesita:
+     * { label, href, icon, order, children }
      *
      * @return array
      */
@@ -42,12 +43,22 @@ class MenuDTO
     {
         return [
             'id' => $this->id,
-            'nombre' => $this->nombre,
-            'ruta' => $this->ruta,
-            'icono' => $this->icono,
-            'parent_id' => $this->parent_id,
-            'orden' => $this->orden,
-            'hijos' => array_map(fn ($h) => $h->toArray(), $this->hijos),
+            'label' => $this->nombre,
+            'href' => $this->ruta,
+            'icon' => $this->icono,
+            'order' => $this->orden,
+            'children' => array_map(fn ($h) => $h->toArray(), $this->hijos),
         ];
+    }
+
+    /**
+     * Implementacion de JsonSerializable para que Laravel serialice
+     * el DTO usando toArray() en lugar de las propiedades publicas.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): mixed
+    {
+        return $this->toArray();
     }
 }

@@ -29,9 +29,9 @@ class MenuApiTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonPath('status', true)
-            ->assertJsonPath('response.nombre', 'Dashboard')
-            ->assertJsonPath('response.ruta', '/dashboard')
-            ->assertJsonPath('response.icono', 'home');
+            ->assertJsonPath('response.label', 'Dashboard')
+            ->assertJsonPath('response.href', '/dashboard')
+            ->assertJsonPath('response.icon', 'home');
 
         $this->assertDatabaseHas('menus', [
             'nombre' => 'Dashboard', 'ruta' => '/dashboard',
@@ -59,8 +59,8 @@ class MenuApiTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonPath('status', true)
-            ->assertJsonPath('response.nombre', 'Usuarios')
-            ->assertJsonPath('response.parent_id', $padre->id);
+            ->assertJsonPath('response.label', 'Usuarios')
+            ->assertJsonPath('response.children', []);
 
         $this->assertDatabaseHas('menus', [
             'nombre' => 'Usuarios', 'parent_id' => $padre->id,
@@ -105,8 +105,8 @@ class MenuApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('status', true)
             ->assertJsonCount(1, 'response')
-            ->assertJsonPath('response.0.nombre', 'Dashboard')
-            ->assertJsonPath('response.0.hijos.0.nombre', 'Reportes');
+            ->assertJsonPath('response.0.label', 'Dashboard')
+            ->assertJsonPath('response.0.children.0.label', 'Reportes');
     }
 
     public function test_asignar_menu_a_rol_devuelve_200(): void
@@ -191,8 +191,8 @@ class MenuApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('status', true)
             ->assertJsonCount(1, 'response')
-            ->assertJsonPath('response.0.nombre', 'Dashboard')
-            ->assertJsonPath('response.0.hijos.0.nombre', 'Reportes');
+            ->assertJsonPath('response.0.label', 'Dashboard')
+            ->assertJsonPath('response.0.children.0.label', 'Reportes');
     }
 
     public function test_obtener_menus_por_rol_sin_roles_devuelve_vacio(): void
