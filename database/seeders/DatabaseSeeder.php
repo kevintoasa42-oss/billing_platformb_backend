@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SriIvaPercentagesSeeder::class,
             RolesSeeder::class,
+            DatosPruebaSeeder::class,
         ]);
     }
 }
