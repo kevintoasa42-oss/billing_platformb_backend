@@ -7,6 +7,7 @@ use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
 use App\Context\V1\Product\Application\Http\Controllers\TaxController;
 use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
 use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
+use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +73,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/signatures/{id}', [SignatureController::class, 'update']);
         Route::patch('/signatures/{id}/status', [SignatureController::class, 'changeStatus']);
     });
+
+
+    // --- Enterprise Signature (central DB, uses enterprise_id from token) ---
+    Route::get('/enterprise-signature', [EnterpriseSignatureController::class, 'show']);
+    Route::post('/enterprise-signature', [EnterpriseSignatureController::class, 'store']);
+    Route::put('/enterprise-signature', [EnterpriseSignatureController::class, 'update']);
+    Route::patch('/enterprise-signature', [EnterpriseSignatureController::class, 'update']);
+    Route::patch('/enterprise-signature/status', [EnterpriseSignatureController::class, 'changeStatus']);
 
     // --- Ivas (catálogo central, no requiere tenant) ---
     Route::get('/taxes', [TaxController::class, 'index']);
