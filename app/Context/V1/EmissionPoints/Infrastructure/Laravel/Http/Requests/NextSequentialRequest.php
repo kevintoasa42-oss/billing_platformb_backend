@@ -17,6 +17,7 @@ final class NextSequentialRequest extends FormRequest
             'branch_office_id' => ['required', 'integer', 'exists:tenant.branch_offices,id'],
             'emission_point_id' => ['nullable', 'integer', 'required_without:emission_point'],
             'emission_point' => ['nullable', 'string', 'max:20', 'required_without:emission_point_id'],
+            'partner_id' => ['nullable', 'integer', 'exists:tenant.partners,id'],
         ];
     }
 }

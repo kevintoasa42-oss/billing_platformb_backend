@@ -11,14 +11,15 @@ final class GetNextSequentialUseCase
     {
     }
 
-    public function execute(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): NextSequentialDTO
+    public function execute(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $partnerId = null): NextSequentialDTO
     {
-        $nextSequential = $this->generator->nextSequential($branchOfficeId, $emissionPointId, $emissionPoint);
+        $nextSequential = $this->generator->nextSequential($branchOfficeId, $emissionPointId, $emissionPoint, $partnerId);
 
         return new NextSequentialDTO(
             branch_office_id: $branchOfficeId,
             emission_point_id: $emissionPointId,
             emission_point: $emissionPoint,
+            partner_id: $partnerId,
             sequential: $nextSequential->sequential,
             formatted_sequential: $nextSequential->formatted(),
         );

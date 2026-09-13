@@ -25,14 +25,17 @@ final class EmissionPointSequentialTest extends TestCase
 
             public int $takeCalls = 0;
 
-            public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
+            public ?int $partnerId = null;
+
+            public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $partnerId = null): EmissionPointSequential
             {
                 $this->previewCalls++;
+                $this->partnerId = $partnerId;
 
                 return new EmissionPointSequential('001', '004', 6);
             }
 
-            public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
+            public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $partnerId = null): EmissionPointSequential
             {
                 $this->takeCalls++;
 
@@ -40,32 +43,35 @@ final class EmissionPointSequentialTest extends TestCase
             }
         };
 
-        $result = (new GetNextSequentialUseCase($generator))->execute(1, 1, '004')->toArray();
+        $result = (new GetNextSequentialUseCase($generator))->execute(1, 1, '004', 9)->toArray();
 
         self::assertSame(6, $result['sequential']);
         self::assertSame('001-004-000000006', $result['formatted_sequential']);
+        self::assertSame(9, $result['partner_id']);
         self::assertSame(1, $generator->previewCalls);
         self::assertSame(0, $generator->takeCalls);
+        self::assertSame(9, $generator->partnerId);
     }
 
     public function test_the_take_use_case_uses_the_internal_counter_advancement_operation(): void
     {
         $generator = new class implements NextSequentialGeneratorInterface
         {
-            public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
+            public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $partnerId = null): EmissionPointSequential
             {
                 throw new \LogicException('The preview operation must not be called when taking a sequential.');
             }
 
-            public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
+            public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $partnerId = null): EmissionPointSequential
             {
                 return new EmissionPointSequential('001', '004', 6);
             }
         };
 
-        $result = (new TakeNextSequentialUseCase($generator))->execute(1, 1, '004')->toArray();
+        $result = (new TakeNextSequentialUseCase($generator))->execute(1, 1, '004', 9)->toArray();
 
         self::assertSame(6, $result['sequential']);
         self::assertSame('001-004-000000006', $result['formatted_sequential']);
+        self::assertSame(9, $result['partner_id']);
     }
 }

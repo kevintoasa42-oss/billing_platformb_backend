@@ -8,6 +8,7 @@ use App\Context\V1\Enterprise\Application\Http\Controllers\AuthController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\EnterpriseController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
 use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
+use App\Context\V1\Partners\Infrastructure\Laravel\Http\Controllers\PartnerController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use App\Context\V1\Product\Application\Http\Controllers\TaxController;
 use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
@@ -80,6 +81,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/clients/{id}', [ClientController::class, 'update']);
         Route::patch('/clients/{id}', [ClientController::class, 'update']);
         Route::delete('/clients/{id}', [ClientController::class, 'destroy']);
+
+        // --- Partners (tenant) ---
+        Route::get('/partners', [PartnerController::class, 'index']);
+        Route::get('/partners/{id}', [PartnerController::class, 'show']);
+        Route::post('/partners', [PartnerController::class, 'store']);
+        Route::put('/partners/{id}', [PartnerController::class, 'update']);
+        Route::patch('/partners/{id}', [PartnerController::class, 'update']);
+        Route::delete('/partners/{id}', [PartnerController::class, 'destroy']);
 
         // --- Emission points (tenant) ---
         // Declare this static route before /emission-points/{id}.

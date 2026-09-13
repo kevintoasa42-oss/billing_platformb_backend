@@ -51,6 +51,7 @@ final class EmissionPointController extends Controller
                 (int)$data['branch_office_id'],
                 isset($data['emission_point_id']) ? (int)$data['emission_point_id'] : null,
                 $data['emission_point'] ?? null,
+                isset($data['partner_id']) ? (int)$data['partner_id'] : null,
             ];
             $result = $take
                 ? $this->sequentialService->takeNextSequential(...$arguments)

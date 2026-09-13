@@ -15,13 +15,13 @@ final class EmissionPointSequentialService implements EmissionPointSequentialSer
     {
     }
 
-    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): NextSequentialDTO
+    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $partnerId = null): NextSequentialDTO
     {
-        return $this->getNextSequentialUseCase->execute($branchOfficeId, $emissionPointId, $emissionPoint);
+        return $this->getNextSequentialUseCase->execute($branchOfficeId, $emissionPointId, $emissionPoint, $partnerId);
     }
 
-    public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): NextSequentialDTO
+    public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $partnerId = null): NextSequentialDTO
     {
-        return $this->takeNextSequentialUseCase->execute($branchOfficeId, $emissionPointId, $emissionPoint);
+        return $this->takeNextSequentialUseCase->execute($branchOfficeId, $emissionPointId, $emissionPoint, $partnerId);
     }
 }

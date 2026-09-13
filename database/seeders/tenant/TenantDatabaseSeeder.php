@@ -9,6 +9,7 @@ final class TenantDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            PartnerSeeder::class,
             BranchOfficeSeeder::class,
             EmissionPointSeeder::class,
             ClientSeeder::class,
