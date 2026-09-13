@@ -9,6 +9,7 @@ final class NextSequentialDTO
         public ?int $emission_point_id,
         public ?string $emission_point,
         public int $sequential,
+        public string $formatted_sequential,
     ) {}
 
     public function toArray(): array
@@ -18,6 +19,7 @@ final class NextSequentialDTO
             'emission_point_id' => $this->emission_point_id,
             'emission_point' => $this->emission_point,
             'sequential' => $this->sequential,
+            'formatted_sequential' => $this->formatted_sequential,
         ];
     }
 }

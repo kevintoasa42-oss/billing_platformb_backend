@@ -5,6 +5,7 @@ namespace App\Context\V1\EmissionPoints\Infrastructure\Laravel\Eloquent\Reposito
 use App\Context\V1\EmissionPoints\Domain\Exceptions\EmissionPointNotFoundException;
 use App\Context\V1\EmissionPoints\Domain\Mappers\EmissionPointMapperInterface;
 use App\Context\V1\EmissionPoints\Domain\Models\EmissionPoint;
+use App\Context\V1\EmissionPoints\Domain\Models\EmissionPointSequential;
 use App\Context\V1\EmissionPoints\Domain\Ports\NextSequentialGeneratorInterface;
 use App\Context\V1\EmissionPoints\Domain\Repositories\EmissionPointRepositoryInterface;
 use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
@@ -79,20 +80,43 @@ final class EloquentEmissionPointRepository implements EmissionPointRepositoryIn
         return EmissionPointModel::find($id)?->delete() ?? false;
     }
 
-    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): int
+    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
     {
-        if (($emissionPointId === null) === ($emissionPoint === null)) {
-            throw new \InvalidArgumentException('Exactly one emission point selector is required.');
+        $query = EmissionPointModel::query()
+            ->with('branchOffice:id,code_sri')
+            ->where('branch_office_id', $branchOfficeId);
+        $emissionPointId !== null
+            ? $query->whereKey($emissionPointId)
+            : $query->where('emission_point', $emissionPoint);
+
+        $point = $query->first();
+        if (! $point || ! $point->branchOffice) {
+            throw new EmissionPointNotFoundException($branchOfficeId, $emissionPointId, $emissionPoint);
         }
 
-        return DB::connection('tenant')->transaction(function () use ($branchOfficeId, $emissionPointId, $emissionPoint): int {
-            $query = EmissionPointModel::query()->where('branch_office_id', $branchOfficeId);
+        $sequential = EmissionPointSequenceModel::query()
+            ->where('emission_point_id', $point->id)
+            ->value('next_sequential');
+
+        return new EmissionPointSequential(
+            branch_office_code_sri: (string) $point->branchOffice->code_sri,
+            emission_point: (string) $point->emission_point,
+            sequential: $sequential === null ? 1 : (int) $sequential,
+        );
+    }
+
+    public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
+    {
+        return DB::connection('tenant')->transaction(function () use ($branchOfficeId, $emissionPointId, $emissionPoint): EmissionPointSequential {
+            $query = EmissionPointModel::query()
+                ->with('branchOffice:id,code_sri')
+                ->where('branch_office_id', $branchOfficeId);
             $emissionPointId !== null
                 ? $query->whereKey($emissionPointId)
                 : $query->where('emission_point', $emissionPoint);
 
             $point = $query->lockForUpdate()->first();
-            if (! $point) {
+            if (! $point || ! $point->branchOffice) {
                 throw new EmissionPointNotFoundException($branchOfficeId, $emissionPointId, $emissionPoint);
             }
 
@@ -112,7 +136,11 @@ final class EloquentEmissionPointRepository implements EmissionPointRepositoryIn
             $sequential = (int) $counter->next_sequential;
             $counter->update(['next_sequential' => $sequential + 1]);
 
-            return $sequential;
+            return new EmissionPointSequential(
+                branch_office_code_sri: (string) $point->branchOffice->code_sri,
+                emission_point: (string) $point->emission_point,
+                sequential: $sequential,
+            );
         });
     }
 }

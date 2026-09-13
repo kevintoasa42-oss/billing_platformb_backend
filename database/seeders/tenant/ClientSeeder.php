@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Context\V1\Clients\Infrastructure\Laravel\Database\Seeders;
+namespace Database\Seeders\tenant;
 
 use App\Context\V1\Clients\Infrastructure\Laravel\Eloquent\Models\ClientModel;
 use Illuminate\Database\Seeder;

@@ -1,17 +1,17 @@
 <?php
 
+use App\Context\V1\BranchOffices\Infrastructure\Laravel\Http\Controllers\BranchOfficeController;
+use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
+use App\Context\V1\Clients\Infrastructure\Laravel\Http\Controllers\ClientController;
+use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Controllers\EmissionPointController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\AuthController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\EnterpriseController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
-use App\Context\V1\BranchOffices\Infrastructure\Laravel\Http\Controllers\BranchOfficeController;
-use App\Context\V1\Clients\Infrastructure\Laravel\Http\Controllers\ClientController;
-use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Controllers\EmissionPointController;
 use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
-use App\Context\V1\Product\Application\Http\Controllers\TaxController;
-use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
-use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
-use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
+use App\Context\V1\Product\Application\Http\Controllers\TaxController;
+use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
+use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -80,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // --- Emission points (tenant) ---
         // Declare this static route before /emission-points/{id}.
         Route::get('/emission-points/next-sequential', [EmissionPointController::class, 'nextSequential']);
+        Route::post('/emission-points/next-sequential/take', [EmissionPointController::class, 'takeNextSequential']);
         Route::get('/emission-points', [EmissionPointController::class, 'index']);
         Route::get('/emission-points/{id}', [EmissionPointController::class, 'show']);
         Route::post('/emission-points', [EmissionPointController::class, 'store']);
@@ -102,7 +103,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/signatures/{id}', [SignatureController::class, 'update']);
         Route::patch('/signatures/{id}/status', [SignatureController::class, 'changeStatus']);
     });
-
 
     // --- Enterprise Signature (central DB, uses enterprise_id from token) ---
     Route::get('/enterprise-signature', [EnterpriseSignatureController::class, 'show']);

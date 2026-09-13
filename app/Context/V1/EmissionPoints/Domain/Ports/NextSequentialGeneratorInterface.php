@@ -2,11 +2,18 @@
 
 namespace App\Context\V1\EmissionPoints\Domain\Ports;
 
+use App\Context\V1\EmissionPoints\Domain\Models\EmissionPointSequential;
+
 interface NextSequentialGeneratorInterface
 {
     /**
-     * Reserves and returns the next sequential for a branch office and one of
-     * its emission points. Exactly one point selector must be supplied.
+     * Reads the next sequential without changing it. Exactly one point
+     * selector must be supplied.
      */
-    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): int;
+    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential;
+
+    /**
+     * Atomically takes the next sequential and advances the stored counter.
+     */
+    public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential;
 }

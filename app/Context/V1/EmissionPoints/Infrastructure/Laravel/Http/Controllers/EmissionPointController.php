@@ -37,13 +37,27 @@ final class EmissionPointController extends Controller
 
     public function nextSequential(NextSequentialRequest $request): JsonResponse
     {
+        return $this->sequentialResponse($request, false);
+    }
+
+    public function takeNextSequential(NextSequentialRequest $request): JsonResponse
+    {
+        return $this->sequentialResponse($request, true);
+    }
+
+    private function sequentialResponse(NextSequentialRequest $request, bool $take): JsonResponse
+    {
         $data = $request->validated();
+
         try {
-            $result = $this->sequentialService->nextSequential(
+            $arguments = [
                 (int) $data['branch_office_id'],
                 isset($data['emission_point_id']) ? (int) $data['emission_point_id'] : null,
                 $data['emission_point'] ?? null,
-            );
+            ];
+            $result = $take
+                ? $this->sequentialService->takeNextSequential(...$arguments)
+                : $this->sequentialService->nextSequential(...$arguments);
 
             return $this->successResponse($result->toArray());
         } catch (EmissionPointNotFoundException) {

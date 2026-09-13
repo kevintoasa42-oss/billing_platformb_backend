@@ -96,14 +96,9 @@ class CreateEnterpriseUseCase
         DB::purge('tenant');
         DB::reconnect('tenant');
 
-        // Ejecutar las migraciones tenant de cada contexto.
+        // Ejecutar las migraciones tenant centralizadas.
         Artisan::call('migrate', [
-            '--path' => [
-                'database/migrations/tenant',
-                'app/Context/V1/BranchOffices/Infrastructure/Laravel/Database/Migrations',
-                'app/Context/V1/EmissionPoints/Infrastructure/Laravel/Database/Migrations',
-                'app/Context/V1/Clients/Infrastructure/Laravel/Database/Migrations',
-            ],
+            '--path' => 'database/migrations/tenant',
             '--database' => 'tenant',
             '--force' => true,
         ]);
