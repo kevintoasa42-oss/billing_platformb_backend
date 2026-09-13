@@ -64,9 +64,10 @@ class InvoiceController extends Controller
     public function store(CreateInvoiceRequest $request): JsonResponse
     {
         $dto = CreateInvoiceRequest::toDTO($request->validated());
+        $enterpriseId = $request->user()->currentAccessToken()->getAttribute('enterprise_id');
 
         try {
-            return $this->successResponse($this->createUseCase->execute($dto), 201);
+            return $this->successResponse($this->createUseCase->execute($dto, $enterpriseId), 201);
         } catch (\InvalidArgumentException $e) {
             return $this->errorResponse($e->getMessage(), 422);
         }
@@ -80,9 +81,10 @@ class InvoiceController extends Controller
     {
         $data = array_merge($request->validated(), ['id' => $id]);
         $dto = UpdateInvoiceRequest::toDTO($data);
+        $enterpriseId = $request->user()->currentAccessToken()->getAttribute('enterprise_id');
 
         try {
-            return $this->successResponse($this->updateUseCase->execute($dto));
+            return $this->successResponse($this->updateUseCase->execute($dto, $enterpriseId));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return $this->errorResponse('Invoice not found.', 404);
         } catch (\InvalidArgumentException $e) {

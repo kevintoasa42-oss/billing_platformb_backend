@@ -17,8 +17,8 @@ class UpdateInvoiceRequest extends FormRequest
     {
         return [
             'carrier_id' => 'sometimes|nullable|integer|exists:tenant.carriers,id',
-            'environment' => 'sometimes|string|in:1,2',
-            'emission_type' => 'sometimes|string|in:1,2',
+            'environment' => 'prohibited',
+            'emission_type' => 'prohibited',
             'ruc' => 'sometimes|required|string|max:13',
             'legal_name' => 'sometimes|required|string|max:255',
             'tradename' => 'sometimes|nullable|string|max:255',

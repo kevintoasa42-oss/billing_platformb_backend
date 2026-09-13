@@ -14,12 +14,13 @@ class UpdateInvoiceUseCase
         private InvoiceCalculationService $calculationService,
     ) {}
 
-    public function execute(InvoiceDTO $dto): InvoiceDTO
+    public function execute(InvoiceDTO $dto, int $enterpriseId): InvoiceDTO
     {
         $invoice = InvoiceMapper::fromDto($dto);
 
-        // Recalculate totals, aggregate taxes, enrich with SRI catalog data
-        $invoice = $this->calculationService->calculateAndEnrich($invoice);
+        // Recalculate totals, aggregate taxes, enrich with SRI catalog data,
+        // resolve environment/emission_type from signature, generate access key
+        $invoice = $this->calculationService->calculateAndEnrich($invoice, $enterpriseId);
 
         return InvoiceDTO::fromArray($this->repository->update($invoice));
     }

@@ -4,6 +4,7 @@ namespace App\Context\V1\Invoice\Domain\Services;
 
 use App\Context\V1\Invoice\Domain\Mappers\InvoiceTaxAggregatorMapper;
 use App\Context\V1\Invoice\Domain\Models\InvoiceHeader;
+use App\Context\V1\Invoice\Domain\Repositories\SignatureConfigRepositoryInterface;
 use App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface;
 use App\Context\V1\Shared\Domain\Services\AccessKeyGenerator;
 
@@ -11,23 +12,41 @@ class InvoiceCalculationService
 {
     public function __construct(
         private SriCatalogRepositoryInterface $sriCatalogRepository,
+        private SignatureConfigRepositoryInterface $signatureConfigRepository,
         private AccessKeyGenerator $accessKeyGenerator,
     ) {}
 
     /**
      * Calculate all header totals, item tax_base, aggregate header taxes,
-     * and fill SRI catalog data (code, percentage_code, rate, payment_code).
+     * fill SRI catalog data, resolve environment/emission_type from signature,
+     * and generate access key.
      *
-     * @throws \InvalidArgumentException If payments do not match the total.
+     * @throws \InvalidArgumentException If no active signature is found or payments do not match the total.
      */
-    public function calculateAndEnrich(InvoiceHeader $invoice): InvoiceHeader
+    public function calculateAndEnrich(InvoiceHeader $invoice, int $enterpriseId): InvoiceHeader
     {
+        // Resolve environment and emission_type from signature (backend responsibility)
+        $signatureConfig = $this->signatureConfigRepository->getActiveConfig(
+            $invoice->carrier_id,
+            $enterpriseId,
+        );
+
+        if (!$signatureConfig) {
+            throw new \InvalidArgumentException(
+                'No active signature found for this ' . ($invoice->carrier_id ? 'carrier' : 'enterprise') . '.'
+            );
+        }
+
+        // Map signature values to SRI codes
+        $invoice->environment = $signatureConfig->environment === 'produccion' ? '2' : '1';
+        $invoice->emission_type = $signatureConfig->emission_type ? '1' : '2';
+
         // Generate access key (backend responsibility, never from frontend)
         $accessKey = $this->accessKeyGenerator->generate(
             issueDate: $invoice->issue_date,
             documentCode: $invoice->document_code ?? '01',
             ruc: $invoice->ruc,
-            environment: $invoice->environment ?? '1',
+            environment: $invoice->environment,
             establishment: $invoice->establishment,
             emissionPoint: $invoice->emission_point,
             sequential: $invoice->sequential,

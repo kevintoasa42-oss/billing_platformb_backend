@@ -17,8 +17,8 @@ class CreateInvoiceRequest extends FormRequest
     {
         return [
             'carrier_id' => 'nullable|integer|exists:tenant.carriers,id',
-            'environment' => 'nullable|string|in:1,2',
-            'emission_type' => 'nullable|string|in:1,2',
+            'environment' => 'prohibited',
+            'emission_type' => 'prohibited',
             'ruc' => 'required|string|max:13',
             'legal_name' => 'required|string|max:255',
             'tradename' => 'nullable|string|max:255',

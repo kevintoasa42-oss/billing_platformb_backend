@@ -91,6 +91,12 @@ class ContextServiceProvider extends ServiceProvider
             \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSriCatalogRepository::class
         );
 
+        // Signature config (resolves environment/emission_type from signature)
+        $this->app->bind(
+            \App\Context\V1\Invoice\Domain\Repositories\SignatureConfigRepositoryInterface::class,
+            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSignatureConfigRepository::class
+        );
+
         // Shared services
         $this->app->singleton(
             \App\Context\V1\Shared\Domain\Services\AccessKeyGenerator::class
