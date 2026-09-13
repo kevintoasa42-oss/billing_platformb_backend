@@ -3,6 +3,7 @@
 namespace App\Context\V1\Product\Infrastructure\Eloquent\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductModel extends Model
 {
@@ -25,17 +26,19 @@ class ProductModel extends Model
     ];
 
     /**
+     * Relacion con la tabla pivote product_tax (DB tenant).
+     * No usa belongsToMany porque sri_iva_percentages esta en la DB central.
+     */
+    public function taxes(): HasMany
+    {
+        return $this->hasMany(ProductTaxModel::class, 'product_id');
+    }
+
+    /**
      * Devuelve los IDs de taxes asignados a este product.
-     * No usa belongsToMany porque la tabla sri_iva_percentages esta en la DB central.
-     *
-     * @return int[]
      */
     public function getTaxIds(): array
     {
-        return \DB::connection('tenant')
-            ->table('product_tax')
-            ->where('product_id', $this->id)
-            ->pluck('sri_iva_percentage_id')
-            ->toArray();
+        return $this->taxes()->pluck('sri_iva_percentage_id')->toArray();
     }
 }

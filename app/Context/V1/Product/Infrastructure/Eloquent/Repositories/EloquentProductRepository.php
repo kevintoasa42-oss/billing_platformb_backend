@@ -6,6 +6,7 @@ use App\Context\V1\Product\Domain\Models\Product;
 use App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface;
 use App\Context\V1\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper;
 use App\Context\V1\Product\Infrastructure\Eloquent\Models\ProductModel;
+use App\Context\V1\Product\Infrastructure\Eloquent\Models\ProductTaxModel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentProductRepository implements ProductRepositoryInterface
@@ -76,24 +77,23 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return ProductModel::where('id', $id)->update(['status' => $status]) > 0;
     }
 
+    /**
+     * Sincroniza los taxes de un product usando el modelo Eloquent ProductTaxModel.
+     * Elimina los registros anteriores y crea los nuevos.
+     */
     public function assignTaxes(int $productId, array $taxIds): void
     {
-        \DB::connection('tenant')
-            ->table('product_tax')
-            ->where('product_id', $productId)
-            ->delete();
+        ProductTaxModel::where('product_id', $productId)->delete();
 
         if (!empty($taxIds)) {
-            \DB::connection('tenant')
-                ->table('product_tax')
-                ->insert(
-                    array_map(fn ($id) => [
-                        'product_id' => $productId,
-                        'sri_iva_percentage_id' => $id,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ], $taxIds)
-                );
+            ProductTaxModel::insert(
+                array_map(fn ($id) => [
+                    'product_id' => $productId,
+                    'sri_iva_percentage_id' => $id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ], $taxIds)
+            );
         }
     }
 }
