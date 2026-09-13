@@ -154,7 +154,8 @@ class EloquentInvoiceRepository implements InvoiceRepositoryInterface
         foreach ($payments as $payment) {
             InvoicePaymentModel::create([
                 'invoice_header_id' => $headerId,
-                'payment_method' => $payment->payment_method,
+                'sri_payment_method_id' => $payment->sri_payment_method_id,
+                'payment_code' => $payment->payment_code,
                 'total' => $payment->total,
                 'term' => $payment->term,
             ]);

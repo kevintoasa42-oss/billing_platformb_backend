@@ -9,6 +9,7 @@ use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
 use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
 use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
 use App\Context\V1\Invoice\Application\Http\Controllers\InvoiceController;
+use App\Context\V1\Invoice\Application\Http\Controllers\PaymentMethodController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -93,4 +94,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- Ivas (catálogo central, no requiere tenant) ---
     Route::get('/taxes', [TaxController::class, 'index']);
+
+    // --- Payment methods (catálogo central, no requiere tenant) ---
+    Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
 });

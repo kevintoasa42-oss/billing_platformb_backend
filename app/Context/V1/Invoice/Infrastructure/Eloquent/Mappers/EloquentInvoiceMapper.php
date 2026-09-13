@@ -54,7 +54,8 @@ class EloquentInvoiceMapper
         $payments = $model->payments->map(fn ($p) => new InvoicePayment(
             id: $p->id,
             invoice_header_id: $p->invoice_header_id,
-            payment_method: $p->payment_method,
+            sri_payment_method_id: $p->sri_payment_method_id,
+            payment_code: $p->payment_code,
             total: (float) $p->total,
             term: $p->term,
         ))->toArray();

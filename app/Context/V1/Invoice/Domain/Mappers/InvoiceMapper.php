@@ -51,7 +51,8 @@ class InvoiceMapper
         $payments = array_map(fn ($p) => new InvoicePayment(
             id: $p['id'] ?? null,
             invoice_header_id: $p['invoice_header_id'] ?? null,
-            payment_method: $p['payment_method'] ?? null,
+            sri_payment_method_id: $p['sri_payment_method_id'] ?? null,
+            payment_code: $p['payment_code'] ?? null,
             total: $p['total'] ?? 0,
             term: $p['term'] ?? 0,
         ), $dto->payments);
@@ -167,7 +168,8 @@ class InvoiceMapper
             'payments' => array_map(fn ($p) => [
                 'id' => $p->id,
                 'invoice_header_id' => $p->invoice_header_id,
-                'payment_method' => $p->payment_method,
+                'sri_payment_method_id' => $p->sri_payment_method_id,
+                'payment_code' => $p->payment_code,
                 'total' => $p->total,
                 'term' => $p->term,
             ], $invoice->payments),
