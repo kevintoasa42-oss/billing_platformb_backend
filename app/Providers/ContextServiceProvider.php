@@ -15,54 +15,54 @@ class ContextServiceProvider extends ServiceProvider
 
         // Enterprise
         $this->app->bind(
-            \App\Context\Enterprise\Domain\Mappers\EnterpriseMapperInterface::class,
-            \App\Context\Enterprise\Infrastructure\Eloquent\Mappers\EnterpriseMapper::class
+            \App\Context\V1\Enterprise\Domain\Mappers\EnterpriseMapperInterface::class,
+            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Mappers\EnterpriseMapper::class
         );
         $this->app->bind(
-            \App\Context\Enterprise\Domain\Mappers\UserMapperInterface::class,
-            \App\Context\Enterprise\Infrastructure\Eloquent\Mappers\UserMapper::class
+            \App\Context\V1\Enterprise\Domain\Mappers\UserMapperInterface::class,
+            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Mappers\UserMapper::class
         );
         $this->app->bind(
-            \App\Context\Enterprise\Domain\Mappers\RoleMapperInterface::class,
-            \App\Context\Enterprise\Infrastructure\Eloquent\Mappers\RoleMapper::class
+            \App\Context\V1\Enterprise\Domain\Mappers\RoleMapperInterface::class,
+            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Mappers\RoleMapper::class
         );
 
         // Menu
         $this->app->bind(
-            \App\Context\Menu\Domain\Mappers\MenuMapperInterface::class,
-            \App\Context\Menu\Infrastructure\Eloquent\Mappers\MenuMapper::class
+            \App\Context\V1\Menu\Domain\Mappers\MenuMapperInterface::class,
+            \App\Context\V1\Menu\Infrastructure\Eloquent\Mappers\MenuMapper::class
         );
 
         // === Repositories (interfaces -> implementaciones Eloquent) ===
 
         // Enterprise
         $this->app->bind(
-            \App\Context\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface::class,
-            \App\Context\Enterprise\Infrastructure\Eloquent\Repositories\EloquentEnterpriseRepository::class
+            \App\Context\V1\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface::class,
+            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories\EloquentEnterpriseRepository::class
         );
         $this->app->bind(
-            \App\Context\Enterprise\Domain\Repositories\UserRepositoryInterface::class,
-            \App\Context\Enterprise\Infrastructure\Eloquent\Repositories\EloquentUserRepository::class
+            \App\Context\V1\Enterprise\Domain\Repositories\UserRepositoryInterface::class,
+            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories\EloquentUserRepository::class
         );
         $this->app->bind(
-            \App\Context\Enterprise\Domain\Repositories\RoleRepositoryInterface::class,
-            \App\Context\Enterprise\Infrastructure\Eloquent\Repositories\EloquentRoleRepository::class
+            \App\Context\V1\Enterprise\Domain\Repositories\RoleRepositoryInterface::class,
+            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories\EloquentRoleRepository::class
         );
 
         // Menu
         $this->app->bind(
-            \App\Context\Menu\Domain\Repositories\MenuRepositoryInterface::class,
-            \App\Context\Menu\Infrastructure\Eloquent\Repositories\EloquentMenuRepository::class
+            \App\Context\V1\Menu\Domain\Repositories\MenuRepositoryInterface::class,
+            \App\Context\V1\Menu\Infrastructure\Eloquent\Repositories\EloquentMenuRepository::class
         );
 
         // Product
         $this->app->bind(
-            \App\Context\Product\Domain\Mappers\ProductMapperInterface::class,
-            \App\Context\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper::class
+            \App\Context\V1\Product\Domain\Mappers\ProductMapperInterface::class,
+            \App\Context\V1\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper::class
         );
         $this->app->bind(
-            \App\Context\Product\Domain\Repositories\ProductRepositoryInterface::class,
-            \App\Context\Product\Infrastructure\Eloquent\Repositories\EloquentProductRepository::class
+            \App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface::class,
+            \App\Context\V1\Product\Infrastructure\Eloquent\Repositories\EloquentProductRepository::class
         );
     }
 

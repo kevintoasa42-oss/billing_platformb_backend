@@ -1,11 +1,11 @@
 <?php
 
-use App\Context\Enterprise\Application\Http\Controllers\AuthController;
-use App\Context\Enterprise\Application\Http\Controllers\EnterpriseController;
-use App\Context\Enterprise\Application\Http\Controllers\UserController;
-use App\Context\Menu\Application\Http\Controllers\MenuController;
-use App\Context\Product\Application\Http\Controllers\TaxController;
-use App\Context\Product\Application\Http\Controllers\ProductController;
+use App\Context\V1\Enterprise\Application\Http\Controllers\AuthController;
+use App\Context\V1\Enterprise\Application\Http\Controllers\EnterpriseController;
+use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
+use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
+use App\Context\V1\Product\Application\Http\Controllers\TaxController;
+use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
