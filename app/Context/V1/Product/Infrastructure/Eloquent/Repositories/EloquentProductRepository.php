@@ -11,10 +11,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentProductRepository implements ProductRepositoryInterface
 {
-    public function __construct(
-        private EloquentProductMapper $mapper,
-    ) {}
-
     public function listPaginated(int $page = 1, int $perPage = 15, ?string $search = null): array
     {
         $query = ProductModel::query();
@@ -31,7 +27,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
         $paginator = $query->orderBy('id', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 
-        $data = $paginator->getCollection()->map(fn ($m) => $this->mapper->toDomain($m))->toArray();
+        $data = $paginator->getCollection()->map(fn ($m) => EloquentProductMapper::toDomain($m))->toArray();
 
         return [
             'data' => $data,
@@ -46,30 +42,30 @@ class EloquentProductRepository implements ProductRepositoryInterface
     {
         $model = ProductModel::find($id);
 
-        return $model ? $this->mapper->toDomain($model) : null;
+        return $model ? EloquentProductMapper::toDomain($model) : null;
     }
 
     public function create(Product $product): Product
     {
-        $model = ProductModel::create($this->mapper->toModel($product));
+        $model = ProductModel::create(EloquentProductMapper::toModel($product));
 
         if (!empty($product->taxes)) {
             $this->assignTaxes($model->id, $product->taxes);
         }
 
-        return $this->mapper->toDomain($model->fresh());
+        return EloquentProductMapper::toDomain($model->fresh());
     }
 
     public function update(Product $product): Product
     {
         $model = ProductModel::findOrFail($product->id);
-        $model->update($this->mapper->toModel($product));
+        $model->update(EloquentProductMapper::toModel($product));
 
         if ($product->taxes !== []) {
             $this->assignTaxes($model->id, $product->taxes);
         }
 
-        return $this->mapper->toDomain($model->fresh());
+        return EloquentProductMapper::toDomain($model->fresh());
     }
 
     public function changeStatus(int $id, bool $status): bool

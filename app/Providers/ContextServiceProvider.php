@@ -57,10 +57,6 @@ class ContextServiceProvider extends ServiceProvider
 
         // Product
         $this->app->bind(
-            \App\Context\V1\Product\Domain\Mappers\ProductMapperInterface::class,
-            \App\Context\V1\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper::class
-        );
-        $this->app->bind(
             \App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface::class,
             \App\Context\V1\Product\Infrastructure\Eloquent\Repositories\EloquentProductRepository::class
         );

@@ -3,8 +3,8 @@
 namespace App\Context\V1\Product\Application\UseCases;
 
 use App\Context\V1\Product\Application\DTOs\ProductDTO;
+use App\Context\V1\Product\Domain\Mappers\ProductMapper;
 use App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface;
-use App\Context\V1\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper;
 
 class GetProductByIdUseCase
 {
@@ -20,6 +20,6 @@ class GetProductByIdUseCase
             return null;
         }
 
-        return ProductDTO::fromArray(EloquentProductMapper::toDtoArray($product));
+        return ProductDTO::fromArray(ProductMapper::toDtoArray($product));
     }
 }
