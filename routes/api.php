@@ -6,6 +6,7 @@ use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
 use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
 use App\Context\V1\Product\Application\Http\Controllers\TaxController;
 use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
+use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/carriers/{id}', [CarrierController::class, 'update']);
         Route::patch('/carriers/{id}', [CarrierController::class, 'update']);
         Route::patch('/carriers/{id}/status', [CarrierController::class, 'changeStatus']);
+
+        // --- Signatures (tenant) ---
+        Route::get('/signatures', [SignatureController::class, 'index']);
+        Route::get('/signatures/{id}', [SignatureController::class, 'show']);
+        Route::post('/signatures', [SignatureController::class, 'store']);
+        Route::put('/signatures/{id}', [SignatureController::class, 'update']);
+        Route::patch('/signatures/{id}', [SignatureController::class, 'update']);
+        Route::patch('/signatures/{id}/status', [SignatureController::class, 'changeStatus']);
     });
 
     // --- Ivas (catálogo central, no requiere tenant) ---
