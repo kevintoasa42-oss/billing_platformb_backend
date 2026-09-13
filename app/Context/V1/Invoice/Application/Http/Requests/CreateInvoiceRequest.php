@@ -22,7 +22,7 @@ class CreateInvoiceRequest extends FormRequest
             'ruc' => 'required|string|max:13',
             'legal_name' => 'required|string|max:255',
             'tradename' => 'nullable|string|max:255',
-            'access_key' => 'required|string|size:49',
+            'access_key' => 'nullable|string|size:49',
             'document_code' => 'nullable|string|max:2',
             'establishment' => 'required|string|max:3',
             'emission_point' => 'required|string|max:3',

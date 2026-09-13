@@ -5,11 +5,13 @@ namespace App\Context\V1\Invoice\Domain\Services;
 use App\Context\V1\Invoice\Domain\Mappers\InvoiceTaxAggregatorMapper;
 use App\Context\V1\Invoice\Domain\Models\InvoiceHeader;
 use App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface;
+use App\Context\V1\Shared\Domain\Services\AccessKeyGenerator;
 
 class InvoiceCalculationService
 {
     public function __construct(
         private SriCatalogRepositoryInterface $sriCatalogRepository,
+        private AccessKeyGenerator $accessKeyGenerator,
     ) {}
 
     /**
@@ -20,6 +22,20 @@ class InvoiceCalculationService
      */
     public function calculateAndEnrich(InvoiceHeader $invoice): InvoiceHeader
     {
+        // Generate access key if not provided
+        if (empty($invoice->access_key)) {
+            $accessKey = $this->accessKeyGenerator->generate(
+                issueDate: $invoice->issue_date,
+                documentCode: $invoice->document_code ?? '01',
+                ruc: $invoice->ruc,
+                environment: $invoice->environment ?? '1',
+                establishment: $invoice->establishment,
+                emissionPoint: $invoice->emission_point,
+                sequential: $invoice->sequential,
+            );
+            $invoice->access_key = $accessKey->value;
+        }
+
         $ivaPercentages = $this->sriCatalogRepository->getIvaPercentages();
         $paymentMethods = $this->sriCatalogRepository->getPaymentMethods();
 

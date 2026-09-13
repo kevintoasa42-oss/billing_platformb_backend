@@ -90,6 +90,11 @@ class ContextServiceProvider extends ServiceProvider
             \App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface::class,
             \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSriCatalogRepository::class
         );
+
+        // Shared services
+        $this->app->singleton(
+            \App\Context\V1\Shared\Domain\Services\AccessKeyGenerator::class
+        );
     }
 
     /**
