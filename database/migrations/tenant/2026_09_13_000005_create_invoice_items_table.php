@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('quantity', 14, 5)->default(0); // quantity
             $table->decimal('unit_price', 14, 5)->default(0); // precio unitario
             $table->decimal('discount', 14, 2)->default(0); // descuento
-            $table->decimal('total_without_tax', 14, 2)->default(0); // precio total sin impuesto
+            $table->decimal('tax_base', 14, 2)->default(0); // line total after discount (taxable base) // precio total sin impuesto
             $table->timestamps();
 
             $table->index('invoice_header_id');

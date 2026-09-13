@@ -13,7 +13,8 @@ class InvoicePaymentModel extends Model
 
     protected $fillable = [
         'invoice_header_id',
-        'payment_method',
+        'sri_payment_method_id',
+        'payment_code',
         'total',
         'term',
     ];

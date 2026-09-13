@@ -13,15 +13,18 @@ class InvoiceTaxModel extends Model
 
     protected $fillable = [
         'invoice_header_id',
+        'sri_iva_percentage_id',
         'code',
         'percentage_code',
-        'taxable_base',
-        'value',
+        'rate',
+        'tax_base',
+        'tax',
     ];
 
     protected $casts = [
-        'taxable_base' => 'decimal:2',
-        'value' => 'decimal:2',
+        'rate' => 'decimal:2',
+        'tax_base' => 'decimal:2',
+        'tax' => 'decimal:2',
     ];
 
     public function header(): BelongsTo

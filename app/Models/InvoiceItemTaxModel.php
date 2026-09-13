@@ -13,17 +13,18 @@ class InvoiceItemTaxModel extends Model
 
     protected $fillable = [
         'invoice_item_id',
+        'sri_iva_percentage_id',
         'code',
         'percentage_code',
         'rate',
-        'taxable_base',
-        'value',
+        'tax_base',
+        'tax',
     ];
 
     protected $casts = [
         'rate' => 'decimal:2',
-        'taxable_base' => 'decimal:2',
-        'value' => 'decimal:2',
+        'tax_base' => 'decimal:2',
+        'tax' => 'decimal:2',
     ];
 
     public function item(): BelongsTo

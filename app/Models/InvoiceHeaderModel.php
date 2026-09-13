@@ -34,10 +34,12 @@ class InvoiceHeaderModel extends Model
         'buyer_address',
         'buyer_phone',
         'buyer_email',
-        'total_without_taxes',
-        'total_discount',
+        'subtotal',
+        'discount',
+        'tax_base',
+        'tax',
         'tip',
-        'total_amount',
+        'total',
         'currency',
         'plate',
         'status',
@@ -45,10 +47,12 @@ class InvoiceHeaderModel extends Model
 
     protected $casts = [
         'issue_date' => 'date',
-        'total_without_taxes' => 'decimal:2',
-        'total_discount' => 'decimal:2',
+        'subtotal' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'tax_base' => 'decimal:2',
+        'tax' => 'decimal:2',
         'tip' => 'decimal:2',
-        'total_amount' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
     public function carrier(): BelongsTo

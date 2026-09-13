@@ -16,6 +16,7 @@ final class LandlordDatabaseSeeder extends Seeder
     {
         $this->call([
             SriIvaPercentagesSeeder::class,
+            SriPaymentMethodsSeeder::class,
             RolesSeeder::class,
             DatosPruebaSeeder::class,
         ]);

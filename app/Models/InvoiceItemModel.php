@@ -21,14 +21,14 @@ class InvoiceItemModel extends Model
         'quantity',
         'unit_price',
         'discount',
-        'total_without_tax',
+        'tax_base',
     ];
 
     protected $casts = [
         'quantity' => 'decimal:5',
         'unit_price' => 'decimal:5',
         'discount' => 'decimal:2',
-        'total_without_tax' => 'decimal:2',
+        'tax_base' => 'decimal:2',
     ];
 
     public function header(): BelongsTo

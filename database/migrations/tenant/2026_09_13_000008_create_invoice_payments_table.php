@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Tenant migration: creates the invoice_payments table.
  * Stores payment info per invoice (infoFactura > pagos > pago).
+ * References sri_payment_methods catalog (central DB) by ID.
  */
 return new class extends Migration
 {
@@ -15,12 +16,14 @@ return new class extends Migration
         Schema::connection('tenant')->create('invoice_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_header_id')->constrained('invoice_headers')->cascadeOnDelete();
-            $table->string('payment_method', 2); // 01=efectivo, 16=tarjeta debito, 19=tarjeta credito, 20=otros
+            $table->unsignedBigInteger('sri_payment_method_id')->nullable(); // reference to central catalog
+            $table->string('payment_code', 2)->nullable(); // snapshot of SRI code (e.g. "01")
             $table->decimal('total', 14, 2)->default(0);
             $table->integer('term')->default(0); // term (days)
             $table->timestamps();
 
             $table->index('invoice_header_id');
+            $table->index('sri_payment_method_id');
         });
     }
 

@@ -23,8 +23,8 @@ class ProductApiTest extends TestCase
 
         // Insertar catalogo de IVA
         \DB::connection('pgsql')->table('sri_iva_percentages')->insert([
-            ['code' => 'IVA_15', 'name' => 'Tarifa general', 'percentage' => 15.00, 'description' => 'IVA general', 'created_at' => now(), 'updated_at' => now()],
-            ['code' => 'IVA_0', 'name' => 'Tarifa cero', 'percentage' => 0.00, 'description' => 'IVA 0%', 'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'IVA_15', 'percentage_code' => '4', 'name' => 'Tarifa general', 'percentage' => 15.00, 'description' => 'IVA general', 'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'IVA_0', 'percentage_code' => '0', 'name' => 'Tarifa cero', 'percentage' => 0.00, 'description' => 'IVA 0%', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // Insertar roles

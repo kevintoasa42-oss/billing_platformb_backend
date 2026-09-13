@@ -79,6 +79,47 @@ class ContextServiceProvider extends ServiceProvider
             \App\Context\V1\Signature\Infrastructure\Eloquent\Repositories\EloquentEnterpriseSignatureRepository::class
         );
 
+
+        // Invoice
+        $this->app->bind(
+            \App\Context\V1\Invoice\Domain\Repositories\InvoiceRepositoryInterface::class,
+            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentInvoiceRepository::class
+        );
+
+        // SRI Catalog (central DB, used by Invoice domain service)
+        $this->app->bind(
+            \App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface::class,
+            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSriCatalogRepository::class
+        );
+
+        // Signature config (resolves environment/emission_type from signature)
+        $this->app->bind(
+            \App\Context\V1\Invoice\Domain\Repositories\SignatureConfigRepositoryInterface::class,
+            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSignatureConfigRepository::class
+        );
+
+        // Shared services
+        $this->app->singleton(
+            \App\Context\V1\Shared\Domain\Services\AccessKeyGenerator::class
+        );
+
+        // XmlGeneration - Invoice XML builder (needs provider RUC from config)
+        $this->app->singleton(
+            \App\Context\V1\XmlGeneration\Domain\Services\InvoiceXmlBuilder::class,
+            fn ($app) => new \App\Context\V1\XmlGeneration\Domain\Services\InvoiceXmlBuilder(
+                config('sri.provider_ruc'),
+            )
+        );
+
+        // SriAuthorization - SRI SOAP communication services
+        $this->app->singleton(\App\Context\V1\SriAuthorization\Domain\Services\SriReceptionService::class);
+        $this->app->singleton(\App\Context\V1\SriAuthorization\Domain\Services\SriAuthorizationService::class);
+
+        // SriAuthorization - log repository
+        $this->app->bind(
+            \App\Context\V1\SriAuthorization\Domain\Repositories\InvoiceSriLogRepositoryInterface::class,
+            \App\Context\V1\SriAuthorization\Infrastructure\Eloquent\Repositories\EloquentInvoiceSriLogRepository::class
+        );
     }
 
     /**
