@@ -5,6 +5,7 @@ use App\Context\V1\Enterprise\Application\Http\Controllers\EnterpriseController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
 use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
 use App\Context\V1\Product\Application\Http\Controllers\TaxController;
+use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,22 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/products/{id}', [ProductController::class, 'update']);
         Route::patch('/products/{id}', [ProductController::class, 'update']);
         Route::patch('/products/{id}/status', [ProductController::class, 'changeStatus']);
+
+        // --- Carriers (tenant) ---
+        Route::get('/carriers', [CarrierController::class, 'index']);
+        Route::get('/carriers/{id}', [CarrierController::class, 'show']);
+        Route::post('/carriers', [CarrierController::class, 'store']);
+        Route::put('/carriers/{id}', [CarrierController::class, 'update']);
+        Route::patch('/carriers/{id}', [CarrierController::class, 'update']);
+        Route::patch('/carriers/{id}/status', [CarrierController::class, 'changeStatus']);
+
+        // --- Carriers (tenant) ---
+        Route::get('/carriers', [CarrierController::class, 'index']);
+        Route::get('/carriers/{id}', [CarrierController::class, 'show']);
+        Route::post('/carriers', [CarrierController::class, 'store']);
+        Route::put('/carriers/{id}', [CarrierController::class, 'update']);
+        Route::patch('/carriers/{id}', [CarrierController::class, 'update']);
+        Route::patch('/carriers/{id}/status', [CarrierController::class, 'changeStatus']);
     });
 
     // --- Ivas (catálogo central, no requiere tenant) ---

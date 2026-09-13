@@ -60,6 +60,12 @@ class ContextServiceProvider extends ServiceProvider
             \App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface::class,
             \App\Context\V1\Product\Infrastructure\Eloquent\Repositories\EloquentProductRepository::class
         );
+
+        // Carrier
+        $this->app->bind(
+            \App\Context\V1\Carrier\Domain\Repositories\CarrierRepositoryInterface::class,
+            \App\Context\V1\Carrier\Infrastructure\Eloquent\Repositories\EloquentCarrierRepository::class
+        );
     }
 
     /**
