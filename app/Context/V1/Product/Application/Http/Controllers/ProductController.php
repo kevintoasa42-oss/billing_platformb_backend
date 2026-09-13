@@ -20,16 +20,16 @@ class ProductController extends Controller
     use ApiResponse;
 
     public function __construct(
-        private CreateProductUseCase $crearCasoUso,
-        private ListProductsUseCase $listarCasoUso,
-        private GetProductByIdUseCase $obtenerPorIdCasoUso,
-        private UpdateProductUseCase $actualizarCasoUso,
-        private ChangeProductStatusUseCase $cambiarEstadoCasoUso,
+        private CreateProductUseCase $createUseCase,
+        private ListProductsUseCase $listUseCase,
+        private GetProductByIdUseCase $getByIdUseCase,
+        private UpdateProductUseCase $updateUseCase,
+        private ChangeProductStatusUseCase $changeStatusUseCase,
     ) {}
 
     /**
      * GET /api/products?page=1&perPage=15&search=...
-     * Lista paginada de products.
+     * Paginated list of products.
      */
     public function index(Request $request): JsonResponse
     {
@@ -37,21 +37,21 @@ class ProductController extends Controller
         $perPage = (int) $request->query('perPage', 15);
         $search = $request->query('search');
 
-        $resultado = $this->listarCasoUso->ejecutar($page, $perPage, $search);
+        $result = $this->listUseCase->execute($page, $perPage, $search);
 
-        return $this->successResponse($resultado);
+        return $this->successResponse($result);
     }
 
     /**
      * GET /api/products/{id}
-     * Obtiene un product por ID.
+     * Get a product by ID.
      */
     public function show(int $id): JsonResponse
     {
-        $product = $this->obtenerPorIdCasoUso->ejecutar($id);
+        $product = $this->getByIdUseCase->execute($id);
 
         if (!$product) {
-            return $this->errorResponse('Product no encontrado.', 404);
+            return $this->errorResponse('Product not found.', 404);
         }
 
         return $this->successResponse($product);
@@ -59,18 +59,18 @@ class ProductController extends Controller
 
     /**
      * POST /api/products
-     * Crea un product.
+     * Create a product.
      */
     public function store(CreateProductRequest $request): JsonResponse
     {
         $dto = CreateProductRequest::toDTO($request->validated());
 
-        return $this->successResponse($this->crearCasoUso->ejecutar($dto), 201);
+        return $this->successResponse($this->createUseCase->execute($dto), 201);
     }
 
     /**
      * PUT/PATCH /api/products/{id}
-     * Actualiza un product.
+     * Update a product.
      */
     public function update(int $id, UpdateProductRequest $request): JsonResponse
     {
@@ -78,26 +78,26 @@ class ProductController extends Controller
         $dto = UpdateProductRequest::toDTO($data);
 
         try {
-            return $this->successResponse($this->actualizarCasoUso->ejecutar($dto));
+            return $this->successResponse($this->updateUseCase->execute($dto));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return $this->errorResponse('Product no encontrado.', 404);
+            return $this->errorResponse('Product not found.', 404);
         }
     }
 
     /**
-     * PATCH /api/products/{id}/estado
-     * Cambia el estado (activo/inactivo) de un product.
+     * PATCH /api/products/{id}/status
+     * Change the status (active/inactive) of a product.
      */
-    public function cambiarEstado(int $id, ChangeProductStatusRequest $request): JsonResponse
+    public function changeStatus(int $id, ChangeProductStatusRequest $request): JsonResponse
     {
         $status = $request->validated()['status'];
 
-        $resultado = $this->cambiarEstadoCasoUso->ejecutar($id, $status);
+        $result = $this->changeStatusUseCase->execute($id, $status);
 
-        if (!$resultado) {
-            return $this->errorResponse('Product no encontrado.', 404);
+        if (!$result) {
+            return $this->errorResponse('Product not found.', 404);
         }
 
-        return $this->successResponse('Estado actualizado correctamente.');
+        return $this->successResponse('Status updated successfully.');
     }
 }

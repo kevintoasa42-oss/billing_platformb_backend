@@ -84,7 +84,7 @@ class ProductApiTest extends TestCase
         $config = config('database.connections.pgsql');
         $dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
         $pdo = new \PDO($dsn, $config['username'], $config['password']);
-        // Forzar cierre de conexiones acttaxes (PostgreSQL 9.2+)
+        // Forzar cierre de conexiones activas (PostgreSQL 9.2+)
         $pdo->exec("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{$dbName}' AND pid <> pg_backend_pid()");
         $pdo->exec("DROP DATABASE IF EXISTS \"{$dbName}\"");
     }
@@ -122,7 +122,7 @@ class ProductApiTest extends TestCase
                 'auxiliary_code' => 'AUX001',
                 'description' => 'Descripcion del product',
                 'base_price' => 100.50,
-                'impuestos' => [$this->iva15Id],
+                'taxes' => [$this->iva15Id],
             ]);
 
         $response->assertStatus(201)

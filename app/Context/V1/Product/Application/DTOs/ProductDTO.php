@@ -26,7 +26,7 @@ class ProductDTO
             description: $data['description'] ?? null,
             status: $data['status'] ?? true,
             base_price: $data['base_price'] ?? 0,
-            taxes: $data['taxes'] ?? $data['taxes'] ?? [],
+            taxes: $data['taxes'] ?? [],
         );
     }
 

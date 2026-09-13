@@ -15,7 +15,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
         private EloquentProductMapper $mapper,
     ) {}
 
-    public function listarPaginado(int $page = 1, int $perPage = 15, ?string $search = null): array
+    public function listPaginated(int $page = 1, int $perPage = 15, ?string $search = null): array
     {
         $query = ProductModel::query();
 
@@ -42,14 +42,14 @@ class EloquentProductRepository implements ProductRepositoryInterface
         ];
     }
 
-    public function obtenerPorId(int $id): ?Product
+    public function getById(int $id): ?Product
     {
         $model = ProductModel::find($id);
 
         return $model ? $this->mapper->toDomain($model) : null;
     }
 
-    public function crear(Product $product): Product
+    public function create(Product $product): Product
     {
         $model = ProductModel::create($this->mapper->toModel($product));
 
@@ -60,7 +60,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return $this->mapper->toDomain($model->fresh());
     }
 
-    public function actualizar(Product $product): Product
+    public function update(Product $product): Product
     {
         $model = ProductModel::findOrFail($product->id);
         $model->update($this->mapper->toModel($product));
@@ -72,14 +72,14 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return $this->mapper->toDomain($model->fresh());
     }
 
-    public function cambiarEstado(int $id, bool $status): bool
+    public function changeStatus(int $id, bool $status): bool
     {
         return ProductModel::where('id', $id)->update(['status' => $status]) > 0;
     }
 
     /**
-     * Sincroniza los taxes de un product usando el modelo Eloquent ProductTaxModel.
-     * Elimina los registros anteriores y crea los nuevos.
+     * Syncs product taxes using Eloquent ProductTaxModel.
+     * Deletes previous records and creates new ones.
      */
     public function assignTaxes(int $productId, array $taxIds): void
     {

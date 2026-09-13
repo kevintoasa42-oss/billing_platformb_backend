@@ -4,6 +4,7 @@ namespace App\Context\V1\Product\Application\UseCases;
 
 use App\Context\V1\Product\Application\DTOs\ProductDTO;
 use App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface;
+use App\Context\V1\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper;
 
 class GetProductByIdUseCase
 {
@@ -11,23 +12,14 @@ class GetProductByIdUseCase
         private ProductRepositoryInterface $repository,
     ) {}
 
-    public function ejecutar(int $id): ?ProductDTO
+    public function execute(int $id): ?ProductDTO
     {
-        $product = $this->repository->obtenerPorId($id);
+        $product = $this->repository->getById($id);
 
         if (!$product) {
             return null;
         }
 
-        return ProductDTO::fromArray([
-            'id' => $product->id,
-            'barcode' => $product->barcode,
-            'auxiliary_code' => $product->auxiliary_code,
-            'name' => $product->name,
-            'description' => $product->description,
-            'status' => $product->status,
-            'base_price' => $product->base_price,
-            'taxes' => $product->taxes,
-        ]);
+        return ProductDTO::fromArray(EloquentProductMapper::toDtoArray($product));
     }
 }

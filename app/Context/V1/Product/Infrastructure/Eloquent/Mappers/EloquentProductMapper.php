@@ -34,4 +34,46 @@ class EloquentProductMapper implements ProductMapperInterface
             'base_price' => $product->base_price,
         ];
     }
+
+    /**
+     * Helper methods to build/modify a Product domain model.
+     */
+
+    public static function fromDto(array $data): Product
+    {
+        return new Product(
+            id: $data['id'] ?? null,
+            barcode: $data['barcode'] ?? null,
+            auxiliary_code: $data['auxiliary_code'] ?? null,
+            name: $data['name'] ?? null,
+            description: $data['description'] ?? null,
+            status: $data['status'] ?? true,
+            base_price: $data['base_price'] ?? 0,
+            taxes: $data['taxes'] ?? [],
+        );
+    }
+
+    public static function toDtoArray(Product $product): array
+    {
+        return [
+            'id' => $product->id,
+            'barcode' => $product->barcode,
+            'auxiliary_code' => $product->auxiliary_code,
+            'name' => $product->name,
+            'description' => $product->description,
+            'status' => $product->status,
+            'base_price' => $product->base_price,
+            'taxes' => $product->taxes,
+        ];
+    }
+
+    public static function activate(Product $product): void
+    {
+        $product->status = true;
+    }
+
+    public static function deactivate(Product $product): void
+    {
+        $product->status = false;
+    }
 }

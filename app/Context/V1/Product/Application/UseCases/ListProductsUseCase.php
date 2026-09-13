@@ -12,15 +12,15 @@ class ListProductsUseCase
     ) {}
 
     /**
-     * Lista paginada de products.
+     * Paginated list of products.
      *
      * @param  int  $page
      * @param  int  $perPage
      * @param  string|null  $search
      * @return array
      */
-    public function ejecutar(int $page = 1, int $perPage = 15, ?string $search = null): array
+    public function execute(int $page = 1, int $perPage = 15, ?string $search = null): array
     {
-        return $this->repository->listarPaginado($page, $perPage, $search);
+        return $this->repository->listPaginated($page, $perPage, $search);
     }
 }

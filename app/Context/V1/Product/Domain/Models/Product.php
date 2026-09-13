@@ -15,14 +15,4 @@ class Product
         /** @var int[] IDs de sri_iva_percentages (DB central) */
         public array $taxes = [],
     ) {}
-
-    public function activar(): void
-    {
-        $this->status = true;
-    }
-
-    public function desactivar(): void
-    {
-        $this->status = false;
-    }
 }
