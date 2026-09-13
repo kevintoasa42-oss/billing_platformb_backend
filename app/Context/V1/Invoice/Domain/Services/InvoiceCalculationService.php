@@ -43,7 +43,7 @@ class InvoiceCalculationService
                 $catalog = $ivaPercentages[$tax->sri_iva_percentage_id] ?? null;
                 if ($catalog) {
                     $tax->code = '2'; // IVA
-                    $tax->percentage_code = $this->resolvePercentageCode($catalog['code']);
+                    $tax->percentage_code = $catalog['percentage_code'];
                     $tax->rate = $catalog['percentage'] !== null ? (float) $catalog['percentage'] : 0;
                 }
 
@@ -110,22 +110,5 @@ class InvoiceCalculationService
         }
 
         return $invoice;
-    }
-
-    /**
-     * Resolve the SRI percentage code from the catalog code.
-     * Maps: IVA_15 -> 4, IVA_8 -> 3, IVA_5 -> 2, IVA_0 -> 0, EXENTO -> 7, NO_OBJETO -> 6
-     */
-    private function resolvePercentageCode(string $catalogCode): string
-    {
-        return match ($catalogCode) {
-            'IVA_15' => '4',
-            'IVA_8' => '3',
-            'IVA_5' => '2',
-            'IVA_0' => '0',
-            'EXENTO' => '7',
-            'NO_OBJETO' => '6',
-            default => '0',
-        };
     }
 }

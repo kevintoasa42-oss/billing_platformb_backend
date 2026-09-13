@@ -12,6 +12,7 @@ class SriIvaPercentageModel extends Model
 
     protected $fillable = [
         'code',
+        'percentage_code',
         'name',
         'percentage',
         'description',

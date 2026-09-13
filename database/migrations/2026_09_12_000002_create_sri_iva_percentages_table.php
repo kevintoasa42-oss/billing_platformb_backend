@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sri_iva_percentages', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique(); // Ej: IVA_15, IVA_0, EXENTO, NO_OBJETO
+            $table->string('percentage_code', 2)->unique(); // SRI percentage code: 4=15%, 3=8%, 2=5%, 0=0%, 7=exempt, 6=no objeto
             $table->string('name'); // Ej: Tarifa general
             $table->decimal('percentage', 5, 2)->nullable(); // 15.00, 8.00, 5.00, 0.00; NULL para exento/no objeto
             $table->text('description')->nullable(); // Base legal / referencia
