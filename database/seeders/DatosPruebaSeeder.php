@@ -2,22 +2,22 @@
 
 namespace Database\Seeders;
 
-use App\Contexto\Enterprise\Infraestructura\Eloquent\Models\EmpresaModel;
-use App\Contexto\Enterprise\Infraestructura\Eloquent\Models\RolModel;
-use App\Contexto\Enterprise\Infraestructura\Eloquent\Models\UsuarioModel;
-use App\Contexto\Menu\Infraestructura\Eloquent\Models\MenuModel;
+use App\Context\Enterprise\Infrastructure\Eloquent\Models\EnterpriseModel;
+use App\Context\Enterprise\Infrastructure\Eloquent\Models\RoleModel;
+use App\Context\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use App\Context\Menu\Infrastructure\Eloquent\Models\MenuModel;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class DatosPruebaSeeder extends Seeder
 {
     /**
-     * Crea datos de prueba: empresas, usuarios, roles, menus y asignaciones.
+     * Crea datos de prueba: enterprises, users, roles, menus y asignaciones.
      */
     public function run(): void
     {
-        // === Empresas ===
-        $empresa1 = EmpresaModel::create([
+        // === Enterprises ===
+        $enterprise1 = EnterpriseModel::create([
             'nombre' => 'Tech Solutions Ecuador SA',
             'ruc' => '1791234567001',
             'tradename' => 'TechSol EC',
@@ -27,7 +27,7 @@ class DatosPruebaSeeder extends Seeder
             'db_name' => '1791234567001',
         ]);
 
-        $empresa2 = EmpresaModel::create([
+        $enterprise2 = EnterpriseModel::create([
             'nombre' => 'Comercial Andina Cia Ltda',
             'ruc' => '1798765432001',
             'tradename' => 'Andina Commerce',
@@ -37,7 +37,7 @@ class DatosPruebaSeeder extends Seeder
             'db_name' => '1798765432001',
         ]);
 
-        $empresa3 = EmpresaModel::create([
+        $enterprise3 = EnterpriseModel::create([
             'nombre' => 'Inversiones del Valle SA',
             'ruc' => '1701234567001',
             'tradename' => 'Valle Investments',
@@ -47,70 +47,70 @@ class DatosPruebaSeeder extends Seeder
             'db_name' => '1701234567001',
         ]);
 
-        // === Usuarios ===
-        $admin = UsuarioModel::create([
+        // === Users ===
+        $admin = UserModel::create([
             'nombre' => 'Kevin Toasa',
             'email' => 'admin@billing.com',
             'password' => bcrypt('Admin123!'),
         ]);
 
-        $gestor = UsuarioModel::create([
+        $gestor = UserModel::create([
             'nombre' => 'Maria Perez',
             'email' => 'gestor@billing.com',
             'password' => bcrypt('Gestor123!'),
         ]);
 
-        $visor = UsuarioModel::create([
+        $visor = UserModel::create([
             'nombre' => 'Juan Garcia',
             'email' => 'visor@billing.com',
             'password' => bcrypt('Visor123!'),
         ]);
 
-        // === Asignar roles a usuarios ===
-        $rolAdmin = RolModel::where('nombre', 'admin')->first();
-        $rolGestor = RolModel::where('nombre', 'gestor')->first();
-        $rolVisor = RolModel::where('nombre', 'visor')->first();
+        // === Asignar roles a users ===
+        $rolAdmin = RoleModel::where('nombre', 'admin')->first();
+        $rolGestor = RoleModel::where('nombre', 'gestor')->first();
+        $rolVisor = RoleModel::where('nombre', 'visor')->first();
 
         $admin->roles()->attach($rolAdmin->id);
         $gestor->roles()->attach($rolGestor->id);
         $visor->roles()->attach($rolVisor->id);
 
-        // === Asignar empresas a usuarios ===
-        $admin->empresas()->attach([$empresa1->id, $empresa2->id, $empresa3->id]);
-        $gestor->empresas()->attach([$empresa1->id, $empresa2->id]);
-        $visor->empresas()->attach([$empresa1->id]);
+        // === Asignar enterprises a users ===
+        $admin->enterprises()->attach([$enterprise1->id, $enterprise2->id, $enterprise3->id]);
+        $gestor->enterprises()->attach([$enterprise1->id, $enterprise2->id]);
+        $visor->enterprises()->attach([$enterprise1->id]);
 
         // === Menus ===
         $menuDashboard = MenuModel::create([
             'nombre' => 'Dashboard', 'ruta' => '/dashboard', 'icono' => 'pi pi-home', 'orden' => 1,
         ]);
 
-        $menuEmpresas = MenuModel::create([
-            'nombre' => 'Empresas', 'ruta' => '/empresas', 'icono' => 'pi pi-building', 'orden' => 2,
+        $menuEnterprises = MenuModel::create([
+            'nombre' => 'Enterprises', 'ruta' => '/enterprises', 'icono' => 'pi pi-building', 'orden' => 2,
         ]);
 
-        $menuEmpresasLista = MenuModel::create([
-            'nombre' => 'Listar Empresas', 'ruta' => '/empresas/lista', 'icono' => 'pi pi-list',
-            'parent_id' => $menuEmpresas->id, 'orden' => 1,
+        $menuEnterprisesLista = MenuModel::create([
+            'nombre' => 'List Enterprises', 'ruta' => '/enterprises/list', 'icono' => 'pi pi-list',
+            'parent_id' => $menuEnterprises->id, 'orden' => 1,
         ]);
 
-        $menuEmpresasCrear = MenuModel::create([
-            'nombre' => 'Crear Empresa', 'ruta' => '/empresas/crear', 'icono' => 'pi pi-plus',
-            'parent_id' => $menuEmpresas->id, 'orden' => 2,
+        $menuEnterprisesCrear = MenuModel::create([
+            'nombre' => 'Create Enterprise', 'ruta' => '/enterprises/create', 'icono' => 'pi pi-plus',
+            'parent_id' => $menuEnterprises->id, 'orden' => 2,
         ]);
 
-        $menuUsuarios = MenuModel::create([
-            'nombre' => 'Usuarios', 'ruta' => '/usuarios', 'icono' => 'pi pi-users', 'orden' => 3,
+        $menuUsers = MenuModel::create([
+            'nombre' => 'Users', 'ruta' => '/users', 'icono' => 'pi pi-users', 'orden' => 3,
         ]);
 
-        $menuUsuariosLista = MenuModel::create([
-            'nombre' => 'Listar Usuarios', 'ruta' => '/usuarios/lista', 'icono' => 'pi pi-list',
-            'parent_id' => $menuUsuarios->id, 'orden' => 1,
+        $menuUsersLista = MenuModel::create([
+            'nombre' => 'List Users', 'ruta' => '/users/list', 'icono' => 'pi pi-list',
+            'parent_id' => $menuUsers->id, 'orden' => 1,
         ]);
 
-        $menuUsuariosCrear = MenuModel::create([
-            'nombre' => 'Crear Usuario', 'ruta' => '/usuarios/crear', 'icono' => 'pi pi-user-plus',
-            'parent_id' => $menuUsuarios->id, 'orden' => 2,
+        $menuUsersCrear = MenuModel::create([
+            'nombre' => 'Create User', 'ruta' => '/users/create', 'icono' => 'pi pi-user-plus',
+            'parent_id' => $menuUsers->id, 'orden' => 2,
         ]);
 
         $menuConfig = MenuModel::create([
@@ -127,18 +127,18 @@ class DatosPruebaSeeder extends Seeder
             'parent_id' => $menuConfig->id, 'orden' => 2,
         ]);
 
-        $menuProductos = MenuModel::create([
-            'nombre' => 'Productos', 'ruta' => '/productos', 'icono' => 'pi pi-box', 'orden' => 5,
+        $menuProducts = MenuModel::create([
+            'nombre' => 'Products', 'ruta' => '/products', 'icono' => 'pi pi-box', 'orden' => 5,
         ]);
 
-        $menuProductosLista = MenuModel::create([
-            'nombre' => 'Listar Productos', 'ruta' => '/productos/lista', 'icono' => 'pi pi-list',
-            'parent_id' => $menuProductos->id, 'orden' => 1,
+        $menuProductsLista = MenuModel::create([
+            'nombre' => 'List Products', 'ruta' => '/products/list', 'icono' => 'pi pi-list',
+            'parent_id' => $menuProducts->id, 'orden' => 1,
         ]);
 
-        $menuProductosCrear = MenuModel::create([
-            'nombre' => 'Crear Producto', 'ruta' => '/productos/crear', 'icono' => 'pi pi-plus',
-            'parent_id' => $menuProductos->id, 'orden' => 2,
+        $menuProductsCrear = MenuModel::create([
+            'nombre' => 'Create Product', 'ruta' => '/products/create', 'icono' => 'pi pi-plus',
+            'parent_id' => $menuProducts->id, 'orden' => 2,
         ]);
 
         // === Asignar menus a roles ===
@@ -148,23 +148,23 @@ class DatosPruebaSeeder extends Seeder
             $menu->roles()->attach($rolAdmin->id);
         }
 
-        // Gestor: Dashboard, Empresas, Usuarios, Productos
+        // Gestor: Dashboard, Enterprises, Users, Products
         $menusGestor = [
-            $menuDashboard->id, $menuEmpresas->id, $menuEmpresasLista->id,
-            $menuUsuarios->id, $menuUsuariosLista->id, $menuUsuariosCrear->id,
-            $menuProductos->id, $menuProductosLista->id, $menuProductosCrear->id,
+            $menuDashboard->id, $menuEnterprises->id, $menuEnterprisesLista->id,
+            $menuUsers->id, $menuUsersLista->id, $menuUsersCrear->id,
+            $menuProducts->id, $menuProductsLista->id, $menuProductsCrear->id,
         ];
         foreach ($menusGestor as $menuId) {
-            DB::table('menu_rol')->insertOrIgnore([
+            DB::table('menu_role')->insertOrIgnore([
                 'menu_id' => $menuId, 'rol_id' => $rolGestor->id,
                 'created_at' => now(), 'updated_at' => now(),
             ]);
         }
 
-        // Visor: Dashboard y Empresas (solo lista)
-        $menusVisor = [$menuDashboard->id, $menuEmpresas->id, $menuEmpresasLista->id];
+        // Visor: Dashboard y Enterprises (solo lista)
+        $menusVisor = [$menuDashboard->id, $menuEnterprises->id, $menuEnterprisesLista->id];
         foreach ($menusVisor as $menuId) {
-            DB::table('menu_rol')->insertOrIgnore([
+            DB::table('menu_role')->insertOrIgnore([
                 'menu_id' => $menuId, 'rol_id' => $rolVisor->id,
                 'created_at' => now(), 'updated_at' => now(),
             ]);

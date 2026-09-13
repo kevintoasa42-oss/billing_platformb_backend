@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Middleware que resuelve la conexion "tenant" (base de datos por empresa)
- * a partir del enterprise_id almacenado en el token Sanctum del usuario
- * autenticado. El nombre de la DB del tenant es el RUC de la empresa.
+ * Middleware que resuelve la conexion "tenant" (base de datos por enterprise)
+ * a partir del enterprise_id almacenado en el token Sanctum del user
+ * autenticado. El nombre de la DB del tenant es el RUC de la enterprise.
  */
 class SetTenantConnection
 {
@@ -30,15 +30,15 @@ class SetTenantConnection
             $enterpriseId = $token->getAttribute('enterprise_id') ?? null;
 
             if ($enterpriseId) {
-                // Buscar la empresa en la DB central para obtener el RUC (nombre de la DB del tenant).
-                $empresa = DB::connection('pgsql')
+                // Buscar la enterprise en la DB central para obtener el RUC (nombre de la DB del tenant).
+                $enterprise = DB::connection('pgsql')
                     ->table('enterprises')
                     ->where('id', $enterpriseId)
                     ->first();
 
-                if ($empresa && !empty($empresa->db_name)) {
+                if ($enterprise && !empty($enterprise->db_name)) {
                     // Setear la conexion tenant dinamicamente con el RUC como nombre de DB.
-                    config(['database.connections.tenant.database' => $empresa->db_name]);
+                    config(['database.connections.tenant.database' => $enterprise->db_name]);
                     DB::purge('tenant');
                     DB::reconnect('tenant');
                 }

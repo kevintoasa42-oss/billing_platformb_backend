@@ -114,9 +114,9 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
-        // Conexion dinamica para bases de datos por empresa (tenant).
+        // Conexion dinamica para bases de datos por enterprise (tenant).
         // El nombre de la DB (database) se setea en runtime por el middleware
-        // SetTenantConnection segun el RUC de la empresa activa del token.
+        // SetTenantConnection segun el RUC de la enterprise activa del token.
         'tenant' => [
             'driver' => 'pgsql',
             'url' => env('DB_URL'),

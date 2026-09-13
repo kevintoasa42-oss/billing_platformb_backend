@@ -1,0 +1,160 @@
+<?php
+
+namespace Tests\Feature\Enterprise;
+
+use App\Context\Enterprise\Infrastructure\Eloquent\Models\EnterpriseModel;
+use App\Context\Enterprise\Infrastructure\Eloquent\Models\RoleModel;
+use App\Context\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
+
+class UserApiTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_crear_user_devuelve_201_con_datos(): void
+    {
+        Sanctum::actingAs(
+            UserModel::create([
+                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'password' => bcrypt('password123'),
+            ])
+        );
+
+        $response = $this->postJson('/api/users', [
+            'nombre' => 'Nuevo User', 'email' => 'nuevo@test.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('status', true)
+            ->assertJsonPath('response.nombre', 'Nuevo User')
+            ->assertJsonPath('response.email', 'nuevo@test.com');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'nuevo@test.com', 'nombre' => 'Nuevo User',
+        ]);
+    }
+
+    public function test_crear_user_con_email_duplicado_devuelve_422(): void
+    {
+        $existing = UserModel::create([
+            'nombre' => 'Existente', 'email' => 'existente@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+        Sanctum::actingAs($existing);
+
+        $response = $this->postJson('/api/users', [
+            'nombre' => 'Otro', 'email' => 'existente@test.com', 'password' => 'password123',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
+    }
+
+    public function test_asignar_rol_a_user_devuelve_200(): void
+    {
+        $admin = UserModel::create([
+            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+        Sanctum::actingAs($admin);
+
+        $user = UserModel::create([
+            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $rol = RoleModel::create([
+            'nombre' => 'editor', 'descripcion' => 'Editor de contenido',
+        ]);
+
+        $response = $this->postJson("/api/users/{$user->id}/roles", [
+            'rol_id' => $rol->id,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('status', true)
+            ->assertJsonPath('response', 'Role asignado correctamente.');
+
+        $this->assertDatabaseHas('user_role', [
+            'user_id' => $user->id, 'rol_id' => $rol->id,
+        ]);
+    }
+
+    public function test_asignar_rol_inexistente_devuelve_422(): void
+    {
+        $admin = UserModel::create([
+            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+        Sanctum::actingAs($admin);
+
+        $user = UserModel::create([
+            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->postJson("/api/users/{$user->id}/roles", [
+            'rol_id' => 9999,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['rol_id']);
+    }
+
+    public function test_asignar_enterprise_a_user_devuelve_200(): void
+    {
+        $admin = UserModel::create([
+            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+        Sanctum::actingAs($admin);
+
+        $user = UserModel::create([
+            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $enterprise = EnterpriseModel::create([
+            'nombre' => 'Enterprise SA', 'ruc' => '1791234567001',
+            'tradename' => 'Commerce', 'matrixname' => 'Matriz',
+            'telefono' => '023333333', 'correo_corporativo' => 'info@test.com',
+            'db_name' => '1791234567001',
+        ]);
+
+        $response = $this->postJson("/api/users/{$user->id}/enterprises", [
+            'enterprise_id' => $enterprise->id,
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('status', true)
+            ->assertJsonPath('response', 'Enterprise asignada correctamente.');
+
+        $this->assertDatabaseHas('user_enterprise', [
+            'user_id' => $user->id, 'enterprise_id' => $enterprise->id,
+        ]);
+    }
+
+    public function test_asignar_enterprise_inexistente_devuelve_422(): void
+    {
+        $admin = UserModel::create([
+            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+        Sanctum::actingAs($admin);
+
+        $user = UserModel::create([
+            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        $response = $this->postJson("/api/users/{$user->id}/enterprises", [
+            'enterprise_id' => 9999,
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['enterprise_id']);
+    }
+}

@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Context\Enterprise\Infrastructure\Eloquent\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
+class RoleModel extends Model
+{
+    protected $table = 'roles';
+
+    protected $fillable = [
+        'nombre',
+        'descripcion',
+    ];
+
+    /**
+     * Users con este rol (pivot user_role).
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(UserModel::class, 'user_role', 'rol_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Menús asignados a este rol (pivot menu_role).
+     */
+    public function menus(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            \App\Context\Menu\Infrastructure\Eloquent\Models\MenuModel::class,
+            'menu_role',
+            'rol_id',
+            'menu_id'
+        )->withTimestamps();
+    }
+}

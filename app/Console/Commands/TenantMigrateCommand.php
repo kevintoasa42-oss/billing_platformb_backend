@@ -7,39 +7,39 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Ejecuta las migraciones de la carpeta database/migrations/tenant
- * en todas las bases de datos de empresas existentes.
+ * en todas las bases de datos de enterprises existentes.
  */
 class TenantMigrateCommand extends Command
 {
     protected $signature = 'tenant:migrate {--fresh : Drop all tables first} {--seed : Seed after migrate}';
 
-    protected $description = 'Ejecuta migraciones tenant en todas las DBs de empresas';
+    protected $description = 'Ejecuta migraciones tenant en todas las DBs de enterprises';
 
     public function handle(): int
     {
         $tenantPath = 'database/migrations/tenant';
 
-        // Obtener todas las empresas con su db_name.
-        $empresas = DB::connection('pgsql')->table('enterprises')->get(['id', 'nombre', 'db_name']);
+        // Obtener todas las enterprises con su db_name.
+        $enterprises = DB::connection('pgsql')->table('enterprises')->get(['id', 'nombre', 'db_name']);
 
-        if ($empresas->isEmpty()) {
-            $this->warn('No hay empresas registradas. No hay DBs tenant para migrar.');
+        if ($enterprises->isEmpty()) {
+            $this->warn('No hay enterprises registradas. No hay DBs tenant para migrar.');
             return Command::SUCCESS;
         }
 
-        foreach ($empresas as $empresa) {
-            $dbName = $empresa->db_name;
+        foreach ($enterprises as $enterprise) {
+            $dbName = $enterprise->db_name;
 
             // Verificar que la DB existe.
             $exists = DB::connection('pgsql')
                 ->select("SELECT 1 FROM pg_database WHERE datname = ?", [$dbName]);
 
             if (empty($exists)) {
-                $this->warn("DB '{$dbName}' ({$empresa->nombre}) no existe. Saltando...");
+                $this->warn("DB '{$dbName}' ({$enterprise->nombre}) no existe. Saltando...");
                 continue;
             }
 
-            $this->info("Migrando tenant: {$empresa->nombre} ({$dbName})");
+            $this->info("Migrando tenant: {$enterprise->nombre} ({$dbName})");
 
             // Configurar conexion tenant.
             config(['database.connections.tenant.database' => $dbName]);

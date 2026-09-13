@@ -1,11 +1,11 @@
 <?php
 
-use App\Contexto\Enterprise\Aplicacion\Http\Controllers\AuthController;
-use App\Contexto\Enterprise\Aplicacion\Http\Controllers\EmpresaController;
-use App\Contexto\Enterprise\Aplicacion\Http\Controllers\UsuarioController;
-use App\Contexto\Menu\Aplicacion\Http\Controllers\MenuController;
-use App\Contexto\Product\Aplicacion\Http\Controllers\IvaController;
-use App\Contexto\Product\Aplicacion\Http\Controllers\ProductoController;
+use App\Context\Enterprise\Application\Http\Controllers\AuthController;
+use App\Context\Enterprise\Application\Http\Controllers\EnterpriseController;
+use App\Context\Enterprise\Application\Http\Controllers\UserController;
+use App\Context\Menu\Application\Http\Controllers\MenuController;
+use App\Context\Product\Application\Http\Controllers\TaxController;
+use App\Context\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,37 +25,37 @@ Route::post('/login', [AuthController::class, 'login']);
 // --- Rutas protegidas (auth:sanctum) ---
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Usuario autenticado
+    // User autenticado
     Route::get('/user', [AuthController::class, 'user']);
 
-    // --- Empresas ---
-    Route::post('/empresas', [EmpresaController::class, 'store']);
-    Route::get('/empresas', [EmpresaController::class, 'index']);
+    // --- Enterprises ---
+    Route::post('/enterprises', [EnterpriseController::class, 'store']);
+    Route::get('/enterprises', [EnterpriseController::class, 'index']);
 
-    // --- Usuarios ---
-    Route::post('/usuarios', [UsuarioController::class, 'store']);
-    Route::post('/usuarios/{id}/roles', [UsuarioController::class, 'asignarRol']);
-    Route::post('/usuarios/{id}/empresas', [UsuarioController::class, 'asignarEmpresa']);
+    // --- Users ---
+    Route::post('/users', [UserController::class, 'store']);
+    Route::post('/users/{id}/roles', [UserController::class, 'asignarRol']);
+    Route::post('/users/{id}/enterprises', [UserController::class, 'asignarEnterprise']);
 
     // --- Menus ---
     Route::post('/menus', [MenuController::class, 'store']);
     Route::get('/menus', [MenuController::class, 'index']);
     Route::post('/menus/{id}/roles', [MenuController::class, 'asignarRol']);
 
-    // --- Obtener menus por rol del usuario autenticado ---
-    Route::get('/menus/por-rol', [MenuController::class, 'menusPorRol'])
+    // --- Obtener menus por rol del user autenticado ---
+    Route::get('/menus/by-role', [MenuController::class, 'menusByRole'])
         ->middleware('tenant');
 
-    // --- Productos (requiere tenant) ---
+    // --- Products (requiere tenant) ---
     Route::middleware('tenant')->group(function () {
-        Route::get('/productos', [ProductoController::class, 'index']);
-        Route::get('/productos/{id}', [ProductoController::class, 'show']);
-        Route::post('/productos', [ProductoController::class, 'store']);
-        Route::put('/productos/{id}', [ProductoController::class, 'update']);
-        Route::patch('/productos/{id}', [ProductoController::class, 'update']);
-        Route::patch('/productos/{id}/estado', [ProductoController::class, 'cambiarEstado']);
+        Route::get('/products', [ProductController::class, 'index']);
+        Route::get('/products/{id}', [ProductController::class, 'show']);
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::put('/products/{id}', [ProductController::class, 'update']);
+        Route::patch('/products/{id}', [ProductController::class, 'update']);
+        Route::patch('/products/{id}/estado', [ProductController::class, 'cambiarEstado']);
     });
 
     // --- Ivas (catálogo central, no requiere tenant) ---
-    Route::get('/ivas', [IvaController::class, 'index']);
+    Route::get('/taxes', [TaxController::class, 'index']);
 });
