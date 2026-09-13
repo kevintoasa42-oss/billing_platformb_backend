@@ -46,7 +46,7 @@ return new class extends Migration
             $table->decimal('propina', 14, 2)->default(0);
             $table->decimal('importe_total', 14, 2)->default(0);
             $table->string('moneda', 10)->default('DOLAR');
-            $table->string('placa', 20)->nullable(); // optional, for transport
+            $table->string('plate', 20)->nullable(); // optional, for transport
 
             // Status (SRI authorization lifecycle)
             $table->string('status', 20)->default('PENDIENTE'); // PENDIENTE, RECHAZADO, AUTORIZADO

@@ -15,7 +15,7 @@ class UpdateCarrierRequest extends FormRequest
     {
         return [
             'ruc' => 'sometimes|required|string|max:13',
-            'placa' => 'sometimes|required|string|max:20',
+            'plate' => 'sometimes|required|string|max:20',
             'name' => 'sometimes|required|string|max:255',
             'tradename' => 'sometimes|nullable|string|max:255',
             'matrix_address' => 'sometimes|nullable|string|max:500',

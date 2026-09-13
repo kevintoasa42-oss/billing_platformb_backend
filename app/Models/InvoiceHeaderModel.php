@@ -37,7 +37,7 @@ class InvoiceHeaderModel extends Model
         'propina',
         'importe_total',
         'moneda',
-        'placa',
+        'plate',
         'status',
     ];
 

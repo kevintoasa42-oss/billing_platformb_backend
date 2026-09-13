@@ -7,7 +7,7 @@ class CarrierDTO
     public function __construct(
         public ?int $id = null,
         public ?string $ruc = null,
-        public ?string $placa = null,
+        public ?string $plate = null,
         public ?string $name = null,
         public ?string $tradename = null,
         public ?string $matrix_address = null,
@@ -21,7 +21,7 @@ class CarrierDTO
         return new self(
             id: $data['id'] ?? null,
             ruc: $data['ruc'] ?? null,
-            placa: $data['placa'] ?? null,
+            plate: $data['plate'] ?? null,
             name: $data['name'] ?? null,
             tradename: $data['tradename'] ?? null,
             matrix_address: $data['matrix_address'] ?? null,
@@ -36,7 +36,7 @@ class CarrierDTO
         return [
             'id' => $this->id,
             'ruc' => $this->ruc,
-            'placa' => $this->placa,
+            'plate' => $this->plate,
             'name' => $this->name,
             'tradename' => $this->tradename,
             'matrix_address' => $this->matrix_address,

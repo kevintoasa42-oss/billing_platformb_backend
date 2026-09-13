@@ -13,7 +13,7 @@ class EloquentCarrierMapper
         return new Carrier(
             id: $model->id,
             ruc: $model->ruc,
-            placa: $model->placa,
+            plate: $model->plate,
             name: $model->name,
             tradename: $model->tradename,
             matrix_address: $model->matrix_address,
@@ -27,7 +27,7 @@ class EloquentCarrierMapper
     {
         return [
             'ruc' => $carrier->ruc,
-            'placa' => $carrier->placa,
+            'plate' => $carrier->plate,
             'name' => $carrier->name,
             'tradename' => $carrier->tradename,
             'matrix_address' => $carrier->matrix_address,

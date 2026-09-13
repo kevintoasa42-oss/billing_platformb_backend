@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::connection('tenant')->create('carriers', function (Blueprint $table) {
             $table->id();
             $table->string('ruc', 13);
-            $table->string('placa', 20)->nullable(); // placa (license plate)
+            $table->string('plate', 20)->nullable(); // plate (license plate)
             $table->string('name'); // razón social
             $table->string('tradename')->nullable(); // nombre comercial
             $table->string('matrix_address')->nullable(); // dirección matriz
