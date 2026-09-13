@@ -117,7 +117,11 @@ class InvoiceController extends Controller
      */
     public function void(int $id): JsonResponse
     {
-        $result = $this->voidUseCase->execute($id);
+        try {
+            $result = $this->voidUseCase->execute($id);
+        } catch (\InvalidArgumentException $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
 
         if (!$result) {
             return $this->errorResponse('Invoice not found.', 404);

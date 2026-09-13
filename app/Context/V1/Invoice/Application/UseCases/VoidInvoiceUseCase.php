@@ -12,6 +12,19 @@ class VoidInvoiceUseCase
 
     public function execute(int $id): bool
     {
+        $invoice = $this->repository->getById($id);
+
+        if (!$invoice) {
+            return false;
+        }
+
+        // Consumidor final invoices cannot be voided (SRI rule)
+        if (($invoice['buyer_identification_type'] ?? null) === '07') {
+            throw new \InvalidArgumentException(
+                'Consumidor final invoices cannot be voided.'
+            );
+        }
+
         return $this->repository->changeStatus($id, 'ANULADO');
     }
 }
