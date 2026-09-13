@@ -8,11 +8,11 @@ use App\Context\V1\BranchOffices\Domain\Mappers\BranchOfficeMapperInterface;
 use App\Context\V1\BranchOffices\Domain\Models\BranchOffice;
 use App\Context\V1\BranchOffices\Domain\Repositories\BranchOfficeRepositoryInterface;
 
-final class BranchOfficeCrudService
+final readonly class BranchOfficeCrudService
 {
     public function __construct(
         private BranchOfficeRepositoryInterface $repository,
-        private BranchOfficeMapperInterface $mapper,
+        private BranchOfficeMapperInterface     $mapper,
     ) {}
 
     public function list(int $page = 1, int $perPage = 15, array $filters = []): array

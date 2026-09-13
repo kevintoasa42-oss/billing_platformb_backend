@@ -16,7 +16,7 @@ final class BranchOfficeController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(private BranchOfficeCrudService $service) {}
+    public function __construct(private readonly BranchOfficeCrudService $service) {}
 
     public function index(Request $request): JsonResponse
     {

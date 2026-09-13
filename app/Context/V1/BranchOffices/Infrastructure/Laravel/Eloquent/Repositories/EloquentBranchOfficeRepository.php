@@ -7,7 +7,7 @@ use App\Context\V1\BranchOffices\Domain\Models\BranchOffice;
 use App\Context\V1\BranchOffices\Domain\Repositories\BranchOfficeRepositoryInterface;
 use App\Context\V1\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOfficeModel;
 
-final class EloquentBranchOfficeRepository implements BranchOfficeRepositoryInterface
+final readonly class EloquentBranchOfficeRepository implements BranchOfficeRepositoryInterface
 {
     public function __construct(private BranchOfficeMapperInterface $mapper) {}
 
