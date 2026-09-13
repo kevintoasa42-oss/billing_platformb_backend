@@ -10,6 +10,7 @@ use App\Context\V1\Invoice\Application\UseCases\CreateInvoiceUseCase;
 use App\Context\V1\Invoice\Application\UseCases\GetInvoiceByIdUseCase;
 use App\Context\V1\Invoice\Application\UseCases\ListInvoicesUseCase;
 use App\Context\V1\Invoice\Application\UseCases\UpdateInvoiceUseCase;
+use App\Context\V1\Invoice\Application\UseCases\VoidInvoiceUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +26,7 @@ class InvoiceController extends Controller
         private GetInvoiceByIdUseCase $getByIdUseCase,
         private UpdateInvoiceUseCase $updateUseCase,
         private ChangeInvoiceStatusUseCase $changeStatusUseCase,
+        private VoidInvoiceUseCase $voidUseCase,
     ) {}
 
     /**
@@ -107,5 +109,20 @@ class InvoiceController extends Controller
         }
 
         return $this->successResponse('Status updated successfully.');
+    }
+
+    /**
+     * PATCH /api/invoices/{id}/void
+     * Void an invoice (sets status to ANULADO).
+     */
+    public function void(int $id): JsonResponse
+    {
+        $result = $this->voidUseCase->execute($id);
+
+        if (!$result) {
+            return $this->errorResponse('Invoice not found.', 404);
+        }
+
+        return $this->successResponse('Invoice voided successfully.');
     }
 }

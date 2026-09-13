@@ -82,6 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
         Route::patch('/invoices/{id}', [InvoiceController::class, 'update']);
         Route::patch('/invoices/{id}/status', [InvoiceController::class, 'changeStatus']);
+        Route::patch('/invoices/{id}/void', [InvoiceController::class, 'void']);
     });
 
 
