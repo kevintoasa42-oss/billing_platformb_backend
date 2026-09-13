@@ -24,7 +24,7 @@ class InvoiceMapper
             quantity: $i['quantity'] ?? 0,
             unit_price: $i['unit_price'] ?? 0,
             discount: $i['discount'] ?? 0,
-            total_without_tax: $i['total_without_tax'] ?? 0,
+            tax_base: $i['tax_base'] ?? 0,
             taxes: array_map(fn ($t) => new InvoiceItemTax(
                 id: $t['id'] ?? null,
                 invoice_item_id: $t['invoice_item_id'] ?? null,
@@ -143,7 +143,7 @@ class InvoiceMapper
                 'quantity' => $i->quantity,
                 'unit_price' => $i->unit_price,
                 'discount' => $i->discount,
-                'total_without_tax' => $i->total_without_tax,
+                'tax_base' => $i->tax_base,
                 'taxes' => array_map(fn ($t) => [
                     'id' => $t->id,
                     'invoice_item_id' => $t->invoice_item_id,

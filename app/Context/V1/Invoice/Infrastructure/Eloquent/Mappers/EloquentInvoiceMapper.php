@@ -27,7 +27,7 @@ class EloquentInvoiceMapper
             quantity: (float) $i->quantity,
             unit_price: (float) $i->unit_price,
             discount: (float) $i->discount,
-            total_without_tax: (float) $i->total_without_tax,
+            tax_base: (float) $i->tax_base,
             taxes: $i->taxes->map(fn ($t) => new InvoiceItemTax(
                 id: $t->id,
                 invoice_item_id: $t->invoice_item_id,

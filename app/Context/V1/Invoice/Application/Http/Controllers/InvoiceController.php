@@ -65,7 +65,11 @@ class InvoiceController extends Controller
     {
         $dto = CreateInvoiceRequest::toDTO($request->validated());
 
-        return $this->successResponse($this->createUseCase->execute($dto), 201);
+        try {
+            return $this->successResponse($this->createUseCase->execute($dto), 201);
+        } catch (\InvalidArgumentException $e) {
+            return $this->errorResponse($e->getMessage(), 422);
+        }
     }
 
     /**
@@ -81,6 +85,8 @@ class InvoiceController extends Controller
             return $this->successResponse($this->updateUseCase->execute($dto));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return $this->errorResponse('Invoice not found.', 404);
+        } catch (\InvalidArgumentException $e) {
+            return $this->errorResponse($e->getMessage(), 422);
         }
     }
 

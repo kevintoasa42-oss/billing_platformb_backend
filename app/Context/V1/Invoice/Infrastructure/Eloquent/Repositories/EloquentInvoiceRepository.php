@@ -111,7 +111,7 @@ class EloquentInvoiceRepository implements InvoiceRepositoryInterface
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
                 'discount' => $item->discount,
-                'total_without_tax' => $item->total_without_tax,
+                'tax_base' => $item->tax_base,
             ]);
 
             foreach ($item->taxes as $tax) {

@@ -14,7 +14,7 @@ class InvoiceItem
         public float $quantity = 0,
         public float $unit_price = 0,
         public float $discount = 0,
-        public float $total_without_tax = 0,
+        public float $tax_base = 0,
         /** @var InvoiceItemTax[] */
         public array $taxes = [],
     ) {}
