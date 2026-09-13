@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Context\V1\Shared\Domain\ValueObjects;
+namespace App\Context\V1\Shared\AccessKey\Domain\ValueObjects;
 
 /**
  * SRI access key value object (49 digits).
  * Immutable.
  */
-final class AccessKey
+final readonly class AccessKey
 {
     public function __construct(
-        public readonly string $value
+        public string $value
     ) {
         if (strlen($value) !== 49 || !ctype_digit($value)) {
             throw new \InvalidArgumentException(

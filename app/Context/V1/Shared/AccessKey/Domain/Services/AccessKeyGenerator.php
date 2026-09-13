@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Context\V1\Shared\Domain\Services;
+namespace App\Context\V1\Shared\AccessKey\Domain\Services;
 
-use App\Context\V1\Shared\Domain\ValueObjects\AccessKey;
+use App\Context\V1\Shared\AccessKey\Domain\ValueObjects\AccessKey;
+use DateTime;
+use InvalidArgumentException;
+use Random\RandomException;
 
 /**
  * Generates SRI access keys for electronic documents.
@@ -19,7 +22,7 @@ use App\Context\V1\Shared\Domain\ValueObjects\AccessKey;
  */
 class AccessKeyGenerator
 {
-    private const DOCUMENT_CODES = [
+    private const array DOCUMENT_CODES = [
         '01' => '01', // factura
         '03' => '03', // liquidacion de compra
         '04' => '04', // nota de credito
@@ -31,14 +34,15 @@ class AccessKeyGenerator
     /**
      * Generate a 49-digit access key.
      *
-     * @param  string  $issueDate  Y-m-d (e.g. "2026-08-28")
-     * @param  string  $documentCode  SRI document code (01, 03, 04, 05, 06, 07)
-     * @param  string  $ruc  13-digit RUC
-     * @param  string  $environment  "1"=pruebas, "2"=produccion
-     * @param  string  $establishment  3-digit establishment code
-     * @param  string  $emissionPoint  3-digit emission point code
-     * @param  string  $sequential  sequential number (will be padded to 9)
+     * @param string $issueDate Y-m-d (e.g. "2026-08-28")
+     * @param string $documentCode SRI document code (01, 03, 04, 05, 06, 07)
+     * @param string $ruc 13-digit RUC
+     * @param string $environment "1"=pruebas, "2"=produccion
+     * @param string $establishment 3-digit establishment code
+     * @param string $emissionPoint 3-digit emission point code
+     * @param string $sequential sequential number (will be padded to 9)
      * @return AccessKey
+     * @throws RandomException
      */
     public function generate(
         string $issueDate,
@@ -52,7 +56,7 @@ class AccessKeyGenerator
         $this->validate($issueDate, $documentCode, $ruc, $environment, $establishment, $emissionPoint, $sequential);
 
         // 1. Fecha emision: ddmmyyyy
-        $date = \DateTime::createFromFormat('Y-m-d', $issueDate);
+        $date = DateTime::createFromFormat('Y-m-d', $issueDate);
         $datePart = $date->format('dmY');
 
         // 2. Tipo de comprobante
@@ -122,34 +126,34 @@ class AccessKeyGenerator
         string $emissionPoint,
         string $sequential,
     ): void {
-        if (\DateTime::createFromFormat('Y-m-d', $issueDate) === false) {
-            throw new \InvalidArgumentException('issue_date must be a valid Y-m-d date.');
+        if (DateTime::createFromFormat('Y-m-d', $issueDate) === false) {
+            throw new InvalidArgumentException('issue_date must be a valid Y-m-d date.');
         }
 
         if (!array_key_exists($documentCode, self::DOCUMENT_CODES)) {
-            throw new \InvalidArgumentException(
-                "Invalid document code: {$documentCode}. Valid: " . implode(', ', array_keys(self::DOCUMENT_CODES))
+            throw new InvalidArgumentException(
+                "Invalid document code: $documentCode. Valid: " . implode(', ', array_keys(self::DOCUMENT_CODES))
             );
         }
 
         if (!ctype_digit($ruc) || strlen($ruc) > 13) {
-            throw new \InvalidArgumentException('ruc must be numeric and max 13 digits.');
+            throw new InvalidArgumentException('ruc must be numeric and max 13 digits.');
         }
 
         if (!in_array($environment, ['1', '2'], true)) {
-            throw new \InvalidArgumentException('environment must be "1" (pruebas) or "2" (produccion).');
+            throw new InvalidArgumentException('environment must be "1" (pruebas) or "2" (produccion).');
         }
 
         if (!ctype_digit($establishment) || strlen($establishment) > 3) {
-            throw new \InvalidArgumentException('establishment must be numeric and max 3 digits.');
+            throw new InvalidArgumentException('establishment must be numeric and max 3 digits.');
         }
 
         if (!ctype_digit($emissionPoint) || strlen($emissionPoint) > 3) {
-            throw new \InvalidArgumentException('emission_point must be numeric and max 3 digits.');
+            throw new InvalidArgumentException('emission_point must be numeric and max 3 digits.');
         }
 
         if (!ctype_digit($sequential) || strlen($sequential) > 9) {
-            throw new \InvalidArgumentException('sequential must be numeric and max 9 digits.');
+            throw new InvalidArgumentException('sequential must be numeric and max 9 digits.');
         }
     }
 }

@@ -6,7 +6,7 @@ use App\Context\V1\Modules\Invoice\Domain\Mappers\InvoiceTaxAggregatorMapper;
 use App\Context\V1\Modules\Invoice\Domain\Models\InvoiceHeader;
 use App\Context\V1\Modules\Invoice\Domain\Repositories\SignatureConfigRepositoryInterface;
 use App\Context\V1\Modules\Invoice\Domain\Repositories\SriCatalogRepositoryInterface;
-use App\Context\V1\Shared\Domain\Services\AccessKeyGenerator;
+use App\Context\V1\Shared\AccessKey\Domain\Services\AccessKeyGenerator;
 
 class InvoiceCalculationService
 {

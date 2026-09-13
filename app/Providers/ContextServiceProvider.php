@@ -100,7 +100,7 @@ class ContextServiceProvider extends ServiceProvider
 
         // Shared services
         $this->app->singleton(
-            \App\Context\V1\Shared\Domain\Services\AccessKeyGenerator::class
+            \App\Context\V1\Shared\AccessKey\Domain\Services\AccessKeyGenerator::class
         );
 
         // XmlGeneration - Invoice XML builder (needs provider RUC from config)
