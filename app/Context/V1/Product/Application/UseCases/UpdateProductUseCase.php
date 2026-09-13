@@ -14,16 +14,7 @@ class UpdateProductUseCase
 
     public function execute(ProductDTO $dto): ProductDTO
     {
-        $product = ProductMapper::fromDto([
-            'id' => $dto->id,
-            'barcode' => $dto->barcode,
-            'auxiliary_code' => $dto->auxiliary_code,
-            'name' => $dto->name,
-            'description' => $dto->description,
-            'status' => $dto->status,
-            'base_price' => $dto->base_price,
-            'taxes' => $dto->taxes,
-        ]);
+        $product = ProductMapper::fromDto($dto);
 
         $product = $this->repository->update($product);
 

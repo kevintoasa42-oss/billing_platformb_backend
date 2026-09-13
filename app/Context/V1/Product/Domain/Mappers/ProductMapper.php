@@ -2,21 +2,22 @@
 
 namespace App\Context\V1\Product\Domain\Mappers;
 
+use App\Context\V1\Product\Application\DTOs\ProductDTO;
 use App\Context\V1\Product\Domain\Models\Product;
 
 class ProductMapper
 {
-    public static function fromDto(array $data): Product
+    public static function fromDto(ProductDTO $dto): Product
     {
         return new Product(
-            id: $data['id'] ?? null,
-            barcode: $data['barcode'] ?? null,
-            auxiliary_code: $data['auxiliary_code'] ?? null,
-            name: $data['name'] ?? null,
-            description: $data['description'] ?? null,
-            status: $data['status'] ?? true,
-            base_price: $data['base_price'] ?? 0,
-            taxes: $data['taxes'] ?? [],
+            id: $dto->id,
+            barcode: $dto->barcode,
+            auxiliary_code: $dto->auxiliary_code,
+            name: $dto->name,
+            description: $dto->description,
+            status: $dto->status,
+            base_price: $dto->base_price,
+            taxes: $dto->taxes,
         );
     }
 
