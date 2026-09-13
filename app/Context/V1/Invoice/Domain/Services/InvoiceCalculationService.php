@@ -3,14 +3,15 @@
 namespace App\Context\V1\Invoice\Domain\Services;
 
 use App\Context\V1\Invoice\Domain\Models\InvoiceHeader;
-use App\Context\V1\Invoice\Domain\Models\InvoiceItem;
-use App\Context\V1\Invoice\Domain\Models\InvoiceItemTax;
-use App\Context\V1\Invoice\Domain\Models\InvoicePayment;
 use App\Context\V1\Invoice\Domain\Models\InvoiceTax;
-use Illuminate\Support\Facades\DB;
+use App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface;
 
 class InvoiceCalculationService
 {
+    public function __construct(
+        private SriCatalogRepositoryInterface $sriCatalogRepository,
+    ) {}
+
     /**
      * Calculate all header totals, item tax_base, aggregate header taxes,
      * and fill SRI catalog data (code, percentage_code, rate, payment_code).
@@ -19,16 +20,8 @@ class InvoiceCalculationService
      */
     public function calculateAndEnrich(InvoiceHeader $invoice): InvoiceHeader
     {
-        // Load SRI catalogs from central DB
-        $ivaPercentages = DB::connection('pgsql')
-            ->table('sri_iva_percentages')
-            ->get()
-            ->keyBy('id');
-
-        $paymentMethods = DB::connection('pgsql')
-            ->table('sri_payment_methods')
-            ->get()
-            ->keyBy('id');
+        $ivaPercentages = $this->sriCatalogRepository->getIvaPercentages();
+        $paymentMethods = $this->sriCatalogRepository->getPaymentMethods();
 
         $subtotal = 0;
         $totalDiscount = 0;
@@ -47,11 +40,11 @@ class InvoiceCalculationService
 
             // Enrich item taxes with SRI catalog data
             foreach ($item->taxes as $tax) {
-                $catalog = $ivaPercentages->get($tax->sri_iva_percentage_id);
+                $catalog = $ivaPercentages[$tax->sri_iva_percentage_id] ?? null;
                 if ($catalog) {
                     $tax->code = '2'; // IVA
-                    $tax->percentage_code = $this->resolvePercentageCode($catalog->code);
-                    $tax->rate = $catalog->percentage !== null ? (float) $catalog->percentage : 0;
+                    $tax->percentage_code = $this->resolvePercentageCode($catalog['code']);
+                    $tax->rate = $catalog['percentage'] !== null ? (float) $catalog['percentage'] : 0;
                 }
 
                 $totalTax += round($tax->tax, 2);
@@ -98,9 +91,9 @@ class InvoiceCalculationService
 
         // Enrich payments with payment_code from catalog
         foreach ($invoice->payments as $payment) {
-            $method = $paymentMethods->get($payment->sri_payment_method_id);
+            $method = $paymentMethods[$payment->sri_payment_method_id] ?? null;
             if ($method) {
-                $payment->payment_code = $method->code;
+                $payment->payment_code = $method['code'];
             }
         }
 

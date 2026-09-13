@@ -84,6 +84,12 @@ class ContextServiceProvider extends ServiceProvider
             \App\Context\V1\Invoice\Domain\Repositories\InvoiceRepositoryInterface::class,
             \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentInvoiceRepository::class
         );
+
+        // SRI Catalog (central DB, used by Invoice domain service)
+        $this->app->bind(
+            \App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface::class,
+            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSriCatalogRepository::class
+        );
     }
 
     /**
