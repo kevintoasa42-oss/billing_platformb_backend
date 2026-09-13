@@ -2,8 +2,8 @@
 
 namespace App\Context\V1\Invoice\Domain\Services;
 
+use App\Context\V1\Invoice\Domain\Mappers\InvoiceTaxAggregatorMapper;
 use App\Context\V1\Invoice\Domain\Models\InvoiceHeader;
-use App\Context\V1\Invoice\Domain\Models\InvoiceTax;
 use App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface;
 
 class InvoiceCalculationService
@@ -76,18 +76,8 @@ class InvoiceCalculationService
             2
         );
 
-        // Build aggregated header taxes
-        $invoice->taxes = array_map(
-            fn ($t) => new InvoiceTax(
-                sri_iva_percentage_id: $t['sri_iva_percentage_id'],
-                code: $t['code'],
-                percentage_code: $t['percentage_code'],
-                rate: $t['rate'],
-                tax_base: round($t['tax_base'], 2),
-                tax: round($t['tax'], 2),
-            ),
-            array_values($aggregatedTaxes)
-        );
+        // Build aggregated header taxes via mapper
+        $invoice->taxes = InvoiceTaxAggregatorMapper::fromAggregated($aggregatedTaxes);
 
         // Enrich payments with payment_code from catalog
         foreach ($invoice->payments as $payment) {
