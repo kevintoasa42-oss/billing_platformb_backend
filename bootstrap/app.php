@@ -1,5 +1,11 @@
 <?php
 
+use App\Context\V1\BranchOffices\Infrastructure\Laravel\Providers\BranchOfficeServiceProvider;
+use App\Context\V1\Clients\Infrastructure\Laravel\Providers\ClientServiceProvider;
+use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Providers\EmissionPointServiceProvider;
+use App\Context\V1\SriVoucherTypes\Infrastructure\Laravel\Providers\SriVoucherTypeServiceProvider;
+use App\Http\Middleware\SetTenantConnection;
+use App\Providers\ContextServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'tenant' => \App\Http\Middleware\SetTenantConnection::class,
+            'tenant' => SetTenantConnection::class,
         ]);
         $middleware->redirectTo(fn (Request $request) => $request->expectsJson() ? null : '/login');
     })
@@ -24,10 +30,10 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withProviders([
-        \App\Providers\ContextServiceProvider::class,
-        \App\Context\V1\BranchOffices\Infrastructure\Laravel\Providers\BranchOfficeServiceProvider::class,
-        \App\Context\V1\Clients\Infrastructure\Laravel\Providers\ClientServiceProvider::class,
-        \App\Context\V1\EmissionPoints\Infrastructure\Laravel\Providers\EmissionPointServiceProvider::class,
-        \App\Context\V1\Partners\Infrastructure\Laravel\Providers\PartnerServiceProvider::class,
+        ContextServiceProvider::class,
+        BranchOfficeServiceProvider::class,
+        ClientServiceProvider::class,
+        EmissionPointServiceProvider::class,
+        SriVoucherTypeServiceProvider::class,
     ])
     ->create();

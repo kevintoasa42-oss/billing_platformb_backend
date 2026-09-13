@@ -7,16 +7,16 @@ use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Controllers\Emissi
 use App\Context\V1\Enterprise\Application\Http\Controllers\AuthController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\EnterpriseController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
+use App\Context\V1\Invoice\Application\Http\Controllers\InvoiceController;
+use App\Context\V1\Invoice\Application\Http\Controllers\PaymentMethodController;
 use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
-use App\Context\V1\Partners\Infrastructure\Laravel\Http\Controllers\PartnerController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use App\Context\V1\Product\Application\Http\Controllers\TaxController;
 use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
-use App\Context\V1\Invoice\Application\Http\Controllers\InvoiceController;
-use App\Context\V1\Invoice\Application\Http\Controllers\PaymentMethodController;
-use App\Context\V1\XmlGeneration\Application\Http\Controllers\InvoiceXmlController;
-use App\Context\V1\SriAuthorization\Application\Http\Controllers\SriAuthorizationController;
 use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
+use App\Context\V1\SriAuthorization\Application\Http\Controllers\SriAuthorizationController;
+use App\Context\V1\SriVoucherTypes\Infrastructure\Laravel\Http\Controllers\SriVoucherTypeController;
+use App\Context\V1\XmlGeneration\Application\Http\Controllers\InvoiceXmlController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -82,14 +82,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/clients/{id}', [ClientController::class, 'update']);
         Route::delete('/clients/{id}', [ClientController::class, 'destroy']);
 
-        // --- Partners (tenant) ---
-        Route::get('/partners', [PartnerController::class, 'index']);
-        Route::get('/partners/{id}', [PartnerController::class, 'show']);
-        Route::post('/partners', [PartnerController::class, 'store']);
-        Route::put('/partners/{id}', [PartnerController::class, 'update']);
-        Route::patch('/partners/{id}', [PartnerController::class, 'update']);
-        Route::delete('/partners/{id}', [PartnerController::class, 'destroy']);
-
         // --- Emission points (tenant) ---
         // Declare this static route before /emission-points/{id}.
         Route::get('/emission-points/next-sequential', [EmissionPointController::class, 'nextSequential']);
@@ -141,4 +133,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- Payment methods (catálogo central, no requiere tenant) ---
     Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+
+    // --- SRI voucher types (catálogo central, no requiere tenant) ---
+    Route::get('/sri-voucher-types', [SriVoucherTypeController::class, 'index']);
+    Route::get('/sri-voucher-types/{id}', [SriVoucherTypeController::class, 'show']);
+    Route::post('/sri-voucher-types', [SriVoucherTypeController::class, 'store']);
+    Route::put('/sri-voucher-types/{id}', [SriVoucherTypeController::class, 'update']);
+    Route::patch('/sri-voucher-types/{id}', [SriVoucherTypeController::class, 'update']);
+    Route::delete('/sri-voucher-types/{id}', [SriVoucherTypeController::class, 'destroy']);
 });

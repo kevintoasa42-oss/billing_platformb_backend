@@ -6,14 +6,15 @@ use Illuminate\Console\Command;
 
 /**
  * Applies pending tenant migrations to all enterprises, or to one explicitly
- * selected enterprise. The legacy --fresh option is intentionally restricted
- * to one enterprise because it destroys tenant data.
+ * selected enterprise. Destructive fresh runs require an explicit target:
+ * one enterprise or all tenant databases.
  */
 class TenantMigrateCommand extends AbstractTenantMigrationCommand
 {
     protected $signature = 'tenant:migrate
-                            {--enterprise= : Empresa objetivo; obligatoria al usar --fresh}
-                            {--fresh : Elimina y vuelve a crear las tablas de una sola empresa}
+                            {--enterprise= : Empresa objetivo; exclusivo con --all al usar --fresh}
+                            {--all : Ejecuta --fresh sobre todas las empresas}
+                            {--fresh : Elimina y vuelve a crear las tablas tenant}
                             {--pretend : Muestra SQL sin ejecutar cambios}
                             {--step : Registra cada migración en un lote separado}
                             {--seed : Ejecuta los seeders tenant después de migrar}
@@ -26,7 +27,7 @@ class TenantMigrateCommand extends AbstractTenantMigrationCommand
     public function handle(): int
     {
         if ($this->option('fresh')) {
-            return $this->runFreshForRequiredEnterprise();
+            return $this->runFreshForEnterpriseOrAll();
         }
 
         $options = $this->withTenantSeeder($this->tenantOptions());
@@ -37,9 +38,13 @@ class TenantMigrateCommand extends AbstractTenantMigrationCommand
             }
         }
 
-        $enterpriseId = $this->option('enterprise');
+        if ($this->option('all') && $this->hasEnterpriseOption()) {
+            $this->error('Las opciones --enterprise=<id> y --all son excluyentes.');
 
-        if ($enterpriseId !== null && $enterpriseId !== '') {
+            return Command::FAILURE;
+        }
+
+        if ($this->hasEnterpriseOption()) {
             $enterprise = $this->requiredEnterprise();
 
             return $enterprise === null
@@ -47,29 +52,10 @@ class TenantMigrateCommand extends AbstractTenantMigrationCommand
                 : $this->runForEnterprise($enterprise, 'migrate', $options);
         }
 
-        $enterprises = $this->enterprises();
-
-        if ($enterprises === null) {
-            return Command::FAILURE;
-        }
-
-        if ($enterprises->isEmpty()) {
-            $this->warn('No hay empresas registradas. No hay bases tenant para migrar.');
-
-            return Command::SUCCESS;
-        }
-
-        $hasFailures = false;
-
-        foreach ($enterprises as $enterprise) {
-            $status = $this->runForEnterprise($enterprise, 'migrate', $options);
-            $hasFailures = $hasFailures || $status !== Command::SUCCESS;
-        }
-
-        return $hasFailures ? Command::FAILURE : Command::SUCCESS;
+        return $this->runForAllEnterprises('migrate', $options);
     }
 
-    private function runFreshForRequiredEnterprise(): int
+    private function runFreshForEnterpriseOrAll(): int
     {
         foreach (['pretend', 'graceful', 'isolated'] as $option) {
             if ($this->option($option)) {
@@ -85,6 +71,6 @@ class TenantMigrateCommand extends AbstractTenantMigrationCommand
             $options['--step'] = true;
         }
 
-        return $this->runForRequiredEnterprise('migrate:fresh', $options);
+        return $this->runForEnterpriseOrAll('migrate:fresh', $options);
     }
 }
