@@ -70,6 +70,8 @@ class EloquentInvoiceMapper
         return new InvoiceHeader(
             id: $model->id,
             carrier_id: $model->carrier_id,
+            branch_office_id: $model->branch_office_id,
+            emission_point_id: $model->emission_point_id,
             environment: $model->environment,
             emission_type: $model->emission_type,
             ruc: $model->ruc,
@@ -110,6 +112,8 @@ class EloquentInvoiceMapper
     {
         return [
             'carrier_id' => $invoice->carrier_id,
+            'branch_office_id' => $invoice->branch_office_id,
+            'emission_point_id' => $invoice->emission_point_id,
             'environment' => $invoice->environment,
             'emission_type' => $invoice->emission_type,
             'ruc' => $invoice->ruc,

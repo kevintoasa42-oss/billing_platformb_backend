@@ -4,6 +4,8 @@ namespace App\Context\V1\EmissionPoints\Infrastructure\Laravel\Providers;
 
 use App\Context\V1\EmissionPoints\Application\Adapters\EmissionPointSequentialService;
 use App\Context\V1\EmissionPoints\Application\Adapters\EmissionPointSequentialServiceInterface;
+use App\Context\V1\EmissionPoints\Application\Adapters\InvoiceSequentialResolver;
+use App\Context\V1\EmissionPoints\Application\Adapters\InvoiceSequentialResolverInterface;
 use App\Context\V1\EmissionPoints\Domain\Mappers\EmissionPointMapperInterface;
 use App\Context\V1\EmissionPoints\Domain\Ports\NextSequentialGeneratorInterface;
 use App\Context\V1\EmissionPoints\Domain\Repositories\EmissionPointRepositoryInterface;
@@ -30,6 +32,10 @@ final class EmissionPointServiceProvider extends ServiceProvider
         $this->app->bind(
             EmissionPointSequentialServiceInterface::class,
             EmissionPointSequentialService::class,
+        );
+        $this->app->bind(
+            InvoiceSequentialResolverInterface::class,
+            InvoiceSequentialResolver::class,
         );
     }
 }

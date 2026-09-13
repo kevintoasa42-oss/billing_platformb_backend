@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Context\V1\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOfficeModel;
+use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +16,8 @@ class InvoiceHeaderModel extends Model
 
     protected $fillable = [
         'carrier_id',
+        'branch_office_id',
+        'emission_point_id',
         'environment',
         'emission_type',
         'ruc',
@@ -58,6 +62,16 @@ class InvoiceHeaderModel extends Model
     public function carrier(): BelongsTo
     {
         return $this->belongsTo(CarrierModel::class, 'carrier_id');
+    }
+
+    public function branchOffice(): BelongsTo
+    {
+        return $this->belongsTo(BranchOfficeModel::class, 'branch_office_id');
+    }
+
+    public function emissionPoint(): BelongsTo
+    {
+        return $this->belongsTo(EmissionPointModel::class, 'emission_point_id');
     }
 
     public function items(): HasMany

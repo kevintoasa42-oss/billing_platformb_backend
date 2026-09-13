@@ -67,6 +67,8 @@ class InvoiceMapper
         return new InvoiceHeader(
             id: $dto->id,
             carrier_id: $dto->carrier_id,
+            branch_office_id: $dto->branch_office_id,
+            emission_point_id: $dto->emission_point_id,
             environment: $dto->environment,
             emission_type: $dto->emission_type,
             ruc: $dto->ruc,
@@ -108,6 +110,8 @@ class InvoiceMapper
         return [
             'id' => $invoice->id,
             'carrier_id' => $invoice->carrier_id,
+            'branch_office_id' => $invoice->branch_office_id,
+            'emission_point_id' => $invoice->emission_point_id,
             'environment' => $invoice->environment,
             'emission_type' => $invoice->emission_type,
             'ruc' => $invoice->ruc,

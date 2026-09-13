@@ -7,6 +7,8 @@ class InvoiceHeader
     public function __construct(
         public ?int $id = null,
         public ?int $carrier_id = null,
+        public ?int $branch_office_id = null,
+        public ?int $emission_point_id = null,
         // infoTributaria (issuer snapshot)
         public ?string $environment = '1',
         public ?string $emission_type = '1',

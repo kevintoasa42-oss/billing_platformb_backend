@@ -3,8 +3,6 @@
 namespace App\Context\V1\Invoice\Application\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Validator;
-use App\Models\InvoiceHeaderModel;
 
 class CreateInvoiceRequest extends FormRequest
 {
@@ -17,6 +15,8 @@ class CreateInvoiceRequest extends FormRequest
     {
         return [
             'carrier_id' => 'nullable|integer|exists:tenant.carriers,id',
+            'branch_office_id' => 'required|integer|exists:tenant.branch_offices,id',
+            'emission_point_id' => 'required|integer|exists:tenant.emission_points,id',
             'environment' => 'prohibited',
             'emission_type' => 'prohibited',
             'ruc' => 'required|string|max:13',
@@ -24,9 +24,9 @@ class CreateInvoiceRequest extends FormRequest
             'tradename' => 'nullable|string|max:255',
             'access_key' => 'prohibited',
             'document_code' => 'nullable|string|max:2',
-            'establishment' => 'required|string|max:3',
-            'emission_point' => 'required|string|max:3',
-            'sequential' => 'required|string|max:9',
+            'establishment' => 'prohibited',
+            'emission_point' => 'prohibited',
+            'sequential' => 'nullable|string|max:9',
             'matrix_address' => 'nullable|string|max:500',
             'issue_date' => 'required|date',
             'establishment_address' => 'nullable|string|max:500',
@@ -60,32 +60,6 @@ class CreateInvoiceRequest extends FormRequest
             'additional_info.*.name' => 'required|string|max:100',
             'additional_info.*.value' => 'nullable|string',
         ];
-    }
-
-    /**
-     * Validate that the sequential (establishment + emission_point + sequential) is unique.
-     */
-    public function withValidator(Validator $validator): void
-    {
-        $validator->after(function (Validator $validator) {
-            $establishment = $this->input('establishment');
-            $emissionPoint = $this->input('emission_point');
-            $sequential = $this->input('sequential');
-
-            if ($establishment && $emissionPoint && $sequential) {
-                $exists = InvoiceHeaderModel::where('establishment', $establishment)
-                    ->where('emission_point', $emissionPoint)
-                    ->where('sequential', $sequential)
-                    ->exists();
-
-                if ($exists) {
-                    $validator->errors()->add(
-                        'sequential',
-                        'The sequential number already exists for this establishment and emission point.'
-                    );
-                }
-            }
-        });
     }
 
     public static function toDTO(array $data): \App\Context\V1\Invoice\Application\DTOs\InvoiceDTO
