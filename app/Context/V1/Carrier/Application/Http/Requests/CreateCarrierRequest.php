@@ -15,6 +15,7 @@ class CreateCarrierRequest extends FormRequest
     {
         return [
             'ruc' => 'required|string|max:13',
+            'placa' => 'required|string|max:20',
             'name' => 'required|string|max:255',
             'tradename' => 'nullable|string|max:255',
             'matrix_address' => 'nullable|string|max:500',

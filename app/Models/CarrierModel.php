@@ -12,6 +12,7 @@ class CarrierModel extends Model
 
     protected $fillable = [
         'ruc',
+        'placa',
         'name',
         'tradename',
         'matrix_address',

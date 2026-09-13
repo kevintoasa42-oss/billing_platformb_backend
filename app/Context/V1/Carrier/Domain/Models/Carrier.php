@@ -7,6 +7,7 @@ class Carrier
     public function __construct(
         public ?int $id = null,
         public ?string $ruc = null,
+        public ?string $placa = null,
         public ?string $name = null,
         public ?string $tradename = null,
         public ?string $matrix_address = null,

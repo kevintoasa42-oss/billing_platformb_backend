@@ -12,6 +12,7 @@ class CarrierMapper
         return new Carrier(
             id: $dto->id,
             ruc: $dto->ruc,
+            placa: $dto->placa,
             name: $dto->name,
             tradename: $dto->tradename,
             matrix_address: $dto->matrix_address,
@@ -26,6 +27,7 @@ class CarrierMapper
         return [
             'id' => $carrier->id,
             'ruc' => $carrier->ruc,
+            'placa' => $carrier->placa,
             'name' => $carrier->name,
             'tradename' => $carrier->tradename,
             'matrix_address' => $carrier->matrix_address,
