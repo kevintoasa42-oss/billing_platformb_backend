@@ -5,13 +5,11 @@ namespace Tests\Feature\Menu;
 use App\Models\RoleModel;
 use App\Models\UserModel;
 use App\Models\MenuModel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use Tests\FeatureTestCase;
 
-class MenuApiTest extends TestCase
+class MenuApiTest extends FeatureTestCase
 {
-    use RefreshDatabase;
 
     public function test_crear_menu_padre_devuelve_201(): void
     {

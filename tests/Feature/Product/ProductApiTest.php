@@ -4,9 +4,9 @@ namespace Tests\Feature\Product;
 
 use App\Models\EnterpriseModel;
 use App\Models\UserModel;
-use Tests\TestCase;
+use Tests\FeatureTestCase;
 
-class ProductApiTest extends TestCase
+class ProductApiTest extends FeatureTestCase
 {
     private string $token;
     private int $iva15Id;
@@ -50,8 +50,8 @@ class ProductApiTest extends TestCase
             'email' => 'test@test.com',
             'password' => bcrypt('Password123!'),
         ]);
-
-        $user->roles()->attach(1);
+        $adminRoleId = \DB::connection('pgsql')->table('roles')->where('name', 'admin')->value('id');
+        $user->roles()->attach($adminRoleId);
         $user->enterprises()->attach($enterprise->id);
 
         // Crear DB tenant y migrar

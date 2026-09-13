@@ -4,13 +4,11 @@ namespace Tests\Feature\Enterprise;
 
 use App\Models\EnterpriseModel;
 use App\Models\UserModel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use Tests\FeatureTestCase;
 
-class EnterpriseApiTest extends TestCase
+class EnterpriseApiTest extends FeatureTestCase
 {
-    use RefreshDatabase;
 
     public function test_crear_enterprise_devuelve_201_con_datos(): void
     {

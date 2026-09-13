@@ -4,12 +4,10 @@ namespace Tests\Feature\Auth;
 
 use App\Models\EnterpriseModel;
 use App\Models\UserModel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Tests\FeatureTestCase;
 
-class LoginApiTest extends TestCase
+class LoginApiTest extends FeatureTestCase
 {
-    use RefreshDatabase;
 
     public function test_login_con_credenciales_validas_devuelve_token(): void
     {

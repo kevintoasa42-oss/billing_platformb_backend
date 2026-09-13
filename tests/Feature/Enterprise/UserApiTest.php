@@ -5,13 +5,11 @@ namespace Tests\Feature\Enterprise;
 use App\Models\EnterpriseModel;
 use App\Models\RoleModel;
 use App\Models\UserModel;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use Tests\FeatureTestCase;
 
-class UserApiTest extends TestCase
+class UserApiTest extends FeatureTestCase
 {
-    use RefreshDatabase;
 
     public function test_crear_user_devuelve_201_con_datos(): void
     {
