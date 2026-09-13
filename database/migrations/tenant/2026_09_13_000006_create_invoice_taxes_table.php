@@ -15,10 +15,10 @@ return new class extends Migration
         Schema::connection('tenant')->create('invoice_taxes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_header_id')->constrained('invoice_headers')->cascadeOnDelete();
-            $table->string('codigo', 2); // 2=IVA
-            $table->string('codigo_porcentaje', 2); // 0=0%, 4=15%, etc.
-            $table->decimal('base_imponible', 14, 2)->default(0);
-            $table->decimal('valor', 14, 2)->default(0);
+            $table->string('code', 2); // 2=IVA
+            $table->string('percentage_code', 2); // 0=0%, 4=15%, etc.
+            $table->decimal('taxable_base', 14, 2)->default(0); // base imponible
+            $table->decimal('value', 14, 2)->default(0); // value
             $table->timestamps();
 
             $table->index('invoice_header_id');

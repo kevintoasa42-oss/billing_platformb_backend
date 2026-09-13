@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Schema;
  * Stores the main invoice data for SRI electronic invoicing (Ecuador).
  * carrier_id is nullable: null = enterprise issues directly,
  * not null = carrier issues (contrafactura).
+ * All data is a snapshot for audit purposes.
  */
 return new class extends Migration
 {
@@ -18,45 +19,47 @@ return new class extends Migration
             $table->id();
             $table->foreignId('carrier_id')->nullable()->constrained('carriers')->nullOnDelete();
 
-            // infoTributaria
-            $table->string('ambiente', 1)->default('1'); // 1=pruebas, 2=produccion
-            $table->string('tipo_emision', 1)->default('1'); // 1=normal, 2=contingencia
+            // infoTributaria (issuer snapshot)
+            $table->string('environment', 1)->default('1'); // 1=pruebas, 2=produccion
+            $table->string('emission_type', 1)->default('1'); // 1=normal, 2=contingencia
             $table->string('ruc', 13); // issuer RUC
-            $table->string('razon_social'); // issuer razon social
-            $table->string('nombre_comercial')->nullable(); // issuer nombre comercial
-            $table->string('clave_acceso', 49)->unique(); // 49 digits
-            $table->string('cod_doc', 2)->default('01'); // 01=factura
-            $table->string('estab', 3); // establecimiento
-            $table->string('pto_emi', 3); // punto de emision
-            $table->string('secuencial', 9); // secuencial
-            $table->string('dir_matriz')->nullable(); // issuer direccion matriz
+            $table->string('legal_name'); // issuer razon social
+            $table->string('tradename')->nullable(); // issuer nombre comercial
+            $table->string('access_key', 49)->unique(); // 49 digits clave de acceso
+            $table->string('document_code', 2)->default('01'); // 01=factura
+            $table->string('establishment', 3); // establecimiento
+            $table->string('emission_point', 3); // punto de emision
+            $table->string('sequential', 9); // sequential number
+            $table->string('matrix_address')->nullable(); // issuer direccion matriz
 
-            // infoFactura
-            $table->date('fecha_emision');
-            $table->string('dir_establecimiento')->nullable();
-            $table->string('obligado_contabilidad', 2)->default('NO'); // SI/NO
-            $table->string('tipo_identificacion_comprador', 2); // 04=cedula, 05=RUC, 06=pasaporte, 07=consumidor final
-            $table->string('razon_social_comprador');
-            $table->string('identificacion_comprador');
-            $table->string('direccion_comprador')->nullable();
+            // infoFactura (buyer snapshot + totals)
+            $table->date('issue_date'); // fecha emision
+            $table->string('establishment_address')->nullable(); // dir establecimiento
+            $table->string('accounting_required', 2)->default('NO'); // SI/NO obligado contabilidad
+            $table->string('buyer_identification_type', 2); // 04=cedula, 05=RUC, 06=pasaporte, 07=consumidor final
+            $table->string('buyer_name'); // razon social comprador
+            $table->string('buyer_identification'); // identificacion comprador
+            $table->string('buyer_address')->nullable(); // direccion comprador
+            $table->string('buyer_phone', 20)->nullable(); // telefono comprador
+            $table->string('buyer_email')->nullable(); // email comprador
 
-            // Totales
-            $table->decimal('total_sin_impuestos', 14, 2)->default(0);
-            $table->decimal('total_descuento', 14, 2)->default(0);
-            $table->decimal('propina', 14, 2)->default(0);
-            $table->decimal('importe_total', 14, 2)->default(0);
-            $table->string('moneda', 10)->default('DOLAR');
+            // Totals
+            $table->decimal('total_without_taxes', 14, 2)->default(0); // total sin impuestos
+            $table->decimal('total_discount', 14, 2)->default(0); // total descuento
+            $table->decimal('tip', 14, 2)->default(0); // propina
+            $table->decimal('total_amount', 14, 2)->default(0); // importe total
+            $table->string('currency', 10)->default('DOLAR'); // moneda
             $table->string('plate', 20)->nullable(); // optional, for transport
 
-            // Status (SRI authorization lifecycle)
+            // Status (SRI authorization lifecycle - in Spanish per requirement)
             $table->string('status', 20)->default('PENDIENTE'); // PENDIENTE, RECHAZADO, AUTORIZADO
 
             $table->timestamps();
 
             $table->index('carrier_id');
-            $table->index('clave_acceso');
+            $table->index('access_key');
             $table->index('status');
-            $table->index(['estab', 'pto_emi', 'secuencial']);
+            $table->index(['establishment', 'emission_point', 'sequential']);
         });
     }
 

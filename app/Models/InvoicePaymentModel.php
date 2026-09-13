@@ -13,9 +13,9 @@ class InvoicePaymentModel extends Model
 
     protected $fillable = [
         'invoice_header_id',
-        'forma_pago',
+        'payment_method',
         'total',
-        'plazo',
+        'term',
     ];
 
     protected $casts = [

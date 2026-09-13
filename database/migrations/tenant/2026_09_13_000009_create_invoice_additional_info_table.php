@@ -15,8 +15,8 @@ return new class extends Migration
         Schema::connection('tenant')->create('invoice_additional_info', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_header_id')->constrained('invoice_headers')->cascadeOnDelete();
-            $table->string('nombre', 100);
-            $table->text('valor')->nullable();
+            $table->string('name', 100);
+            $table->text('value')->nullable();
             $table->timestamps();
 
             $table->index('invoice_header_id');

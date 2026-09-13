@@ -15,9 +15,9 @@ return new class extends Migration
         Schema::connection('tenant')->create('invoice_payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('invoice_header_id')->constrained('invoice_headers')->cascadeOnDelete();
-            $table->string('forma_pago', 2); // 01=efectivo, 16=tarjeta debito, 19=tarjeta credito, 20=otros
+            $table->string('payment_method', 2); // 01=efectivo, 16=tarjeta debito, 19=tarjeta credito, 20=otros
             $table->decimal('total', 14, 2)->default(0);
-            $table->integer('plazo')->default(0); // days
+            $table->integer('term')->default(0); // term (days)
             $table->timestamps();
 
             $table->index('invoice_header_id');

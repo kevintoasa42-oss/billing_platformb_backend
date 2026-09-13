@@ -13,15 +13,15 @@ class InvoiceTaxModel extends Model
 
     protected $fillable = [
         'invoice_header_id',
-        'codigo',
-        'codigo_porcentaje',
-        'base_imponible',
-        'valor',
+        'code',
+        'percentage_code',
+        'taxable_base',
+        'value',
     ];
 
     protected $casts = [
-        'base_imponible' => 'decimal:2',
-        'valor' => 'decimal:2',
+        'taxable_base' => 'decimal:2',
+        'value' => 'decimal:2',
     ];
 
     public function header(): BelongsTo

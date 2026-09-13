@@ -13,8 +13,8 @@ class InvoiceAdditionalInfoModel extends Model
 
     protected $fillable = [
         'invoice_header_id',
-        'nombre',
-        'valor',
+        'name',
+        'value',
     ];
 
     public function header(): BelongsTo
