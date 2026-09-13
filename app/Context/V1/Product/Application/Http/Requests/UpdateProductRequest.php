@@ -20,8 +20,8 @@ class UpdateProductRequest extends FormRequest
             'description' => 'sometimes|nullable|string',
             'status' => 'sometimes|boolean',
             'base_price' => 'sometimes|numeric|min:0',
-            'impuestos' => 'sometimes|array',
-            'impuestos.*' => 'integer|exists:pgsql.sri_iva_percentages,id',
+            'taxes' => 'sometimes|array',
+            'taxes.*' => 'integer|exists:pgsql.sri_iva_percentages,id',
         ];
     }
 

@@ -13,7 +13,7 @@ class Product
         public bool $status = true,
         public float $base_price = 0,
         /** @var int[] IDs de sri_iva_percentages (DB central) */
-        public array $impuestos = [],
+        public array $taxes = [],
     ) {}
 
     public function activar(): void

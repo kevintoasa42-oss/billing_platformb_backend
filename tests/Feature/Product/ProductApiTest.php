@@ -223,7 +223,7 @@ class ProductApiTest extends TestCase
         $id = $create->json('response.id');
 
         $response = $this->withToken($this->token)
-            ->patchJson("/api/products/{$id}/estado", [
+            ->patchJson("/api/products/{$id}/status", [
                 'status' => false,
             ]);
 

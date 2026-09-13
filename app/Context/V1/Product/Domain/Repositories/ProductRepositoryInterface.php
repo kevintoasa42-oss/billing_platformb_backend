@@ -24,5 +24,5 @@ interface ProductRepositoryInterface
 
     public function cambiarEstado(int $id, bool $status): bool;
 
-    public function asignarImpuestos(int $productId, array $impuestoIds): void;
+    public function assignTaxes(int $productId, array $taxIds): void;
 }

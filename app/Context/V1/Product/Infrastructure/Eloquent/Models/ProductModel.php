@@ -25,12 +25,12 @@ class ProductModel extends Model
     ];
 
     /**
-     * Devuelve los IDs de impuestos asignados a este product.
+     * Devuelve los IDs de taxes asignados a este product.
      * No usa belongsToMany porque la tabla sri_iva_percentages esta en la DB central.
      *
      * @return int[]
      */
-    public function getImpuestoIds(): array
+    public function getTaxIds(): array
     {
         return \DB::connection('tenant')
             ->table('product_tax')

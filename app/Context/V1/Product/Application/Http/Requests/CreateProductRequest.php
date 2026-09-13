@@ -20,8 +20,8 @@ class CreateProductRequest extends FormRequest
             'description' => 'nullable|string',
             'status' => 'boolean',
             'base_price' => 'required|numeric|min:0',
-            'impuestos' => 'array',
-            'impuestos.*' => 'integer|exists:pgsql.sri_iva_percentages,id',
+            'taxes' => 'array',
+            'taxes.*' => 'integer|exists:pgsql.sri_iva_percentages,id',
         ];
     }
 

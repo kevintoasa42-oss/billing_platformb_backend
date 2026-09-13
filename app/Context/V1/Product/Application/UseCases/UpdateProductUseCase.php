@@ -22,7 +22,7 @@ class UpdateProductUseCase
             description: $dto->description,
             status: $dto->status,
             base_price: $dto->base_price,
-            impuestos: $dto->impuestos,
+            taxes: $dto->taxes,
         );
 
         $product = $this->repository->actualizar($product);
@@ -35,7 +35,7 @@ class UpdateProductUseCase
             'description' => $product->description,
             'status' => $product->status,
             'base_price' => $product->base_price,
-            'impuestos' => $product->impuestos,
+            'taxes' => $product->taxes,
         ]);
     }
 }

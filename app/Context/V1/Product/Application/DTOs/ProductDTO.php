@@ -13,7 +13,7 @@ class ProductDTO
         public bool $status = true,
         public float $base_price = 0,
         /** @var int[] */
-        public array $impuestos = [],
+        public array $taxes = [],
     ) {}
 
     public static function fromArray(array $data): self
@@ -26,7 +26,7 @@ class ProductDTO
             description: $data['description'] ?? null,
             status: $data['status'] ?? true,
             base_price: $data['base_price'] ?? 0,
-            impuestos: $data['impuestos'] ?? [],
+            taxes: $data['taxes'] ?? $data['taxes'] ?? [],
         );
     }
 
@@ -40,7 +40,7 @@ class ProductDTO
             'description' => $this->description,
             'status' => $this->status,
             'base_price' => $this->base_price,
-            'impuestos' => $this->impuestos,
+            'taxes' => $this->taxes,
         ];
     }
 }

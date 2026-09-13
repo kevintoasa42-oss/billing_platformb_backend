@@ -27,7 +27,7 @@ class GetProductByIdUseCase
             'description' => $product->description,
             'status' => $product->status,
             'base_price' => $product->base_price,
-            'impuestos' => $product->impuestos,
+            'taxes' => $product->taxes,
         ]);
     }
 }

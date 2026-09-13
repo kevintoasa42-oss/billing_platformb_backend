@@ -53,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/products', [ProductController::class, 'store']);
         Route::put('/products/{id}', [ProductController::class, 'update']);
         Route::patch('/products/{id}', [ProductController::class, 'update']);
-        Route::patch('/products/{id}/estado', [ProductController::class, 'cambiarEstado']);
+        Route::patch('/products/{id}/status', [ProductController::class, 'cambiarEstado']);
     });
 
     // --- Ivas (catálogo central, no requiere tenant) ---

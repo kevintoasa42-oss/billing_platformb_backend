@@ -19,7 +19,7 @@ class EloquentProductMapper implements ProductMapperInterface
             description: $model->description,
             status: $model->status,
             base_price: (float) $model->base_price,
-            impuestos: $model->getImpuestoIds(),
+            taxes: $model->getTaxIds(),
         );
     }
 

@@ -52,8 +52,8 @@ class EloquentProductRepository implements ProductRepositoryInterface
     {
         $model = ProductModel::create($this->mapper->toModel($product));
 
-        if (!empty($product->impuestos)) {
-            $this->asignarImpuestos($model->id, $product->impuestos);
+        if (!empty($product->taxes)) {
+            $this->assignTaxes($model->id, $product->taxes);
         }
 
         return $this->mapper->toDomain($model->fresh());
@@ -64,8 +64,8 @@ class EloquentProductRepository implements ProductRepositoryInterface
         $model = ProductModel::findOrFail($product->id);
         $model->update($this->mapper->toModel($product));
 
-        if ($product->impuestos !== []) {
-            $this->asignarImpuestos($model->id, $product->impuestos);
+        if ($product->taxes !== []) {
+            $this->assignTaxes($model->id, $product->taxes);
         }
 
         return $this->mapper->toDomain($model->fresh());
@@ -76,14 +76,14 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return ProductModel::where('id', $id)->update(['status' => $status]) > 0;
     }
 
-    public function asignarImpuestos(int $productId, array $impuestoIds): void
+    public function assignTaxes(int $productId, array $taxIds): void
     {
         \DB::connection('tenant')
             ->table('product_tax')
             ->where('product_id', $productId)
             ->delete();
 
-        if (!empty($impuestoIds)) {
+        if (!empty($taxIds)) {
             \DB::connection('tenant')
                 ->table('product_tax')
                 ->insert(
@@ -92,7 +92,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
                         'sri_iva_percentage_id' => $id,
                         'created_at' => now(),
                         'updated_at' => now(),
-                    ], $impuestoIds)
+                    ], $taxIds)
                 );
         }
     }
