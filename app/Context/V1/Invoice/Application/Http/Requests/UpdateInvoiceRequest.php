@@ -22,7 +22,7 @@ class UpdateInvoiceRequest extends FormRequest
             'ruc' => 'sometimes|required|string|max:13',
             'legal_name' => 'sometimes|required|string|max:255',
             'tradename' => 'sometimes|nullable|string|max:255',
-            'access_key' => 'sometimes|nullable|string|size:49',
+            'access_key' => 'prohibited',
             'document_code' => 'sometimes|string|max:2',
             'establishment' => 'sometimes|required|string|max:3',
             'emission_point' => 'sometimes|required|string|max:3',

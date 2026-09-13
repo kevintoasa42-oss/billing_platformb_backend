@@ -22,19 +22,17 @@ class InvoiceCalculationService
      */
     public function calculateAndEnrich(InvoiceHeader $invoice): InvoiceHeader
     {
-        // Generate access key if not provided
-        if (empty($invoice->access_key)) {
-            $accessKey = $this->accessKeyGenerator->generate(
-                issueDate: $invoice->issue_date,
-                documentCode: $invoice->document_code ?? '01',
-                ruc: $invoice->ruc,
-                environment: $invoice->environment ?? '1',
-                establishment: $invoice->establishment,
-                emissionPoint: $invoice->emission_point,
-                sequential: $invoice->sequential,
-            );
-            $invoice->access_key = $accessKey->value;
-        }
+        // Generate access key (backend responsibility, never from frontend)
+        $accessKey = $this->accessKeyGenerator->generate(
+            issueDate: $invoice->issue_date,
+            documentCode: $invoice->document_code ?? '01',
+            ruc: $invoice->ruc,
+            environment: $invoice->environment ?? '1',
+            establishment: $invoice->establishment,
+            emissionPoint: $invoice->emission_point,
+            sequential: $invoice->sequential,
+        );
+        $invoice->access_key = $accessKey->value;
 
         $ivaPercentages = $this->sriCatalogRepository->getIvaPercentages();
         $paymentMethods = $this->sriCatalogRepository->getPaymentMethods();
