@@ -8,7 +8,7 @@ final class ClientDTO
 {
     /** @param string[] $providedFields */
     public function __construct(
-        public ?int $id = null,
+        public ?int    $id = null,
         public ?string $identification_type = null,
         public ?string $identification_number = null,
         public ?string $name = null,
@@ -22,13 +22,15 @@ final class ClientDTO
         public ?string $created_at = null,
         public ?string $updated_at = null,
         public ?string $deleted_at = null,
-        public array $providedFields = [],
-    ) {}
+        public array   $providedFields = [],
+    )
+    {
+    }
 
     public static function fromArray(array $data): self
     {
         return new self(
-            id: isset($data['id']) ? (int) $data['id'] : null,
+            id: isset($data['id']) ? (int)$data['id'] : null,
             identification_type: $data['identification_type'] ?? null,
             identification_number: $data['identification_number'] ?? null,
             name: $data['name'] ?? null, last_name: $data['last_name'] ?? null,
@@ -52,6 +54,11 @@ final class ClientDTO
         );
     }
 
+    public function inputArray(): array
+    {
+        return array_intersect_key($this->toArray(), array_flip($this->providedFields));
+    }
+
     public function toArray(): array
     {
         return [
@@ -62,10 +69,5 @@ final class ClientDTO
             'plates' => $this->plates, 'created_at' => $this->created_at,
             'updated_at' => $this->updated_at, 'deleted_at' => $this->deleted_at,
         ];
-    }
-
-    public function inputArray(): array
-    {
-        return array_intersect_key($this->toArray(), array_flip($this->providedFields));
     }
 }

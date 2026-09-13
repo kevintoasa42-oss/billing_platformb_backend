@@ -9,9 +9,11 @@ use App\Context\V1\EmissionPoints\Application\UseCases\TakeNextSequentialUseCase
 final class EmissionPointSequentialService implements EmissionPointSequentialServiceInterface
 {
     public function __construct(
-        private GetNextSequentialUseCase $getNextSequentialUseCase,
+        private GetNextSequentialUseCase  $getNextSequentialUseCase,
         private TakeNextSequentialUseCase $takeNextSequentialUseCase,
-    ) {}
+    )
+    {
+    }
 
     public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): NextSequentialDTO
     {

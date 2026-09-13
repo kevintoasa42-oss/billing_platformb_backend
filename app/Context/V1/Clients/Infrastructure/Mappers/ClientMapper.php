@@ -11,7 +11,7 @@ final class ClientMapper implements ClientMapperInterface
     public function toDomain(array $data): Client
     {
         return new Client(
-            id: isset($data['id']) ? (int) $data['id'] : null,
+            id: isset($data['id']) ? (int)$data['id'] : null,
             identification_type: $data['identification_type'] ?? null,
             identification_number: $data['identification_number'] ?? null,
             name: $data['name'] ?? null, last_name: $data['last_name'] ?? null,
@@ -22,6 +22,11 @@ final class ClientMapper implements ClientMapperInterface
             updated_at: $this->date($data['updated_at'] ?? null),
             deleted_at: $this->date($data['deleted_at'] ?? null),
         );
+    }
+
+    private function date(mixed $value): ?string
+    {
+        return $value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : ($value === null ? null : (string)$value);
     }
 
     public function toPersistence(Client $client): array
@@ -46,10 +51,5 @@ final class ClientMapper implements ClientMapperInterface
             'plates' => $client->plates, 'created_at' => $client->created_at,
             'updated_at' => $client->updated_at, 'deleted_at' => $client->deleted_at,
         ];
-    }
-
-    private function date(mixed $value): ?string
-    {
-        return $value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : ($value === null ? null : (string) $value);
     }
 }

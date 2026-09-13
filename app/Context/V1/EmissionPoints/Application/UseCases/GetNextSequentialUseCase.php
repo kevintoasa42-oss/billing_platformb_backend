@@ -7,7 +7,9 @@ use App\Context\V1\EmissionPoints\Domain\Ports\NextSequentialGeneratorInterface;
 
 final class GetNextSequentialUseCase
 {
-    public function __construct(private NextSequentialGeneratorInterface $generator) {}
+    public function __construct(private NextSequentialGeneratorInterface $generator)
+    {
+    }
 
     public function execute(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): NextSequentialDTO
     {

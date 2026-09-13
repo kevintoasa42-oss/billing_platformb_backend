@@ -9,24 +9,26 @@ use App\Context\V1\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOf
 
 final readonly class EloquentBranchOfficeRepository implements BranchOfficeRepositoryInterface
 {
-    public function __construct(private BranchOfficeMapperInterface $mapper) {}
+    public function __construct(private BranchOfficeMapperInterface $mapper)
+    {
+    }
 
     public function listPaginated(int $page = 1, int $perPage = 15, array $filters = []): array
     {
         $query = BranchOfficeModel::query();
-        if (! empty($filters['search'])) {
-            $value = '%'.$filters['search'].'%';
-            $query->where(fn ($q) => $q->where('name', 'like', $value)->orWhere('code_sri', 'like', $value)->orWhere('type', 'like', $value));
+        if (!empty($filters['search'])) {
+            $value = '%' . $filters['search'] . '%';
+            $query->where(fn($q) => $q->where('name', 'like', $value)->orWhere('code_sri', 'like', $value)->orWhere('type', 'like', $value));
         }
         foreach (['status', 'default'] as $field) {
             if (array_key_exists($field, $filters) && $filters[$field] !== null) {
-                $query->where($field, (bool) $filters[$field]);
+                $query->where($field, (bool)$filters[$field]);
             }
         }
         $paginator = $query->orderByDesc('id')->paginate($perPage, ['*'], 'page', $page);
 
         return [
-            'data' => $paginator->getCollection()->map(fn (BranchOfficeModel $model) => $this->mapper->toDomain($model->toArray()))->all(),
+            'data' => $paginator->getCollection()->map(fn(BranchOfficeModel $model) => $this->mapper->toDomain($model->toArray()))->all(),
             'total' => $paginator->total(), 'page' => $paginator->currentPage(),
             'perPage' => $paginator->perPage(), 'lastPage' => $paginator->lastPage(),
         ];

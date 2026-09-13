@@ -16,13 +16,13 @@ final class BranchOfficeModel extends Model
 
     protected $fillable = ['name', 'code_sri', 'status', 'type', 'default'];
 
-    protected function casts(): array
-    {
-        return ['status' => 'boolean', 'default' => 'boolean'];
-    }
-
     public function emissionPoints()
     {
         return $this->hasMany(EmissionPointModel::class, 'branch_office_id');
+    }
+
+    protected function casts(): array
+    {
+        return ['status' => 'boolean', 'default' => 'boolean'];
     }
 }

@@ -6,7 +6,7 @@ namespace App\Context\V1\Clients\Domain\Models;
 final class Client
 {
     public function __construct(
-        public ?int $id = null,
+        public ?int    $id = null,
         public ?string $identification_type = null,
         public ?string $identification_number = null,
         public ?string $name = null,
@@ -20,5 +20,7 @@ final class Client
         public ?string $created_at = null,
         public ?string $updated_at = null,
         public ?string $deleted_at = null,
-    ) {}
+    )
+    {
+    }
 }
