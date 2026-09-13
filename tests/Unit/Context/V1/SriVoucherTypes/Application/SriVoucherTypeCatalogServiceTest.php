@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Context\V1\SriVoucherTypes\Application;
 
-use App\Context\V1\SriVoucherTypes\Application\Adapters\SriVoucherTypeCatalogService;
-use App\Context\V1\SriVoucherTypes\Application\UseCases\SriVoucherTypeCrudService;
-use App\Context\V1\SriVoucherTypes\Domain\Mappers\SriVoucherTypeMapperInterface;
-use App\Context\V1\SriVoucherTypes\Domain\Models\SriVoucherType;
-use App\Context\V1\SriVoucherTypes\Domain\Repositories\SriVoucherTypeRepositoryInterface;
+use App\Context\V1\Modules\SriVoucherTypes\Application\Adapters\SriVoucherTypeCatalogService;
+use App\Context\V1\Modules\SriVoucherTypes\Application\UseCases\SriVoucherTypeCrudService;
+use App\Context\V1\Modules\SriVoucherTypes\Domain\Mappers\SriVoucherTypeMapperInterface;
+use App\Context\V1\Modules\SriVoucherTypes\Domain\Models\SriVoucherType;
+use App\Context\V1\Modules\SriVoucherTypes\Domain\Repositories\SriVoucherTypeRepositoryInterface;
 use PHPUnit\Framework\TestCase;
 
 final class SriVoucherTypeCatalogServiceTest extends TestCase

@@ -1,9 +1,9 @@
 <?php
 
-use App\Context\V1\BranchOffices\Infrastructure\Laravel\Providers\BranchOfficeServiceProvider;
-use App\Context\V1\Clients\Infrastructure\Laravel\Providers\ClientServiceProvider;
-use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Providers\EmissionPointServiceProvider;
-use App\Context\V1\SriVoucherTypes\Infrastructure\Laravel\Providers\SriVoucherTypeServiceProvider;
+use App\Context\V1\Modules\BranchOffices\Infrastructure\Laravel\Providers\BranchOfficeServiceProvider;
+use App\Context\V1\Modules\Clients\Infrastructure\Laravel\Providers\ClientServiceProvider;
+use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Providers\EmissionPointServiceProvider;
+use App\Context\V1\Modules\SriVoucherTypes\Infrastructure\Laravel\Providers\SriVoucherTypeServiceProvider;
 use App\Http\Middleware\SetTenantConnection;
 use App\Providers\ContextServiceProvider;
 use Illuminate\Foundation\Application;
