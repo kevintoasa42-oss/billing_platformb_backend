@@ -34,8 +34,10 @@ class InvoiceHeaderModel extends Model
         'buyer_address',
         'buyer_phone',
         'buyer_email',
+        'subtotal',
         'total_without_taxes',
         'total_discount',
+        'total_tax',
         'tip',
         'total_amount',
         'currency',
@@ -45,8 +47,10 @@ class InvoiceHeaderModel extends Model
 
     protected $casts = [
         'issue_date' => 'date',
+        'subtotal' => 'decimal:2',
         'total_without_taxes' => 'decimal:2',
         'total_discount' => 'decimal:2',
+        'total_tax' => 'decimal:2',
         'tip' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];

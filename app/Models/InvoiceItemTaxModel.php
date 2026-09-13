@@ -13,6 +13,7 @@ class InvoiceItemTaxModel extends Model
 
     protected $fillable = [
         'invoice_item_id',
+        'sri_iva_percentage_id',
         'code',
         'percentage_code',
         'rate',

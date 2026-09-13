@@ -8,6 +8,7 @@ use App\Context\V1\Product\Application\Http\Controllers\TaxController;
 use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
 use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
 use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
+use App\Context\V1\Invoice\Application\Http\Controllers\InvoiceController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +73,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/signatures/{id}', [SignatureController::class, 'update']);
         Route::patch('/signatures/{id}', [SignatureController::class, 'update']);
         Route::patch('/signatures/{id}/status', [SignatureController::class, 'changeStatus']);
+
+        // --- Invoices (tenant) ---
+        Route::get('/invoices', [InvoiceController::class, 'index']);
+        Route::get('/invoices/{id}', [InvoiceController::class, 'show']);
+        Route::post('/invoices', [InvoiceController::class, 'store']);
+        Route::put('/invoices/{id}', [InvoiceController::class, 'update']);
+        Route::patch('/invoices/{id}', [InvoiceController::class, 'update']);
+        Route::patch('/invoices/{id}/status', [InvoiceController::class, 'changeStatus']);
     });
 
 

@@ -44,11 +44,13 @@ return new class extends Migration
             $table->string('buyer_email')->nullable(); // email comprador
 
             // Totals
-            $table->decimal('total_without_taxes', 14, 2)->default(0); // total sin impuestos
-            $table->decimal('total_discount', 14, 2)->default(0); // total descuento
-            $table->decimal('tip', 14, 2)->default(0); // propina
-            $table->decimal('total_amount', 14, 2)->default(0); // importe total
-            $table->string('currency', 10)->default('DOLAR'); // moneda
+            $table->decimal('subtotal', 14, 2)->default(0); // sum of (quantity * unit_price) before discount
+            $table->decimal('total_without_taxes', 14, 2)->default(0); // taxable base (subtotal - discount)
+            $table->decimal('total_discount', 14, 2)->default(0); // total discount
+            $table->decimal('total_tax', 14, 2)->default(0); // total tax (IVA)
+            $table->decimal('tip', 14, 2)->default(0); // tip
+            $table->decimal('total_amount', 14, 2)->default(0); // grand total
+            $table->string('currency', 10)->default('DOLAR'); // currency
             $table->string('plate', 20)->nullable(); // optional, for transport
 
             // Status (SRI authorization lifecycle - in Spanish per requirement)
