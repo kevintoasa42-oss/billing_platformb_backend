@@ -101,6 +101,14 @@ class ContextServiceProvider extends ServiceProvider
         $this->app->singleton(
             \App\Context\V1\Shared\Domain\Services\AccessKeyGenerator::class
         );
+
+        // XmlGeneration - Invoice XML builder (needs provider RUC from config)
+        $this->app->singleton(
+            \App\Context\V1\XmlGeneration\Domain\Services\InvoiceXmlBuilder::class,
+            fn ($app) => new \App\Context\V1\XmlGeneration\Domain\Services\InvoiceXmlBuilder(
+                config('sri.provider_ruc'),
+            )
+        );
     }
 
     /**

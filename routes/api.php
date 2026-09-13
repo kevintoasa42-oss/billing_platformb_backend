@@ -10,6 +10,7 @@ use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
 use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
 use App\Context\V1\Invoice\Application\Http\Controllers\InvoiceController;
 use App\Context\V1\Invoice\Application\Http\Controllers\PaymentMethodController;
+use App\Context\V1\XmlGeneration\Application\Http\Controllers\InvoiceXmlController;
 use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -83,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/invoices/{id}', [InvoiceController::class, 'update']);
         Route::patch('/invoices/{id}/status', [InvoiceController::class, 'changeStatus']);
         Route::patch('/invoices/{id}/void', [InvoiceController::class, 'void']);
+        Route::get('/invoices/{id}/xml', [InvoiceXmlController::class, 'show']);
     });
 
 
