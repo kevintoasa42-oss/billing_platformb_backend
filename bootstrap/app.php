@@ -25,5 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withProviders([
         \App\Providers\ContextServiceProvider::class,
+        \App\Context\V1\BranchOffices\Infrastructure\Laravel\Providers\BranchOfficeServiceProvider::class,
+        \App\Context\V1\Clients\Infrastructure\Laravel\Providers\ClientServiceProvider::class,
+        \App\Context\V1\EmissionPoints\Infrastructure\Laravel\Providers\EmissionPointServiceProvider::class,
     ])
     ->create();

@@ -17,7 +17,12 @@ class TenantMigrateCommand extends Command
 
     public function handle(): int
     {
-        $tenantPath = 'database/migrations/tenant';
+        $tenantPaths = [
+            'database/migrations/tenant',
+            'app/Context/V1/BranchOffices/Infrastructure/Laravel/Database/Migrations',
+            'app/Context/V1/EmissionPoints/Infrastructure/Laravel/Database/Migrations',
+            'app/Context/V1/Clients/Infrastructure/Laravel/Database/Migrations',
+        ];
 
         // Obtener todas las enterprises con su db_name.
         $enterprises = DB::connection('pgsql')->table('enterprises')->get(['id', 'name', 'db_name']);
@@ -47,12 +52,26 @@ class TenantMigrateCommand extends Command
             DB::reconnect('tenant');
 
             // Ejecutar migraciones.
-            $options = ['--path' => $tenantPath, '--force' => true];
+            $options = ['--path' => $tenantPaths, '--force' => true];
 
             if ($this->option('fresh')) {
                 $this->call('migrate:fresh', array_merge($options, ['--database' => 'tenant']));
             } else {
                 $this->call('migrate', array_merge($options, ['--database' => 'tenant']));
+            }
+
+            if ($this->option('seed')) {
+                foreach ([
+                    \App\Context\V1\BranchOffices\Infrastructure\Laravel\Database\Seeders\BranchOfficeSeeder::class,
+                    \App\Context\V1\EmissionPoints\Infrastructure\Laravel\Database\Seeders\EmissionPointSeeder::class,
+                    \App\Context\V1\Clients\Infrastructure\Laravel\Database\Seeders\ClientSeeder::class,
+                ] as $seeder) {
+                    $this->call('db:seed', [
+                        '--database' => 'tenant',
+                        '--class' => $seeder,
+                        '--force' => true,
+                    ]);
+                }
             }
         }
 

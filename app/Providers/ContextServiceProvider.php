@@ -78,6 +78,7 @@ class ContextServiceProvider extends ServiceProvider
             \App\Context\V1\Signature\Domain\Repositories\EnterpriseSignatureRepositoryInterface::class,
             \App\Context\V1\Signature\Infrastructure\Eloquent\Repositories\EloquentEnterpriseSignatureRepository::class
         );
+
     }
 
     /**
