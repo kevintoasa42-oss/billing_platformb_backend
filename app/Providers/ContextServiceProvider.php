@@ -109,6 +109,16 @@ class ContextServiceProvider extends ServiceProvider
                 config('sri.provider_ruc'),
             )
         );
+
+        // SriAuthorization - SRI SOAP communication services
+        $this->app->singleton(\App\Context\V1\SriAuthorization\Domain\Services\SriReceptionService::class);
+        $this->app->singleton(\App\Context\V1\SriAuthorization\Domain\Services\SriAuthorizationService::class);
+
+        // SriAuthorization - log repository
+        $this->app->bind(
+            \App\Context\V1\SriAuthorization\Domain\Repositories\InvoiceSriLogRepositoryInterface::class,
+            \App\Context\V1\SriAuthorization\Infrastructure\Eloquent\Repositories\EloquentInvoiceSriLogRepository::class
+        );
     }
 
     /**
