@@ -3,60 +3,88 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 /**
- * Ejecuta las migraciones de la carpeta database/migrations/tenant
- * en todas las bases de datos de enterprises existentes.
+ * Applies pending tenant migrations to all enterprises, or to one explicitly
+ * selected enterprise. The legacy --fresh option is intentionally restricted
+ * to one enterprise because it destroys tenant data.
  */
-class TenantMigrateCommand extends Command
+class TenantMigrateCommand extends AbstractTenantMigrationCommand
 {
-    protected $signature = 'tenant:migrate {--fresh : Drop all tables first} {--seed : Seed after migrate}';
+    protected $signature = 'tenant:migrate
+                            {--enterprise= : Empresa objetivo; obligatoria al usar --fresh}
+                            {--fresh : Elimina y vuelve a crear las tablas de una sola empresa}
+                            {--pretend : Muestra SQL sin ejecutar cambios}
+                            {--step : Registra cada migración en un lote separado}
+                            {--seed : Ejecuta los seeders tenant después de migrar}
+                            {--seeder= : Clase del seeder raíz}
+                            {--graceful : Devuelve éxito aunque Laravel encuentre un error}
+                            {--isolated : Adquiere el bloqueo de migración de Laravel}';
 
-    protected $description = 'Ejecuta migraciones tenant en todas las DBs de enterprises';
+    protected $description = 'Ejecuta las migraciones tenant pendientes sin cruzar la ruta landlord';
 
     public function handle(): int
     {
-        $tenantPath = 'database/migrations/tenant';
+        if ($this->option('fresh')) {
+            return $this->runFreshForRequiredEnterprise();
+        }
 
-        // Obtener todas las enterprises con su db_name.
-        $enterprises = DB::connection('pgsql')->table('enterprises')->get(['id', 'name', 'db_name']);
+        $options = $this->withTenantSeeder($this->tenantOptions());
+
+        foreach (['pretend', 'step', 'graceful', 'isolated'] as $option) {
+            if ($this->option($option)) {
+                $options["--{$option}"] = true;
+            }
+        }
+
+        $enterpriseId = $this->option('enterprise');
+
+        if ($enterpriseId !== null && $enterpriseId !== '') {
+            $enterprise = $this->requiredEnterprise();
+
+            return $enterprise === null
+                ? Command::FAILURE
+                : $this->runForEnterprise($enterprise, 'migrate', $options);
+        }
+
+        $enterprises = $this->enterprises();
+
+        if ($enterprises === null) {
+            return Command::FAILURE;
+        }
 
         if ($enterprises->isEmpty()) {
-            $this->warn('No hay enterprises registradas. No hay DBs tenant para migrar.');
+            $this->warn('No hay empresas registradas. No hay bases tenant para migrar.');
+
             return Command::SUCCESS;
         }
 
+        $hasFailures = false;
+
         foreach ($enterprises as $enterprise) {
-            $dbName = $enterprise->db_name;
+            $status = $this->runForEnterprise($enterprise, 'migrate', $options);
+            $hasFailures = $hasFailures || $status !== Command::SUCCESS;
+        }
 
-            // Verificar que la DB existe.
-            $exists = DB::connection('pgsql')
-                ->select("SELECT 1 FROM pg_database WHERE datname = ?", [$dbName]);
+        return $hasFailures ? Command::FAILURE : Command::SUCCESS;
+    }
 
-            if (empty($exists)) {
-                $this->warn("DB '{$dbName}' ({$enterprise->name}) no existe. Saltando...");
-                continue;
-            }
+    private function runFreshForRequiredEnterprise(): int
+    {
+        foreach (['pretend', 'graceful', 'isolated'] as $option) {
+            if ($this->option($option)) {
+                $this->error("--{$option} no es compatible con tenant:migrate --fresh. Usa tenant:migrate:fresh.");
 
-            $this->info("Migrando tenant: {$enterprise->name} ({$dbName})");
-
-            // Configurar conexion tenant.
-            config(['database.connections.tenant.database' => $dbName]);
-            DB::purge('tenant');
-            DB::reconnect('tenant');
-
-            // Ejecutar migraciones.
-            $options = ['--path' => $tenantPath, '--force' => true];
-
-            if ($this->option('fresh')) {
-                $this->call('migrate:fresh', array_merge($options, ['--database' => 'tenant']));
-            } else {
-                $this->call('migrate', array_merge($options, ['--database' => 'tenant']));
+                return Command::FAILURE;
             }
         }
 
-        $this->info('Migraciones tenant completadas.');
-        return Command::SUCCESS;
+        $options = $this->withTenantSeeder($this->tenantOptions());
+
+        if ($this->option('step')) {
+            $options['--step'] = true;
+        }
+
+        return $this->runForRequiredEnterprise('migrate:fresh', $options);
     }
 }

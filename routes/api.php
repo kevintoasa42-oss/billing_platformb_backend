@@ -1,18 +1,21 @@
 <?php
 
+use App\Context\V1\BranchOffices\Infrastructure\Laravel\Http\Controllers\BranchOfficeController;
+use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
+use App\Context\V1\Clients\Infrastructure\Laravel\Http\Controllers\ClientController;
+use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Controllers\EmissionPointController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\AuthController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\EnterpriseController;
 use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
 use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
+use App\Context\V1\Product\Application\Http\Controllers\ProductController;
 use App\Context\V1\Product\Application\Http\Controllers\TaxController;
-use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
-use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
 use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
 use App\Context\V1\Invoice\Application\Http\Controllers\InvoiceController;
 use App\Context\V1\Invoice\Application\Http\Controllers\PaymentMethodController;
 use App\Context\V1\XmlGeneration\Application\Http\Controllers\InvoiceXmlController;
 use App\Context\V1\SriAuthorization\Application\Http\Controllers\SriAuthorizationController;
-use App\Context\V1\Product\Application\Http\Controllers\ProductController;
+use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -62,6 +65,33 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/products/{id}', [ProductController::class, 'update']);
         Route::patch('/products/{id}/status', [ProductController::class, 'changeStatus']);
 
+        // --- Branch offices (tenant) ---
+        Route::get('/branch-offices', [BranchOfficeController::class, 'index']);
+        Route::get('/branch-offices/{id}', [BranchOfficeController::class, 'show']);
+        Route::post('/branch-offices', [BranchOfficeController::class, 'store']);
+        Route::put('/branch-offices/{id}', [BranchOfficeController::class, 'update']);
+        Route::patch('/branch-offices/{id}', [BranchOfficeController::class, 'update']);
+        Route::delete('/branch-offices/{id}', [BranchOfficeController::class, 'destroy']);
+
+        // --- Clients (tenant) ---
+        Route::get('/clients', [ClientController::class, 'index']);
+        Route::get('/clients/{id}', [ClientController::class, 'show']);
+        Route::post('/clients', [ClientController::class, 'store']);
+        Route::put('/clients/{id}', [ClientController::class, 'update']);
+        Route::patch('/clients/{id}', [ClientController::class, 'update']);
+        Route::delete('/clients/{id}', [ClientController::class, 'destroy']);
+
+        // --- Emission points (tenant) ---
+        // Declare this static route before /emission-points/{id}.
+        Route::get('/emission-points/next-sequential', [EmissionPointController::class, 'nextSequential']);
+        Route::post('/emission-points/next-sequential/take', [EmissionPointController::class, 'takeNextSequential']);
+        Route::get('/emission-points', [EmissionPointController::class, 'index']);
+        Route::get('/emission-points/{id}', [EmissionPointController::class, 'show']);
+        Route::post('/emission-points', [EmissionPointController::class, 'store']);
+        Route::put('/emission-points/{id}', [EmissionPointController::class, 'update']);
+        Route::patch('/emission-points/{id}', [EmissionPointController::class, 'update']);
+        Route::delete('/emission-points/{id}', [EmissionPointController::class, 'destroy']);
+
         // --- Carriers (tenant) ---
         Route::get('/carriers', [CarrierController::class, 'index']);
         Route::get('/carriers/{id}', [CarrierController::class, 'show']);
@@ -89,7 +119,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/invoices/{id}/authorize', [SriAuthorizationController::class, 'authorize']);
         Route::get('/invoices/{id}/sri-logs', [SriAuthorizationController::class, 'logs']);
     });
-
 
     // --- Enterprise Signature (central DB, uses enterprise_id from token) ---
     Route::get('/enterprise-signature', [EnterpriseSignatureController::class, 'show']);

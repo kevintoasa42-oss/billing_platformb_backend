@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\landlord;
 
 use App\Models\EnterpriseModel;
 use App\Models\RoleModel;
