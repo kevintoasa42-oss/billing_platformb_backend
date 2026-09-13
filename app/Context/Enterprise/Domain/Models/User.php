@@ -6,7 +6,7 @@ class User
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $nombre = null,
+        public ?string $name = null,
         public ?string $email = null,
         public ?string $password = null,
         /** @var Role[] */

@@ -21,7 +21,7 @@ class ListMenusUseCase
         $menus = $this->menuRepository->listar();
 
         return array_map(
-            fn ($m) => $this->convertirADTO($m->id, $m->nombre, $m->ruta, $m->icono, $m->parent_id, $m->orden, $m->hijos),
+            fn ($m) => $this->convertirADTO($m->id, $m->name, $m->route, $m->icon, $m->parent_id, $m->order, $m->hijos),
             $menus
         );
     }
@@ -29,17 +29,17 @@ class ListMenusUseCase
     /**
      * Convierte un Menu de dominio a MenuDTO recursivamente.
      */
-    private function convertirADTO(?int $id, ?string $nombre, ?string $ruta, ?string $icono, ?int $parent_id, int $orden, array $hijos = []): MenuDTO
+    private function convertirADTO(?int $id, ?string $name, ?string $route, ?string $icon, ?int $parent_id, int $order, array $hijos = []): MenuDTO
     {
         return new MenuDTO(
             id: $id,
-            nombre: $nombre,
-            ruta: $ruta,
-            icono: $icono,
+            name: $name,
+            route: $route,
+            icon: $icon,
             parent_id: $parent_id,
-            orden: $orden,
+            order: $order,
             hijos: array_map(
-                fn ($h) => $this->convertirADTO($h->id, $h->nombre, $h->ruta, $h->icono, $h->parent_id, $h->orden, $h->hijos ?? []),
+                fn ($h) => $this->convertirADTO($h->id, $h->name, $h->route, $h->icon, $h->parent_id, $h->order, $h->hijos ?? []),
                 $hijos
             ),
         );

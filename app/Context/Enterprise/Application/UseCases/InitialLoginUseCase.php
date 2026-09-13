@@ -27,12 +27,12 @@ class InitialLoginUseCase
             throw new \Exception('Credenciales inválidas.', 401);
         }
 
-        $enterprises = $user->enterprises()->get(['enterprises.id', 'enterprises.nombre', 'enterprises.ruc', 'enterprises.tradename']);
+        $enterprises = $user->enterprises()->get(['enterprises.id', 'enterprises.name', 'enterprises.ruc', 'enterprises.tradename']);
 
         return [
             'user' => [
                 'id' => $user->id,
-                'nombre' => $user->nombre,
+                'name' => $user->name,
                 'email' => $user->email,
             ],
             'enterprises' => $enterprises->toArray(),

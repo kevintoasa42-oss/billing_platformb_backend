@@ -22,7 +22,7 @@ interface ProductRepositoryInterface
 
     public function actualizar(Product $product): Product;
 
-    public function cambiarEstado(int $id, bool $estado): bool;
+    public function cambiarEstado(int $id, bool $status): bool;
 
     public function asignarImpuestos(int $productId, array $impuestoIds): void;
 }

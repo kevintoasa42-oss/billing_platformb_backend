@@ -21,22 +21,22 @@ class CreateMenuUseCase
     public function ejecutar(MenuDTO $dto): MenuDTO
     {
         $menu = new Menu(
-            nombre: $dto->nombre,
-            ruta: $dto->ruta,
-            icono: $dto->icono,
+            name: $dto->name,
+            route: $dto->route,
+            icon: $dto->icon,
             parent_id: $dto->parent_id,
-            orden: $dto->orden,
+            order: $dto->order,
         );
 
         $menu = $this->menuRepository->crear($menu);
 
         return MenuDTO::fromArray([
             'id' => $menu->id,
-            'nombre' => $menu->nombre,
-            'ruta' => $menu->ruta,
-            'icono' => $menu->icono,
+            'name' => $menu->name,
+            'route' => $menu->route,
+            'icon' => $menu->icon,
             'parent_id' => $menu->parent_id,
-            'orden' => $menu->orden,
+            'order' => $menu->order,
         ]);
     }
 }

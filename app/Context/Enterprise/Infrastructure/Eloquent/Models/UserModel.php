@@ -15,7 +15,7 @@ class UserModel extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'nombre',
+        'name',
         'email',
         'password',
     ];
@@ -38,7 +38,7 @@ class UserModel extends Authenticatable
      */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(RoleModel::class, 'user_role', 'user_id', 'rol_id')
+        return $this->belongsToMany(RoleModel::class, 'user_role', 'user_id', 'role_id')
             ->withTimestamps();
     }
 

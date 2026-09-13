@@ -6,7 +6,7 @@ class UserDTO
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $nombre = null,
+        public ?string $name = null,
         public ?string $email = null,
         public ?string $password = null,
         /** @var RoleDTO[] */
@@ -25,7 +25,7 @@ class UserDTO
     {
         return new self(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
+            name: $data['name'] ?? null,
             email: $data['email'] ?? null,
             password: $data['password'] ?? null,
         );
@@ -40,7 +40,7 @@ class UserDTO
     {
         return [
             'id' => $this->id,
-            'nombre' => $this->nombre,
+            'name' => $this->name,
             'email' => $this->email,
             'roles' => array_map(fn ($r) => $r->toArray(), $this->roles),
             'enterprises' => array_map(fn ($e) => $e->toArray(), $this->enterprises),

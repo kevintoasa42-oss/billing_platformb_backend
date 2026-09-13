@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::connection('tenant')->create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo_barras', 100)->nullable();
-            $table->string('codigo_auxiliar', 100)->nullable();
-            $table->string('nombre');
-            $table->text('descripcion')->nullable();
-            $table->boolean('estado')->default(true); // true = activo, false = inactivo
-            $table->decimal('precio_base', 12, 2)->default(0);
+            $table->string('barcode', 100)->nullable();
+            $table->string('auxiliary_code', 100)->nullable();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->boolean('status')->default(true); // true = activo, false = inactivo
+            $table->decimal('base_price', 12, 2)->default(0);
             $table->timestamps();
 
-            $table->index('codigo_barras');
-            $table->index('codigo_auxiliar');
-            $table->index('estado');
+            $table->index('barcode');
+            $table->index('auxiliary_code');
+            $table->index('status');
         });
     }
 

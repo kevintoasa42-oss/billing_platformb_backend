@@ -17,14 +17,14 @@ class MenuApiTest extends TestCase
     {
         Sanctum::actingAs(
             UserModel::create([
-                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'name' => 'Admin', 'email' => 'admin@test.com',
                 'password' => bcrypt('password123'),
             ])
         );
 
         $response = $this->postJson('/api/menus', [
-            'nombre' => 'Dashboard', 'ruta' => '/dashboard',
-            'icono' => 'home', 'orden' => 1,
+            'name' => 'Dashboard', 'route' => '/dashboard',
+            'icon' => 'home', 'order' => 1,
         ]);
 
         $response->assertStatus(201)
@@ -34,7 +34,7 @@ class MenuApiTest extends TestCase
             ->assertJsonPath('response.icon', 'home');
 
         $this->assertDatabaseHas('menus', [
-            'nombre' => 'Dashboard', 'ruta' => '/dashboard',
+            'name' => 'Dashboard', 'route' => '/dashboard',
         ]);
     }
 
@@ -42,19 +42,19 @@ class MenuApiTest extends TestCase
     {
         Sanctum::actingAs(
             UserModel::create([
-                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'name' => 'Admin', 'email' => 'admin@test.com',
                 'password' => bcrypt('password123'),
             ])
         );
 
         $padre = MenuModel::create([
-            'nombre' => 'Configuracion', 'ruta' => '/config',
-            'icono' => 'settings', 'orden' => 1,
+            'name' => 'Configuracion', 'route' => '/config',
+            'icon' => 'settings', 'order' => 1,
         ]);
 
         $response = $this->postJson('/api/menus', [
-            'nombre' => 'Users', 'ruta' => '/config/users',
-            'icono' => 'users', 'parent_id' => $padre->id, 'orden' => 1,
+            'name' => 'Users', 'route' => '/config/users',
+            'icon' => 'users', 'parent_id' => $padre->id, 'order' => 1,
         ]);
 
         $response->assertStatus(201)
@@ -63,7 +63,7 @@ class MenuApiTest extends TestCase
             ->assertJsonPath('response.children', []);
 
         $this->assertDatabaseHas('menus', [
-            'nombre' => 'Users', 'parent_id' => $padre->id,
+            'name' => 'Users', 'parent_id' => $padre->id,
         ]);
     }
 
@@ -71,33 +71,33 @@ class MenuApiTest extends TestCase
     {
         Sanctum::actingAs(
             UserModel::create([
-                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'name' => 'Admin', 'email' => 'admin@test.com',
                 'password' => bcrypt('password123'),
             ])
         );
 
-        $response = $this->postJson('/api/menus', ['ruta' => '/test']);
+        $response = $this->postJson('/api/menus', ['route' => '/test']);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['nombre']);
+            ->assertJsonValidationErrors(['name']);
     }
 
     public function test_listar_menus_devuelve_jerarquia(): void
     {
         Sanctum::actingAs(
             UserModel::create([
-                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'name' => 'Admin', 'email' => 'admin@test.com',
                 'password' => bcrypt('password123'),
             ])
         );
 
         $padre = MenuModel::create([
-            'nombre' => 'Dashboard', 'ruta' => '/dashboard',
-            'icono' => 'home', 'orden' => 1,
+            'name' => 'Dashboard', 'route' => '/dashboard',
+            'icon' => 'home', 'order' => 1,
         ]);
         MenuModel::create([
-            'nombre' => 'Reportes', 'ruta' => '/dashboard/reportes',
-            'icono' => 'chart', 'parent_id' => $padre->id, 'orden' => 1,
+            'name' => 'Reportes', 'route' => '/dashboard/reportes',
+            'icon' => 'chart', 'parent_id' => $padre->id, 'order' => 1,
         ]);
 
         $response = $this->getJson('/api/menus');
@@ -113,21 +113,21 @@ class MenuApiTest extends TestCase
     {
         Sanctum::actingAs(
             UserModel::create([
-                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'name' => 'Admin', 'email' => 'admin@test.com',
                 'password' => bcrypt('password123'),
             ])
         );
 
         $menu = MenuModel::create([
-            'nombre' => 'Dashboard', 'ruta' => '/dashboard',
-            'icono' => 'home', 'orden' => 1,
+            'name' => 'Dashboard', 'route' => '/dashboard',
+            'icon' => 'home', 'order' => 1,
         ]);
         $rol = RoleModel::create([
-            'nombre' => 'admin', 'descripcion' => 'Administrador',
+            'name' => 'admin', 'description' => 'Administrador',
         ]);
 
         $response = $this->postJson("/api/menus/{$menu->id}/roles", [
-            'rol_id' => $rol->id,
+            'role_id' => $rol->id,
         ]);
 
         $response->assertStatus(200)
@@ -135,7 +135,7 @@ class MenuApiTest extends TestCase
             ->assertJsonPath('response', 'Menu asignado al rol correctamente.');
 
         $this->assertDatabaseHas('menu_role', [
-            'menu_id' => $menu->id, 'rol_id' => $rol->id,
+            'menu_id' => $menu->id, 'role_id' => $rol->id,
         ]);
     }
 
@@ -143,44 +143,44 @@ class MenuApiTest extends TestCase
     {
         Sanctum::actingAs(
             UserModel::create([
-                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'name' => 'Admin', 'email' => 'admin@test.com',
                 'password' => bcrypt('password123'),
             ])
         );
 
         $menu = MenuModel::create([
-            'nombre' => 'Dashboard', 'ruta' => '/dashboard',
-            'icono' => 'home', 'orden' => 1,
+            'name' => 'Dashboard', 'route' => '/dashboard',
+            'icon' => 'home', 'order' => 1,
         ]);
 
         $response = $this->postJson("/api/menus/{$menu->id}/roles", [
-            'rol_id' => 9999,
+            'role_id' => 9999,
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['rol_id']);
+            ->assertJsonValidationErrors(['role_id']);
     }
 
     public function test_obtener_menus_por_rol_devuelve_menus_asignados(): void
     {
         $user = UserModel::create([
-            'nombre' => 'User Test', 'email' => 'user@test.com',
+            'name' => 'User Test', 'email' => 'user@test.com',
             'password' => bcrypt('password123'),
         ]);
         Sanctum::actingAs($user);
 
         $rol = RoleModel::create([
-            'nombre' => 'visor', 'descripcion' => 'Solo lectura',
+            'name' => 'visor', 'description' => 'Solo lectura',
         ]);
         $user->roles()->attach($rol->id);
 
         $menuPadre = MenuModel::create([
-            'nombre' => 'Dashboard', 'ruta' => '/dashboard',
-            'icono' => 'home', 'orden' => 1,
+            'name' => 'Dashboard', 'route' => '/dashboard',
+            'icon' => 'home', 'order' => 1,
         ]);
         $menuHijo = MenuModel::create([
-            'nombre' => 'Reportes', 'ruta' => '/dashboard/reportes',
-            'icono' => 'chart', 'parent_id' => $menuPadre->id, 'orden' => 1,
+            'name' => 'Reportes', 'route' => '/dashboard/reportes',
+            'icon' => 'chart', 'parent_id' => $menuPadre->id, 'order' => 1,
         ]);
 
         $menuPadre->roles()->attach($rol->id);
@@ -198,7 +198,7 @@ class MenuApiTest extends TestCase
     public function test_obtener_menus_por_rol_sin_roles_devuelve_vacio(): void
     {
         $user = UserModel::create([
-            'nombre' => 'User Test', 'email' => 'user@test.com',
+            'name' => 'User Test', 'email' => 'user@test.com',
             'password' => bcrypt('password123'),
         ]);
         Sanctum::actingAs($user);

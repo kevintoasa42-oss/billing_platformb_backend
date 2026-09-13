@@ -14,11 +14,11 @@ class CreateMenuRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'ruta' => 'nullable|string|max:255',
-            'icono' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
+            'route' => 'nullable|string|max:255',
+            'icon' => 'nullable|string|max:255',
             'parent_id' => 'nullable|integer|exists:menus,id',
-            'orden' => 'nullable|integer',
+            'order' => 'nullable|integer',
         ];
     }
 

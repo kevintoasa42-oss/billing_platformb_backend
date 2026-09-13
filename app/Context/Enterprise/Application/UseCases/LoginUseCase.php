@@ -58,12 +58,12 @@ class LoginUseCase
             'token' => $token->plainTextToken,
             'user' => [
                 'id' => $userModel->id,
-                'nombre' => $userModel->nombre,
+                'name' => $userModel->name,
                 'email' => $userModel->email,
             ],
             'enterprise' => [
                 'id' => $enterprise->id,
-                'nombre' => $enterprise->nombre,
+                'name' => $enterprise->name,
                 'ruc' => $enterprise->ruc,
             ],
         ];

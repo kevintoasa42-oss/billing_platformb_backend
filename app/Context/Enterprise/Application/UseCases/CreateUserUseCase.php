@@ -21,7 +21,7 @@ class CreateUserUseCase
     public function ejecutar(UserDTO $dto): UserDTO
     {
         $user = new User(
-            nombre: $dto->nombre,
+            name: $dto->name,
             email: $dto->email,
             password: $dto->password,
         );
@@ -30,7 +30,7 @@ class CreateUserUseCase
 
         return UserDTO::fromArray([
             'id' => $user->id,
-            'nombre' => $user->nombre,
+            'name' => $user->name,
             'email' => $user->email,
         ]);
     }

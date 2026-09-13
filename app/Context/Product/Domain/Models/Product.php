@@ -6,23 +6,23 @@ class Product
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $codigo_barras = null,
-        public ?string $codigo_auxiliar = null,
-        public ?string $nombre = null,
-        public ?string $descripcion = null,
-        public bool $estado = true,
-        public float $precio_base = 0,
+        public ?string $barcode = null,
+        public ?string $auxiliary_code = null,
+        public ?string $name = null,
+        public ?string $description = null,
+        public bool $status = true,
+        public float $base_price = 0,
         /** @var int[] IDs de sri_iva_percentages (DB central) */
         public array $impuestos = [],
     ) {}
 
     public function activar(): void
     {
-        $this->estado = true;
+        $this->status = true;
     }
 
     public function desactivar(): void
     {
-        $this->estado = false;
+        $this->status = false;
     }
 }

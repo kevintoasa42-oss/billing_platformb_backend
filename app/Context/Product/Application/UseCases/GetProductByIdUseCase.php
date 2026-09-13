@@ -21,12 +21,12 @@ class GetProductByIdUseCase
 
         return ProductDTO::fromArray([
             'id' => $product->id,
-            'codigo_barras' => $product->codigo_barras,
-            'codigo_auxiliar' => $product->codigo_auxiliar,
-            'nombre' => $product->nombre,
-            'descripcion' => $product->descripcion,
-            'estado' => $product->estado,
-            'precio_base' => $product->precio_base,
+            'barcode' => $product->barcode,
+            'auxiliary_code' => $product->auxiliary_code,
+            'name' => $product->name,
+            'description' => $product->description,
+            'status' => $product->status,
+            'base_price' => $product->base_price,
             'impuestos' => $product->impuestos,
         ]);
     }

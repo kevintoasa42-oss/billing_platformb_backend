@@ -23,12 +23,12 @@ class ListEnterprisesUseCase
         return array_map(
             fn ($e) => EnterpriseDTO::fromArray([
                 'id' => $e->id,
-                'nombre' => $e->nombre,
+                'name' => $e->name,
                 'ruc' => $e->ruc,
                 'tradename' => $e->tradename,
-                'matrixname' => $e->matrixname,
-                'telefono' => $e->telefono,
-                'correo_corporativo' => $e->correo_corporativo,
+                'matrix_name' => $e->matrix_name,
+                'phone' => $e->phone,
+                'corporate_email' => $e->corporate_email,
             ]),
             $enterprises
         );

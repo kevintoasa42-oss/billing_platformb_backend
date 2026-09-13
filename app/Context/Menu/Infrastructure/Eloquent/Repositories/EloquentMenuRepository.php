@@ -24,7 +24,7 @@ class EloquentMenuRepository implements MenuRepositoryInterface
     {
         $menus = MenuModel::whereNull('parent_id')
             ->with('hijos')
-            ->orderBy('orden')
+            ->orderBy('order')
             ->get();
 
         return $menus->map(fn ($m) => $this->mapper->toDomain($m->toArray()))->all();
@@ -54,9 +54,9 @@ class EloquentMenuRepository implements MenuRepositoryInterface
             ->with(['hijos' => function ($query) use ($rolId) {
                 $query->whereHas('roles', function ($q) use ($rolId) {
                     $q->where('roles.id', $rolId);
-                })->orderBy('orden');
+                })->orderBy('order');
             }])
-            ->orderBy('orden')
+            ->orderBy('order')
             ->get();
 
         return $menus->map(fn ($m) => $this->mapper->toDomain($m->toArray()))->all();

@@ -11,12 +11,12 @@ class EnterpriseMapper implements EnterpriseMapperInterface
     {
         return new Enterprise(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
+            name: $data['name'] ?? null,
             ruc: $data['ruc'] ?? null,
             tradename: $data['tradename'] ?? null,
-            matrixname: $data['matrixname'] ?? null,
-            telefono: $data['telefono'] ?? null,
-            correo_corporativo: $data['correo_corporativo'] ?? null,
+            matrix_name: $data['matrix_name'] ?? null,
+            phone: $data['phone'] ?? null,
+            corporate_email: $data['corporate_email'] ?? null,
             db_name: $data['db_name'] ?? null,
         );
     }
@@ -24,12 +24,12 @@ class EnterpriseMapper implements EnterpriseMapperInterface
     public function toEloquent(Enterprise $enterprise): array
     {
         return [
-            'nombre' => $enterprise->nombre,
+            'name' => $enterprise->name,
             'ruc' => $enterprise->ruc,
             'tradename' => $enterprise->tradename,
-            'matrixname' => $enterprise->matrixname,
-            'telefono' => $enterprise->telefono,
-            'correo_corporativo' => $enterprise->correo_corporativo,
+            'matrix_name' => $enterprise->matrix_name,
+            'phone' => $enterprise->phone,
+            'corporate_email' => $enterprise->corporate_email,
             'db_name' => $enterprise->getDbName(),
         ];
     }

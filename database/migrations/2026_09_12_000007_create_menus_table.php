@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('ruta')->nullable(); // URL o ruta de frontend
-            $table->string('icono')->nullable();
+            $table->string('name');
+            $table->string('route')->nullable(); // URL o route de frontend
+            $table->string('icon')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('menus')->nullOnDelete(); // Menus jerárquicos
-            $table->integer('orden')->default(0);
+            $table->integer('order')->default(0);
             $table->timestamps();
         });
     }

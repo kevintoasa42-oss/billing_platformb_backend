@@ -10,8 +10,8 @@ class RoleModel extends Model
     protected $table = 'roles';
 
     protected $fillable = [
-        'nombre',
-        'descripcion',
+        'name',
+        'description',
     ];
 
     /**
@@ -19,7 +19,7 @@ class RoleModel extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(UserModel::class, 'user_role', 'rol_id', 'user_id')
+        return $this->belongsToMany(UserModel::class, 'user_role', 'role_id', 'user_id')
             ->withTimestamps();
     }
 
@@ -31,7 +31,7 @@ class RoleModel extends Model
         return $this->belongsToMany(
             \App\Context\Menu\Infrastructure\Eloquent\Models\MenuModel::class,
             'menu_role',
-            'rol_id',
+            'role_id',
             'menu_id'
         )->withTimestamps();
     }

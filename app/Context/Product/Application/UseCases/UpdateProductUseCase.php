@@ -16,12 +16,12 @@ class UpdateProductUseCase
     {
         $product = new Product(
             id: $dto->id,
-            codigo_barras: $dto->codigo_barras,
-            codigo_auxiliar: $dto->codigo_auxiliar,
-            nombre: $dto->nombre,
-            descripcion: $dto->descripcion,
-            estado: $dto->estado,
-            precio_base: $dto->precio_base,
+            barcode: $dto->barcode,
+            auxiliary_code: $dto->auxiliary_code,
+            name: $dto->name,
+            description: $dto->description,
+            status: $dto->status,
+            base_price: $dto->base_price,
             impuestos: $dto->impuestos,
         );
 
@@ -29,12 +29,12 @@ class UpdateProductUseCase
 
         return ProductDTO::fromArray([
             'id' => $product->id,
-            'codigo_barras' => $product->codigo_barras,
-            'codigo_auxiliar' => $product->codigo_auxiliar,
-            'nombre' => $product->nombre,
-            'descripcion' => $product->descripcion,
-            'estado' => $product->estado,
-            'precio_base' => $product->precio_base,
+            'barcode' => $product->barcode,
+            'auxiliary_code' => $product->auxiliary_code,
+            'name' => $product->name,
+            'description' => $product->description,
+            'status' => $product->status,
+            'base_price' => $product->base_price,
             'impuestos' => $product->impuestos,
         ]);
     }

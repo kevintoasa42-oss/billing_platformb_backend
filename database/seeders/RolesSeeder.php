@@ -15,14 +15,14 @@ class RolesSeeder extends Seeder
         $now = now();
 
         $roles = [
-            ['nombre' => 'admin', 'descripcion' => 'Administrador con acceso total al sistema.'],
-            ['nombre' => 'gestor', 'descripcion' => 'Gestor con permisos de operacion.'],
-            ['nombre' => 'visor', 'descripcion' => 'Visor con permisos de solo lectura.'],
+            ['name' => 'admin', 'description' => 'Administrador con acceso total al sistema.'],
+            ['name' => 'gestor', 'description' => 'Gestor con permisos de operacion.'],
+            ['name' => 'visor', 'description' => 'Visor con permisos de solo lectura.'],
         ];
 
         foreach ($roles as $rol) {
             DB::table('roles')->updateOrInsert(
-                ['nombre' => $rol['nombre']],
+                ['name' => $rol['name']],
                 array_merge($rol, ['created_at' => $now, 'updated_at' => $now])
             );
         }

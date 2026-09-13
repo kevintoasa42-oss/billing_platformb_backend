@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('enterprises', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre'); // Razon social
+            $table->string('name'); // Razon social
             $table->string('ruc', 13)->unique(); // RUC ecuatoriano
             $table->string('tradename'); // Nombre comercial
-            $table->string('matrixname'); // Nombre de la matriz
-            $table->string('telefono');
-            $table->string('correo_corporativo');
+            $table->string('matrix_name'); // Nombre de la matriz
+            $table->string('phone');
+            $table->string('corporate_email');
             $table->string('db_name')->nullable(); // Nombre de la DB del tenant (= RUC)
             $table->timestamps();
         });

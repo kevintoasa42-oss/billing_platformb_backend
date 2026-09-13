@@ -23,7 +23,7 @@ class EloquentRoleRepository implements RoleRepositoryInterface
 
     public function listar(): array
     {
-        return RoleModel::orderBy('nombre')
+        return RoleModel::orderBy('name')
             ->get()
             ->map(fn ($m) => $this->mapper->toDomain($m->toArray()))
             ->all();
@@ -36,9 +36,9 @@ class EloquentRoleRepository implements RoleRepositoryInterface
         return $model ? $this->mapper->toDomain($model->toArray()) : null;
     }
 
-    public function buscarPorNombre(string $nombre): ?Role
+    public function buscarPorNombre(string $name): ?Role
     {
-        $model = RoleModel::where('nombre', $nombre)->first();
+        $model = RoleModel::where('name', $name)->first();
 
         return $model ? $this->mapper->toDomain($model->toArray()) : null;
     }

@@ -6,8 +6,8 @@ class RoleDTO
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $nombre = null,
-        public ?string $descripcion = null,
+        public ?string $name = null,
+        public ?string $description = null,
     ) {}
 
     /**
@@ -20,8 +20,8 @@ class RoleDTO
     {
         return new self(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
-            descripcion: $data['descripcion'] ?? null,
+            name: $data['name'] ?? null,
+            description: $data['description'] ?? null,
         );
     }
 
@@ -34,8 +34,8 @@ class RoleDTO
     {
         return [
             'id' => $this->id,
-            'nombre' => $this->nombre,
-            'descripcion' => $this->descripcion,
+            'name' => $this->name,
+            'description' => $this->description,
         ];
     }
 }

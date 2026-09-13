@@ -14,7 +14,7 @@ class ChangeProductStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'estado' => 'required|boolean',
+            'status' => 'required|boolean',
         ];
     }
 }

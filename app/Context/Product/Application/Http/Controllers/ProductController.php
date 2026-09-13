@@ -90,9 +90,9 @@ class ProductController extends Controller
      */
     public function cambiarEstado(int $id, ChangeProductStatusRequest $request): JsonResponse
     {
-        $estado = $request->validated()['estado'];
+        $status = $request->validated()['status'];
 
-        $resultado = $this->cambiarEstadoCasoUso->ejecutar($id, $estado);
+        $resultado = $this->cambiarEstadoCasoUso->ejecutar($id, $status);
 
         if (!$resultado) {
             return $this->errorResponse('Product no encontrado.', 404);

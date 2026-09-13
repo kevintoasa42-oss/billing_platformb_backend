@@ -18,58 +18,58 @@ class DatosPruebaSeeder extends Seeder
     {
         // === Enterprises ===
         $enterprise1 = EnterpriseModel::create([
-            'nombre' => 'Tech Solutions Ecuador SA',
+            'name' => 'Tech Solutions Ecuador SA',
             'ruc' => '1791234567001',
             'tradename' => 'TechSol EC',
-            'matrixname' => 'Matriz Quito',
-            'telefono' => '022333444',
-            'correo_corporativo' => 'info@techsol.ec',
+            'matrix_name' => 'Matriz Quito',
+            'phone' => '022333444',
+            'corporate_email' => 'info@techsol.ec',
             'db_name' => '1791234567001',
         ]);
 
         $enterprise2 = EnterpriseModel::create([
-            'nombre' => 'Comercial Andina Cia Ltda',
+            'name' => 'Comercial Andina Cia Ltda',
             'ruc' => '1798765432001',
             'tradename' => 'Andina Commerce',
-            'matrixname' => 'Matriz Guayaquil',
-            'telefono' => '042555666',
-            'correo_corporativo' => 'contacto@andina.ec',
+            'matrix_name' => 'Matriz Guayaquil',
+            'phone' => '042555666',
+            'corporate_email' => 'contacto@andina.ec',
             'db_name' => '1798765432001',
         ]);
 
         $enterprise3 = EnterpriseModel::create([
-            'nombre' => 'Inversiones del Valle SA',
+            'name' => 'Inversiones del Valle SA',
             'ruc' => '1701234567001',
             'tradename' => 'Valle Investments',
-            'matrixname' => 'Matriz Cuenca',
-            'telefono' => '072777888',
-            'correo_corporativo' => 'info@valleinv.ec',
+            'matrix_name' => 'Matriz Cuenca',
+            'phone' => '072777888',
+            'corporate_email' => 'info@valleinv.ec',
             'db_name' => '1701234567001',
         ]);
 
         // === Users ===
         $admin = UserModel::create([
-            'nombre' => 'Kevin Toasa',
+            'name' => 'Kevin Toasa',
             'email' => 'admin@billing.com',
             'password' => bcrypt('Admin123!'),
         ]);
 
         $gestor = UserModel::create([
-            'nombre' => 'Maria Perez',
+            'name' => 'Maria Perez',
             'email' => 'gestor@billing.com',
             'password' => bcrypt('Gestor123!'),
         ]);
 
         $visor = UserModel::create([
-            'nombre' => 'Juan Garcia',
+            'name' => 'Juan Garcia',
             'email' => 'visor@billing.com',
             'password' => bcrypt('Visor123!'),
         ]);
 
         // === Asignar roles a users ===
-        $rolAdmin = RoleModel::where('nombre', 'admin')->first();
-        $rolGestor = RoleModel::where('nombre', 'gestor')->first();
-        $rolVisor = RoleModel::where('nombre', 'visor')->first();
+        $rolAdmin = RoleModel::where('name', 'admin')->first();
+        $rolGestor = RoleModel::where('name', 'gestor')->first();
+        $rolVisor = RoleModel::where('name', 'visor')->first();
 
         $admin->roles()->attach($rolAdmin->id);
         $gestor->roles()->attach($rolGestor->id);
@@ -82,63 +82,63 @@ class DatosPruebaSeeder extends Seeder
 
         // === Menus ===
         $menuDashboard = MenuModel::create([
-            'nombre' => 'Dashboard', 'ruta' => '/dashboard', 'icono' => 'pi pi-home', 'orden' => 1,
+            'name' => 'Dashboard', 'route' => '/dashboard', 'icon' => 'pi pi-home', 'order' => 1,
         ]);
 
         $menuEnterprises = MenuModel::create([
-            'nombre' => 'Enterprises', 'ruta' => '/enterprises', 'icono' => 'pi pi-building', 'orden' => 2,
+            'name' => 'Enterprises', 'route' => '/enterprises', 'icon' => 'pi pi-building', 'order' => 2,
         ]);
 
         $menuEnterprisesLista = MenuModel::create([
-            'nombre' => 'List Enterprises', 'ruta' => '/enterprises/list', 'icono' => 'pi pi-list',
-            'parent_id' => $menuEnterprises->id, 'orden' => 1,
+            'name' => 'List Enterprises', 'route' => '/enterprises/list', 'icon' => 'pi pi-list',
+            'parent_id' => $menuEnterprises->id, 'order' => 1,
         ]);
 
         $menuEnterprisesCrear = MenuModel::create([
-            'nombre' => 'Create Enterprise', 'ruta' => '/enterprises/create', 'icono' => 'pi pi-plus',
-            'parent_id' => $menuEnterprises->id, 'orden' => 2,
+            'name' => 'Create Enterprise', 'route' => '/enterprises/create', 'icon' => 'pi pi-plus',
+            'parent_id' => $menuEnterprises->id, 'order' => 2,
         ]);
 
         $menuUsers = MenuModel::create([
-            'nombre' => 'Users', 'ruta' => '/users', 'icono' => 'pi pi-users', 'orden' => 3,
+            'name' => 'Users', 'route' => '/users', 'icon' => 'pi pi-users', 'order' => 3,
         ]);
 
         $menuUsersLista = MenuModel::create([
-            'nombre' => 'List Users', 'ruta' => '/users/list', 'icono' => 'pi pi-list',
-            'parent_id' => $menuUsers->id, 'orden' => 1,
+            'name' => 'List Users', 'route' => '/users/list', 'icon' => 'pi pi-list',
+            'parent_id' => $menuUsers->id, 'order' => 1,
         ]);
 
         $menuUsersCrear = MenuModel::create([
-            'nombre' => 'Create User', 'ruta' => '/users/create', 'icono' => 'pi pi-user-plus',
-            'parent_id' => $menuUsers->id, 'orden' => 2,
+            'name' => 'Create User', 'route' => '/users/create', 'icon' => 'pi pi-user-plus',
+            'parent_id' => $menuUsers->id, 'order' => 2,
         ]);
 
         $menuConfig = MenuModel::create([
-            'nombre' => 'Configuracion', 'ruta' => '/configuracion', 'icono' => 'pi pi-cog', 'orden' => 4,
+            'name' => 'Configuracion', 'route' => '/configuracion', 'icon' => 'pi pi-cog', 'order' => 4,
         ]);
 
         $menuConfigMenus = MenuModel::create([
-            'nombre' => 'Menus', 'ruta' => '/configuracion/menus', 'icono' => 'pi pi-bars',
-            'parent_id' => $menuConfig->id, 'orden' => 1,
+            'name' => 'Menus', 'route' => '/configuracion/menus', 'icon' => 'pi pi-bars',
+            'parent_id' => $menuConfig->id, 'order' => 1,
         ]);
 
         $menuConfigRoles = MenuModel::create([
-            'nombre' => 'Roles', 'ruta' => '/configuracion/roles', 'icono' => 'pi pi-id-card',
-            'parent_id' => $menuConfig->id, 'orden' => 2,
+            'name' => 'Roles', 'route' => '/configuracion/roles', 'icon' => 'pi pi-id-card',
+            'parent_id' => $menuConfig->id, 'order' => 2,
         ]);
 
         $menuProducts = MenuModel::create([
-            'nombre' => 'Products', 'ruta' => '/products', 'icono' => 'pi pi-box', 'orden' => 5,
+            'name' => 'Products', 'route' => '/products', 'icon' => 'pi pi-box', 'order' => 5,
         ]);
 
         $menuProductsLista = MenuModel::create([
-            'nombre' => 'List Products', 'ruta' => '/products/list', 'icono' => 'pi pi-list',
-            'parent_id' => $menuProducts->id, 'orden' => 1,
+            'name' => 'List Products', 'route' => '/products/list', 'icon' => 'pi pi-list',
+            'parent_id' => $menuProducts->id, 'order' => 1,
         ]);
 
         $menuProductsCrear = MenuModel::create([
-            'nombre' => 'Create Product', 'ruta' => '/products/create', 'icono' => 'pi pi-plus',
-            'parent_id' => $menuProducts->id, 'orden' => 2,
+            'name' => 'Create Product', 'route' => '/products/create', 'icon' => 'pi pi-plus',
+            'parent_id' => $menuProducts->id, 'order' => 2,
         ]);
 
         // === Asignar menus a roles ===
@@ -156,7 +156,7 @@ class DatosPruebaSeeder extends Seeder
         ];
         foreach ($menusGestor as $menuId) {
             DB::table('menu_role')->insertOrIgnore([
-                'menu_id' => $menuId, 'rol_id' => $rolGestor->id,
+                'menu_id' => $menuId, 'role_id' => $rolGestor->id,
                 'created_at' => now(), 'updated_at' => now(),
             ]);
         }
@@ -165,7 +165,7 @@ class DatosPruebaSeeder extends Seeder
         $menusVisor = [$menuDashboard->id, $menuEnterprises->id, $menuEnterprisesLista->id];
         foreach ($menusVisor as $menuId) {
             DB::table('menu_role')->insertOrIgnore([
-                'menu_id' => $menuId, 'rol_id' => $rolVisor->id,
+                'menu_id' => $menuId, 'role_id' => $rolVisor->id,
                 'created_at' => now(), 'updated_at' => now(),
             ]);
         }

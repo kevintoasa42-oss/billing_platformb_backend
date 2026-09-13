@@ -13,12 +13,12 @@ class EloquentProductMapper implements ProductMapperInterface
         /** @var ProductModel $model */
         return new Product(
             id: $model->id,
-            codigo_barras: $model->codigo_barras,
-            codigo_auxiliar: $model->codigo_auxiliar,
-            nombre: $model->nombre,
-            descripcion: $model->descripcion,
-            estado: $model->estado,
-            precio_base: (float) $model->precio_base,
+            barcode: $model->barcode,
+            auxiliary_code: $model->auxiliary_code,
+            name: $model->name,
+            description: $model->description,
+            status: $model->status,
+            base_price: (float) $model->base_price,
             impuestos: $model->getImpuestoIds(),
         );
     }
@@ -26,12 +26,12 @@ class EloquentProductMapper implements ProductMapperInterface
     public function toModel(Product $product): array
     {
         return [
-            'codigo_barras' => $product->codigo_barras,
-            'codigo_auxiliar' => $product->codigo_auxiliar,
-            'nombre' => $product->nombre,
-            'descripcion' => $product->descripcion,
-            'estado' => $product->estado,
-            'precio_base' => $product->precio_base,
+            'barcode' => $product->barcode,
+            'auxiliary_code' => $product->auxiliary_code,
+            'name' => $product->name,
+            'description' => $product->description,
+            'status' => $product->status,
+            'base_price' => $product->base_price,
         ];
     }
 }

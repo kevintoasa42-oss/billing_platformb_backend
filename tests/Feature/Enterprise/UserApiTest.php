@@ -17,36 +17,36 @@ class UserApiTest extends TestCase
     {
         Sanctum::actingAs(
             UserModel::create([
-                'nombre' => 'Admin', 'email' => 'admin@test.com',
+                'name' => 'Admin', 'email' => 'admin@test.com',
                 'password' => bcrypt('password123'),
             ])
         );
 
         $response = $this->postJson('/api/users', [
-            'nombre' => 'Nuevo User', 'email' => 'nuevo@test.com',
+            'name' => 'Nuevo User', 'email' => 'nuevo@test.com',
             'password' => 'password123',
         ]);
 
         $response->assertStatus(201)
             ->assertJsonPath('status', true)
-            ->assertJsonPath('response.nombre', 'Nuevo User')
+            ->assertJsonPath('response.name', 'Nuevo User')
             ->assertJsonPath('response.email', 'nuevo@test.com');
 
         $this->assertDatabaseHas('users', [
-            'email' => 'nuevo@test.com', 'nombre' => 'Nuevo User',
+            'email' => 'nuevo@test.com', 'name' => 'Nuevo User',
         ]);
     }
 
     public function test_crear_user_con_email_duplicado_devuelve_422(): void
     {
         $existing = UserModel::create([
-            'nombre' => 'Existente', 'email' => 'existente@test.com',
+            'name' => 'Existente', 'email' => 'existente@test.com',
             'password' => bcrypt('password123'),
         ]);
         Sanctum::actingAs($existing);
 
         $response = $this->postJson('/api/users', [
-            'nombre' => 'Otro', 'email' => 'existente@test.com', 'password' => 'password123',
+            'name' => 'Otro', 'email' => 'existente@test.com', 'password' => 'password123',
         ]);
 
         $response->assertStatus(422)
@@ -56,22 +56,22 @@ class UserApiTest extends TestCase
     public function test_asignar_rol_a_user_devuelve_200(): void
     {
         $admin = UserModel::create([
-            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'name' => 'Admin', 'email' => 'admin@test.com',
             'password' => bcrypt('password123'),
         ]);
         Sanctum::actingAs($admin);
 
         $user = UserModel::create([
-            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'name' => 'User Target', 'email' => 'target@test.com',
             'password' => bcrypt('password123'),
         ]);
 
         $rol = RoleModel::create([
-            'nombre' => 'editor', 'descripcion' => 'Editor de contenido',
+            'name' => 'editor', 'description' => 'Editor de contenido',
         ]);
 
         $response = $this->postJson("/api/users/{$user->id}/roles", [
-            'rol_id' => $rol->id,
+            'role_id' => $rol->id,
         ]);
 
         $response->assertStatus(200)
@@ -79,48 +79,48 @@ class UserApiTest extends TestCase
             ->assertJsonPath('response', 'Role asignado correctamente.');
 
         $this->assertDatabaseHas('user_role', [
-            'user_id' => $user->id, 'rol_id' => $rol->id,
+            'user_id' => $user->id, 'role_id' => $rol->id,
         ]);
     }
 
     public function test_asignar_rol_inexistente_devuelve_422(): void
     {
         $admin = UserModel::create([
-            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'name' => 'Admin', 'email' => 'admin@test.com',
             'password' => bcrypt('password123'),
         ]);
         Sanctum::actingAs($admin);
 
         $user = UserModel::create([
-            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'name' => 'User Target', 'email' => 'target@test.com',
             'password' => bcrypt('password123'),
         ]);
 
         $response = $this->postJson("/api/users/{$user->id}/roles", [
-            'rol_id' => 9999,
+            'role_id' => 9999,
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['rol_id']);
+            ->assertJsonValidationErrors(['role_id']);
     }
 
     public function test_asignar_enterprise_a_user_devuelve_200(): void
     {
         $admin = UserModel::create([
-            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'name' => 'Admin', 'email' => 'admin@test.com',
             'password' => bcrypt('password123'),
         ]);
         Sanctum::actingAs($admin);
 
         $user = UserModel::create([
-            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'name' => 'User Target', 'email' => 'target@test.com',
             'password' => bcrypt('password123'),
         ]);
 
         $enterprise = EnterpriseModel::create([
-            'nombre' => 'Enterprise SA', 'ruc' => '1791234567001',
-            'tradename' => 'Commerce', 'matrixname' => 'Matriz',
-            'telefono' => '023333333', 'correo_corporativo' => 'info@test.com',
+            'name' => 'Enterprise SA', 'ruc' => '1791234567001',
+            'tradename' => 'Commerce', 'matrix_name' => 'Matriz',
+            'phone' => '023333333', 'corporate_email' => 'info@test.com',
             'db_name' => '1791234567001',
         ]);
 
@@ -140,13 +140,13 @@ class UserApiTest extends TestCase
     public function test_asignar_enterprise_inexistente_devuelve_422(): void
     {
         $admin = UserModel::create([
-            'nombre' => 'Admin', 'email' => 'admin@test.com',
+            'name' => 'Admin', 'email' => 'admin@test.com',
             'password' => bcrypt('password123'),
         ]);
         Sanctum::actingAs($admin);
 
         $user = UserModel::create([
-            'nombre' => 'User Target', 'email' => 'target@test.com',
+            'name' => 'User Target', 'email' => 'target@test.com',
             'password' => bcrypt('password123'),
         ]);
 

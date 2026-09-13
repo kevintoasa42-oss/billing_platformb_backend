@@ -6,12 +6,12 @@ class EnterpriseDTO
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $nombre = null,
+        public ?string $name = null,
         public ?string $ruc = null,
         public ?string $tradename = null,
-        public ?string $matrixname = null,
-        public ?string $telefono = null,
-        public ?string $correo_corporativo = null,
+        public ?string $matrix_name = null,
+        public ?string $phone = null,
+        public ?string $corporate_email = null,
     ) {}
 
     /**
@@ -24,12 +24,12 @@ class EnterpriseDTO
     {
         return new self(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
+            name: $data['name'] ?? null,
             ruc: $data['ruc'] ?? null,
             tradename: $data['tradename'] ?? null,
-            matrixname: $data['matrixname'] ?? null,
-            telefono: $data['telefono'] ?? null,
-            correo_corporativo: $data['correo_corporativo'] ?? null,
+            matrix_name: $data['matrix_name'] ?? null,
+            phone: $data['phone'] ?? null,
+            corporate_email: $data['corporate_email'] ?? null,
         );
     }
 
@@ -42,12 +42,12 @@ class EnterpriseDTO
     {
         return [
             'id' => $this->id,
-            'nombre' => $this->nombre,
+            'name' => $this->name,
             'ruc' => $this->ruc,
             'tradename' => $this->tradename,
-            'matrixname' => $this->matrixname,
-            'telefono' => $this->telefono,
-            'correo_corporativo' => $this->correo_corporativo,
+            'matrix_name' => $this->matrix_name,
+            'phone' => $this->phone,
+            'corporate_email' => $this->corporate_email,
         ];
     }
 }

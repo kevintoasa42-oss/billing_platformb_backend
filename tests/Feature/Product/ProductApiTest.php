@@ -23,30 +23,30 @@ class ProductApiTest extends TestCase
 
         // Insertar catalogo de IVA
         \DB::connection('pgsql')->table('sri_iva_percentages')->insert([
-            ['codigo' => 'IVA_15', 'nombre' => 'Tarifa general', 'porcentaje' => 15.00, 'descripcion' => 'IVA general', 'created_at' => now(), 'updated_at' => now()],
-            ['codigo' => 'IVA_0', 'nombre' => 'Tarifa cero', 'porcentaje' => 0.00, 'descripcion' => 'IVA 0%', 'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'IVA_15', 'name' => 'Tarifa general', 'percentage' => 15.00, 'description' => 'IVA general', 'created_at' => now(), 'updated_at' => now()],
+            ['code' => 'IVA_0', 'name' => 'Tarifa cero', 'percentage' => 0.00, 'description' => 'IVA 0%', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // Insertar roles
         \DB::connection('pgsql')->table('roles')->insert([
-            ['nombre' => 'admin', 'descripcion' => 'Administrador', 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'gestor', 'descripcion' => 'Gestor', 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'visor', 'descripcion' => 'Visor', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'admin', 'description' => 'Administrador', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'gestor', 'description' => 'Gestor', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'visor', 'description' => 'Visor', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
         // Crear enterprise + user
         $enterprise = EnterpriseModel::create([
-            'nombre' => 'Test Enterprise',
+            'name' => 'Test Enterprise',
             'ruc' => '1790000000001',
             'tradename' => 'Test',
-            'matrixname' => 'Matrix',
-            'telefono' => '0999999999',
-            'correo_corporativo' => 'test@test.com',
+            'matrix_name' => 'Matrix',
+            'phone' => '0999999999',
+            'corporate_email' => 'test@test.com',
             'db_name' => '1790000000001',
         ]);
 
         $user = UserModel::create([
-            'nombre' => 'Test User',
+            'name' => 'Test User',
             'email' => 'test@test.com',
             'password' => bcrypt('Password123!'),
         ]);
@@ -66,7 +66,7 @@ class ProductApiTest extends TestCase
         ]);
 
         $this->token = $loginResponse->json('response.token');
-        $this->iva15Id = \DB::connection('pgsql')->table('sri_iva_percentages')->where('codigo', 'IVA_15')->value('id');
+        $this->iva15Id = \DB::connection('pgsql')->table('sri_iva_percentages')->where('code', 'IVA_15')->value('id');
     }
 
     protected function tearDown(): void
@@ -117,26 +117,26 @@ class ProductApiTest extends TestCase
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/products', [
-                'nombre' => 'Product Test',
-                'codigo_barras' => '789456123',
-                'codigo_auxiliar' => 'AUX001',
-                'descripcion' => 'Descripcion del product',
-                'precio_base' => 100.50,
+                'name' => 'Product Test',
+                'barcode' => '789456123',
+                'auxiliary_code' => 'AUX001',
+                'description' => 'Descripcion del product',
+                'base_price' => 100.50,
                 'impuestos' => [$this->iva15Id],
             ]);
 
         $response->assertStatus(201)
             ->assertJsonPath('status', true)
-            ->assertJsonPath('response.nombre', 'Product Test')
-            ->assertJsonPath('response.codigo_barras', '789456123')
-            ->assertJsonPath('response.precio_base', 100.5);
+            ->assertJsonPath('response.name', 'Product Test')
+            ->assertJsonPath('response.barcode', '789456123')
+            ->assertJsonPath('response.base_price', 100.5);
     }
 
     public function test_crear_product_sin_nombre_devuelve_422(): void
     {
         $response = $this->withToken($this->token)
             ->postJson('/api/products', [
-                'precio_base' => 100,
+                'base_price' => 100,
             ]);
 
         $response->assertStatus(422);
@@ -146,8 +146,8 @@ class ProductApiTest extends TestCase
     {
         for ($i = 1; $i <= 5; $i++) {
             $this->withToken($this->token)->postJson('/api/products', [
-                'nombre' => "Product {$i}",
-                'precio_base' => $i * 10,
+                'name' => "Product {$i}",
+                'base_price' => $i * 10,
             ]);
         }
 
@@ -166,8 +166,8 @@ class ProductApiTest extends TestCase
     {
         $create = $this->withToken($this->token)
             ->postJson('/api/products', [
-                'nombre' => 'Product Buscar',
-                'precio_base' => 50,
+                'name' => 'Product Buscar',
+                'base_price' => 50,
             ]);
 
         $id = $create->json('response.id');
@@ -178,7 +178,7 @@ class ProductApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('status', true)
             ->assertJsonPath('response.id', $id)
-            ->assertJsonPath('response.nombre', 'Product Buscar');
+            ->assertJsonPath('response.name', 'Product Buscar');
     }
 
     public function test_obtener_product_inexistente_devuelve_404(): void
@@ -194,37 +194,37 @@ class ProductApiTest extends TestCase
     {
         $create = $this->withToken($this->token)
             ->postJson('/api/products', [
-                'nombre' => 'Product Original',
-                'precio_base' => 100,
+                'name' => 'Product Original',
+                'base_price' => 100,
             ]);
 
         $id = $create->json('response.id');
 
         $response = $this->withToken($this->token)
             ->putJson("/api/products/{$id}", [
-                'nombre' => 'Product Actualizado',
-                'precio_base' => 200,
+                'name' => 'Product Actualizado',
+                'base_price' => 200,
             ]);
 
         $response->assertStatus(200)
             ->assertJsonPath('status', true)
-            ->assertJsonPath('response.nombre', 'Product Actualizado')
-            ->assertJsonPath('response.precio_base', 200);
+            ->assertJsonPath('response.name', 'Product Actualizado')
+            ->assertJsonPath('response.base_price', 200);
     }
 
     public function test_cambiar_estado_product(): void
     {
         $create = $this->withToken($this->token)
             ->postJson('/api/products', [
-                'nombre' => 'Product Estado',
-                'precio_base' => 100,
+                'name' => 'Product Estado',
+                'base_price' => 100,
             ]);
 
         $id = $create->json('response.id');
 
         $response = $this->withToken($this->token)
             ->patchJson("/api/products/{$id}/estado", [
-                'estado' => false,
+                'status' => false,
             ]);
 
         $response->assertStatus(200)
@@ -232,7 +232,7 @@ class ProductApiTest extends TestCase
 
         $this->assertDatabaseHas('products', [
             'id' => $id,
-            'estado' => false,
+            'status' => false,
         ], 'tenant');
     }
 
@@ -246,13 +246,13 @@ class ProductApiTest extends TestCase
     public function test_listar_con_busqueda(): void
     {
         $this->withToken($this->token)->postJson('/api/products', [
-            'nombre' => 'Laptop HP',
-            'precio_base' => 800,
+            'name' => 'Laptop HP',
+            'base_price' => 800,
         ]);
 
         $this->withToken($this->token)->postJson('/api/products', [
-            'nombre' => 'Mouse Logitech',
-            'precio_base' => 25,
+            'name' => 'Mouse Logitech',
+            'base_price' => 25,
         ]);
 
         $response = $this->withToken($this->token)
@@ -261,6 +261,6 @@ class ProductApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('status', true)
             ->assertJsonPath('response.total', 1)
-            ->assertJsonPath('response.data.0.nombre', 'Laptop HP');
+            ->assertJsonPath('response.data.0.name', 'Laptop HP');
     }
 }

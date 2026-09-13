@@ -14,12 +14,12 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'codigo_barras' => 'sometimes|nullable|string|max:100',
-            'codigo_auxiliar' => 'sometimes|nullable|string|max:100',
-            'nombre' => 'sometimes|string|max:255',
-            'descripcion' => 'sometimes|nullable|string',
-            'estado' => 'sometimes|boolean',
-            'precio_base' => 'sometimes|numeric|min:0',
+            'barcode' => 'sometimes|nullable|string|max:100',
+            'auxiliary_code' => 'sometimes|nullable|string|max:100',
+            'name' => 'sometimes|string|max:255',
+            'description' => 'sometimes|nullable|string',
+            'status' => 'sometimes|boolean',
+            'base_price' => 'sometimes|numeric|min:0',
             'impuestos' => 'sometimes|array',
             'impuestos.*' => 'integer|exists:pgsql.sri_iva_percentages,id',
         ];

@@ -32,10 +32,10 @@ interface RoleRepositoryInterface
     /**
      * Busca un rol por su nombre.
      *
-     * @param  string  $nombre
+     * @param  string  $name
      * @return Role|null
      */
-    public function buscarPorNombre(string $nombre): ?Role;
+    public function buscarPorNombre(string $name): ?Role;
 
     /**
      * Lista los roles asignados a un user.

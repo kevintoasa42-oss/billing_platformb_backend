@@ -39,7 +39,7 @@ class UserController extends Controller
      */
     public function asignarRol(int $id, AssignRoleRequest $request): JsonResponse
     {
-        $this->asignarRolCasoUso->ejecutar($id, $request->validated()['rol_id']);
+        $this->asignarRolCasoUso->ejecutar($id, $request->validated()['role_id']);
 
         return $this->successResponse('Role asignado correctamente.');
     }

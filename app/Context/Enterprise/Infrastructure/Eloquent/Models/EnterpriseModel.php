@@ -10,12 +10,12 @@ class EnterpriseModel extends Model
     protected $table = 'enterprises';
 
     protected $fillable = [
-        'nombre',
+        'name',
         'ruc',
         'tradename',
-        'matrixname',
-        'telefono',
-        'correo_corporativo',
+        'matrix_name',
+        'phone',
+        'corporate_email',
         'db_name',
     ];
 

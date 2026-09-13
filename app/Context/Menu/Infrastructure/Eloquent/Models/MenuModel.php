@@ -13,11 +13,11 @@ class MenuModel extends Model
     protected $table = 'menus';
 
     protected $fillable = [
-        'nombre',
-        'ruta',
-        'icono',
+        'name',
+        'route',
+        'icon',
         'parent_id',
-        'orden',
+        'order',
     ];
 
     /**
@@ -33,7 +33,7 @@ class MenuModel extends Model
      */
     public function hijos(): HasMany
     {
-        return $this->hasMany(MenuModel::class, 'parent_id')->orderBy('orden');
+        return $this->hasMany(MenuModel::class, 'parent_id')->orderBy('order');
     }
 
     /**
@@ -41,7 +41,7 @@ class MenuModel extends Model
      */
     public function roles(): BelongsToMany
     {
-        return $this->belongsToMany(RoleModel::class, 'menu_role', 'menu_id', 'rol_id')
+        return $this->belongsToMany(RoleModel::class, 'menu_role', 'menu_id', 'role_id')
             ->withTimestamps();
     }
 }

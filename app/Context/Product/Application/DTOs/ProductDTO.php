@@ -6,12 +6,12 @@ class ProductDTO
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $codigo_barras = null,
-        public ?string $codigo_auxiliar = null,
-        public ?string $nombre = null,
-        public ?string $descripcion = null,
-        public bool $estado = true,
-        public float $precio_base = 0,
+        public ?string $barcode = null,
+        public ?string $auxiliary_code = null,
+        public ?string $name = null,
+        public ?string $description = null,
+        public bool $status = true,
+        public float $base_price = 0,
         /** @var int[] */
         public array $impuestos = [],
     ) {}
@@ -20,12 +20,12 @@ class ProductDTO
     {
         return new self(
             id: $data['id'] ?? null,
-            codigo_barras: $data['codigo_barras'] ?? null,
-            codigo_auxiliar: $data['codigo_auxiliar'] ?? null,
-            nombre: $data['nombre'] ?? null,
-            descripcion: $data['descripcion'] ?? null,
-            estado: $data['estado'] ?? true,
-            precio_base: $data['precio_base'] ?? 0,
+            barcode: $data['barcode'] ?? null,
+            auxiliary_code: $data['auxiliary_code'] ?? null,
+            name: $data['name'] ?? null,
+            description: $data['description'] ?? null,
+            status: $data['status'] ?? true,
+            base_price: $data['base_price'] ?? 0,
             impuestos: $data['impuestos'] ?? [],
         );
     }
@@ -34,12 +34,12 @@ class ProductDTO
     {
         return [
             'id' => $this->id,
-            'codigo_barras' => $this->codigo_barras,
-            'codigo_auxiliar' => $this->codigo_auxiliar,
-            'nombre' => $this->nombre,
-            'descripcion' => $this->descripcion,
-            'estado' => $this->estado,
-            'precio_base' => $this->precio_base,
+            'barcode' => $this->barcode,
+            'auxiliary_code' => $this->auxiliary_code,
+            'name' => $this->name,
+            'description' => $this->description,
+            'status' => $this->status,
+            'base_price' => $this->base_price,
             'impuestos' => $this->impuestos,
         ];
     }

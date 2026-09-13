@@ -23,12 +23,12 @@ class CreateEnterpriseUseCase
     public function ejecutar(EnterpriseDTO $dto): EnterpriseDTO
     {
         $enterprise = new Enterprise(
-            nombre: $dto->nombre,
+            name: $dto->name,
             ruc: $dto->ruc,
             tradename: $dto->tradename,
-            matrixname: $dto->matrixname,
-            telefono: $dto->telefono,
-            correo_corporativo: $dto->correo_corporativo,
+            matrix_name: $dto->matrix_name,
+            phone: $dto->phone,
+            corporate_email: $dto->corporate_email,
             db_name: $dto->ruc,
         );
 
@@ -43,12 +43,12 @@ class CreateEnterpriseUseCase
 
         return EnterpriseDTO::fromArray($enterprise->id ? [
             'id' => $enterprise->id,
-            'nombre' => $enterprise->nombre,
+            'name' => $enterprise->name,
             'ruc' => $enterprise->ruc,
             'tradename' => $enterprise->tradename,
-            'matrixname' => $enterprise->matrixname,
-            'telefono' => $enterprise->telefono,
-            'correo_corporativo' => $enterprise->correo_corporativo,
+            'matrix_name' => $enterprise->matrix_name,
+            'phone' => $enterprise->phone,
+            'corporate_email' => $enterprise->corporate_email,
         ] : []);
     }
 

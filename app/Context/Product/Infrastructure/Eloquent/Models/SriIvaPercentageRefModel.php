@@ -15,13 +15,13 @@ class SriIvaPercentageRefModel extends Model
     protected $table = 'sri_iva_percentages';
 
     protected $fillable = [
-        'codigo',
-        'nombre',
-        'porcentaje',
-        'descripcion',
+        'code',
+        'name',
+        'percentage',
+        'description',
     ];
 
     protected $casts = [
-        'porcentaje' => 'decimal:2',
+        'percentage' => 'decimal:2',
     ];
 }

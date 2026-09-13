@@ -50,7 +50,7 @@ class MenuController extends Controller
      */
     public function asignarRol(int $id, AssignMenuRoleRequest $request): JsonResponse
     {
-        $this->asignarMenuRolCasoUso->ejecutar($id, $request->validated()['rol_id']);
+        $this->asignarMenuRolCasoUso->ejecutar($id, $request->validated()['role_id']);
 
         return $this->successResponse('Menu asignado al rol correctamente.');
     }

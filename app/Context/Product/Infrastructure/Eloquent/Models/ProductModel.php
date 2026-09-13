@@ -11,17 +11,17 @@ class ProductModel extends Model
     protected $table = 'products';
 
     protected $fillable = [
-        'codigo_barras',
-        'codigo_auxiliar',
-        'nombre',
-        'descripcion',
-        'estado',
-        'precio_base',
+        'barcode',
+        'auxiliary_code',
+        'name',
+        'description',
+        'status',
+        'base_price',
     ];
 
     protected $casts = [
-        'estado' => 'boolean',
-        'precio_base' => 'decimal:2',
+        'status' => 'boolean',
+        'base_price' => 'decimal:2',
     ];
 
     /**

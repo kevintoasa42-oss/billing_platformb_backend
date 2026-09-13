@@ -11,16 +11,16 @@ class RoleMapper implements RoleMapperInterface
     {
         return new Role(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
-            descripcion: $data['descripcion'] ?? null,
+            name: $data['name'] ?? null,
+            description: $data['description'] ?? null,
         );
     }
 
     public function toEloquent(Role $rol): array
     {
         return [
-            'nombre' => $rol->nombre,
-            'descripcion' => $rol->descripcion,
+            'name' => $rol->name,
+            'description' => $rol->description,
         ];
     }
 }

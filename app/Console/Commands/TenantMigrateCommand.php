@@ -20,7 +20,7 @@ class TenantMigrateCommand extends Command
         $tenantPath = 'database/migrations/tenant';
 
         // Obtener todas las enterprises con su db_name.
-        $enterprises = DB::connection('pgsql')->table('enterprises')->get(['id', 'nombre', 'db_name']);
+        $enterprises = DB::connection('pgsql')->table('enterprises')->get(['id', 'name', 'db_name']);
 
         if ($enterprises->isEmpty()) {
             $this->warn('No hay enterprises registradas. No hay DBs tenant para migrar.');
@@ -35,11 +35,11 @@ class TenantMigrateCommand extends Command
                 ->select("SELECT 1 FROM pg_database WHERE datname = ?", [$dbName]);
 
             if (empty($exists)) {
-                $this->warn("DB '{$dbName}' ({$enterprise->nombre}) no existe. Saltando...");
+                $this->warn("DB '{$dbName}' ({$enterprise->name}) no existe. Saltando...");
                 continue;
             }
 
-            $this->info("Migrando tenant: {$enterprise->nombre} ({$dbName})");
+            $this->info("Migrando tenant: {$enterprise->name} ({$dbName})");
 
             // Configurar conexion tenant.
             config(['database.connections.tenant.database' => $dbName]);

@@ -20,9 +20,9 @@ class EloquentProductRepository implements ProductRepositoryInterface
 
         if ($search) {
             $query->where(function ($q) use ($search) {
-                $q->where('nombre', 'ILIKE', "%{$search}%")
-                  ->orWhere('codigo_barras', 'ILIKE', "%{$search}%")
-                  ->orWhere('codigo_auxiliar', 'ILIKE', "%{$search}%");
+                $q->where('name', 'ILIKE', "%{$search}%")
+                  ->orWhere('barcode', 'ILIKE', "%{$search}%")
+                  ->orWhere('auxiliary_code', 'ILIKE', "%{$search}%");
             });
         }
 
@@ -71,9 +71,9 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return $this->mapper->toDomain($model->fresh());
     }
 
-    public function cambiarEstado(int $id, bool $estado): bool
+    public function cambiarEstado(int $id, bool $status): bool
     {
-        return ProductModel::where('id', $id)->update(['estado' => $estado]) > 0;
+        return ProductModel::where('id', $id)->update(['status' => $status]) > 0;
     }
 
     public function asignarImpuestos(int $productId, array $impuestoIds): void

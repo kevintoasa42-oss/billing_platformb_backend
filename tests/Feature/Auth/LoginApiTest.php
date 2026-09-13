@@ -14,14 +14,14 @@ class LoginApiTest extends TestCase
     public function test_login_con_credenciales_validas_devuelve_token(): void
     {
         $enterprise = EnterpriseModel::create([
-            'nombre' => 'Enterprise Test SA', 'ruc' => '1791234567001',
-            'tradename' => 'Test Commerce', 'matrixname' => 'Matriz Quito',
-            'telefono' => '023333333', 'correo_corporativo' => 'info@test.com',
+            'name' => 'Enterprise Test SA', 'ruc' => '1791234567001',
+            'tradename' => 'Test Commerce', 'matrix_name' => 'Matriz Quito',
+            'phone' => '023333333', 'corporate_email' => 'info@test.com',
             'db_name' => '1791234567001',
         ]);
 
         $user = UserModel::create([
-            'nombre' => 'User Test', 'email' => 'user@test.com',
+            'name' => 'User Test', 'email' => 'user@test.com',
             'password' => bcrypt('password123'),
         ]);
         $user->enterprises()->attach($enterprise->id);
@@ -37,8 +37,8 @@ class LoginApiTest extends TestCase
                 'status',
                 'response' => [
                     'token',
-                    'user' => ['id', 'nombre', 'email'],
-                    'enterprise' => ['id', 'nombre', 'ruc'],
+                    'user' => ['id', 'name', 'email'],
+                    'enterprise' => ['id', 'name', 'ruc'],
                 ],
             ])
             ->assertJsonPath('response.user.email', 'user@test.com')
@@ -50,14 +50,14 @@ class LoginApiTest extends TestCase
     public function test_login_con_credenciales_invalidas_devuelve_401(): void
     {
         $enterprise = EnterpriseModel::create([
-            'nombre' => 'Enterprise Test SA', 'ruc' => '1791234567001',
-            'tradename' => 'Test Commerce', 'matrixname' => 'Matriz Quito',
-            'telefono' => '023333333', 'correo_corporativo' => 'info@test.com',
+            'name' => 'Enterprise Test SA', 'ruc' => '1791234567001',
+            'tradename' => 'Test Commerce', 'matrix_name' => 'Matriz Quito',
+            'phone' => '023333333', 'corporate_email' => 'info@test.com',
             'db_name' => '1791234567001',
         ]);
 
         UserModel::create([
-            'nombre' => 'User Test', 'email' => 'user@test.com',
+            'name' => 'User Test', 'email' => 'user@test.com',
             'password' => bcrypt('password123'),
         ]);
 
@@ -74,18 +74,18 @@ class LoginApiTest extends TestCase
     public function test_login_con_enterprise_no_asignada_devuelve_403(): void
     {
         $enterprise1 = EnterpriseModel::create([
-            'nombre' => 'Enterprise 1', 'ruc' => '1791234567001', 'tradename' => 'Test 1',
-            'matrixname' => 'Matriz 1', 'telefono' => '023333333',
-            'correo_corporativo' => 'info1@test.com', 'db_name' => '1791234567001',
+            'name' => 'Enterprise 1', 'ruc' => '1791234567001', 'tradename' => 'Test 1',
+            'matrix_name' => 'Matriz 1', 'phone' => '023333333',
+            'corporate_email' => 'info1@test.com', 'db_name' => '1791234567001',
         ]);
         $enterprise2 = EnterpriseModel::create([
-            'nombre' => 'Enterprise 2', 'ruc' => '1799876543001', 'tradename' => 'Test 2',
-            'matrixname' => 'Matriz 2', 'telefono' => '024444444',
-            'correo_corporativo' => 'info2@test.com', 'db_name' => '1799876543001',
+            'name' => 'Enterprise 2', 'ruc' => '1799876543001', 'tradename' => 'Test 2',
+            'matrix_name' => 'Matriz 2', 'phone' => '024444444',
+            'corporate_email' => 'info2@test.com', 'db_name' => '1799876543001',
         ]);
 
         $user = UserModel::create([
-            'nombre' => 'User Test', 'email' => 'user@test.com',
+            'name' => 'User Test', 'email' => 'user@test.com',
             'password' => bcrypt('password123'),
         ]);
         $user->enterprises()->attach($enterprise1->id);
@@ -111,14 +111,14 @@ class LoginApiTest extends TestCase
     public function test_login_inicial_devuelve_user_y_enterprises(): void
     {
         $enterprise = EnterpriseModel::create([
-            'nombre' => 'Enterprise Test SA', 'ruc' => '1791234567001',
-            'tradename' => 'Test Commerce', 'matrixname' => 'Matriz Quito',
-            'telefono' => '023333333', 'correo_corporativo' => 'info@test.com',
+            'name' => 'Enterprise Test SA', 'ruc' => '1791234567001',
+            'tradename' => 'Test Commerce', 'matrix_name' => 'Matriz Quito',
+            'phone' => '023333333', 'corporate_email' => 'info@test.com',
             'db_name' => '1791234567001',
         ]);
 
         $user = UserModel::create([
-            'nombre' => 'User Test', 'email' => 'user@test.com',
+            'name' => 'User Test', 'email' => 'user@test.com',
             'password' => bcrypt('password123'),
         ]);
         $user->enterprises()->attach($enterprise->id);

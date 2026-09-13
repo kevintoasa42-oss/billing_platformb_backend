@@ -10,8 +10,8 @@ class ChangeProductStatusUseCase
         private ProductRepositoryInterface $repository,
     ) {}
 
-    public function ejecutar(int $id, bool $estado): bool
+    public function ejecutar(int $id, bool $status): bool
     {
-        return $this->repository->cambiarEstado($id, $estado);
+        return $this->repository->cambiarEstado($id, $status);
     }
 }

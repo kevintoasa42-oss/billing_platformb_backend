@@ -6,7 +6,7 @@ class Role
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $nombre = null,
-        public ?string $descripcion = null,
+        public ?string $name = null,
+        public ?string $description = null,
     ) {}
 }

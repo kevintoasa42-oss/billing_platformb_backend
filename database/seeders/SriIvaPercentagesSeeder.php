@@ -16,46 +16,46 @@ class SriIvaPercentagesSeeder extends Seeder
 
         $tipos = [
             [
-                'codigo' => 'IVA_15',
-                'nombre' => 'Tarifa general',
-                'porcentaje' => 15.00,
-                'descripcion' => 'Bienes y servicios gravados con tarifa general (vigente desde abril 2024, Ley Organica para Enfrentar el Conflicto Armado Interno).',
+                'code' => 'IVA_15',
+                'name' => 'Tarifa general',
+                'percentage' => 15.00,
+                'description' => 'Bienes y servicios gravados con tarifa general (vigente desde abril 2024, Ley Organica para Enfrentar el Conflicto Armado Interno).',
             ],
             [
-                'codigo' => 'IVA_8',
-                'nombre' => 'Tarifa reducida turismo',
-                'porcentaje' => 8.00,
-                'descripcion' => 'Servicios turisticos en feriados segun normativa vigente.',
+                'code' => 'IVA_8',
+                'name' => 'Tarifa reducida turismo',
+                'percentage' => 8.00,
+                'description' => 'Servicios turisticos en feriados segun normativa vigente.',
             ],
             [
-                'codigo' => 'IVA_5',
-                'nombre' => 'Materiales de construccion',
-                'porcentaje' => 5.00,
-                'descripcion' => 'Transferencia local de materiales de construccion y servicios de construccion de vivienda de interes social.',
+                'code' => 'IVA_5',
+                'name' => 'Materiales de construccion',
+                'percentage' => 5.00,
+                'description' => 'Transferencia local de materiales de construccion y servicios de construccion de vivienda de interes social.',
             ],
             [
-                'codigo' => 'IVA_0',
-                'nombre' => 'Tarifa cero',
-                'porcentaje' => 0.00,
-                'descripcion' => 'Bienes y servicios expresamente senalados en los Art. 55 y 56 LRTI (alimentos en estado natural, salud, educacion, exportaciones, etc.).',
+                'code' => 'IVA_0',
+                'name' => 'Tarifa cero',
+                'percentage' => 0.00,
+                'description' => 'Bienes y servicios expresamente senalados en los Art. 55 y 56 LRTI (alimentos en estado natural, salud, educacion, exportaciones, etc.).',
             ],
             [
-                'codigo' => 'EXENTO',
-                'nombre' => 'Exento',
-                'porcentaje' => null,
-                'descripcion' => 'Operaciones liberadas del pago del impuesto por norma especifica.',
+                'code' => 'EXENTO',
+                'name' => 'Exento',
+                'percentage' => null,
+                'description' => 'Operaciones liberadas del pago del impuesto por norma especifica.',
             ],
             [
-                'codigo' => 'NO_OBJETO',
-                'nombre' => 'No objeto de IVA',
-                'porcentaje' => null,
-                'descripcion' => 'Operaciones fuera del ambito del IVA segun la LRTI.',
+                'code' => 'NO_OBJETO',
+                'name' => 'No objeto de IVA',
+                'percentage' => null,
+                'description' => 'Operaciones fuera del ambito del IVA segun la LRTI.',
             ],
         ];
 
         foreach ($tipos as $tipo) {
             DB::table('sri_iva_percentages')->updateOrInsert(
-                ['codigo' => $tipo['codigo']],
+                ['code' => $tipo['code']],
                 array_merge($tipo, ['created_at' => $now, 'updated_at' => $now])
             );
         }

@@ -22,7 +22,7 @@ class EloquentEnterpriseRepository implements EnterpriseRepositoryInterface
 
     public function listar(): array
     {
-        return EnterpriseModel::orderBy('nombre')
+        return EnterpriseModel::orderBy('name')
             ->get()
             ->map(fn ($m) => $this->mapper->toDomain($m->toArray()))
             ->all();

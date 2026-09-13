@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('menu_role', function (Blueprint $table) {
             $table->foreignId('menu_id')->constrained('menus')->cascadeOnDelete();
-            $table->foreignId('rol_id')->constrained('roles')->cascadeOnDelete();
-            $table->primary(['menu_id', 'rol_id']);
+            $table->foreignId('role_id')->constrained('roles')->cascadeOnDelete();
+            $table->primary(['menu_id', 'role_id']);
             $table->timestamps();
         });
     }

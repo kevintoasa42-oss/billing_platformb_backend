@@ -19,8 +19,8 @@ class TaxController extends Controller
     {
         $taxes = DB::connection('pgsql')
             ->table('sri_iva_percentages')
-            ->orderBy('porcentaje', 'desc')
-            ->get(['id', 'codigo', 'nombre', 'porcentaje', 'descripcion']);
+            ->orderBy('percentage', 'desc')
+            ->get(['id', 'code', 'name', 'percentage', 'description']);
 
         return $this->successResponse($taxes);
     }

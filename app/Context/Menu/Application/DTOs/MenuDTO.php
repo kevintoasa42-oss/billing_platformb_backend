@@ -6,11 +6,11 @@ class MenuDTO implements \JsonSerializable
 {
     public function __construct(
         public ?int $id = null,
-        public ?string $nombre = null,
-        public ?string $ruta = null,
-        public ?string $icono = null,
+        public ?string $name = null,
+        public ?string $route = null,
+        public ?string $icon = null,
         public ?int $parent_id = null,
-        public int $orden = 0,
+        public int $order = 0,
         /** @var MenuDTO[] */
         public array $hijos = [],
     ) {}
@@ -25,11 +25,11 @@ class MenuDTO implements \JsonSerializable
     {
         return new self(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
-            ruta: $data['ruta'] ?? null,
-            icono: $data['icono'] ?? null,
+            name: $data['name'] ?? null,
+            route: $data['route'] ?? null,
+            icon: $data['icon'] ?? null,
             parent_id: $data['parent_id'] ?? null,
-            orden: $data['orden'] ?? 0,
+            order: $data['order'] ?? 0,
         );
     }
 
@@ -43,10 +43,10 @@ class MenuDTO implements \JsonSerializable
     {
         return [
             'id' => $this->id,
-            'label' => $this->nombre,
-            'href' => $this->ruta,
-            'icon' => $this->icono,
-            'order' => $this->orden,
+            'label' => $this->name,
+            'href' => $this->route,
+            'icon' => $this->icon,
+            'order' => $this->order,
             'children' => array_map(fn ($h) => $h->toArray(), $this->hijos),
         ];
     }

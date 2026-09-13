@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('sri_iva_percentages', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo')->unique(); // Ej: IVA_15, IVA_0, EXENTO, NO_OBJETO
-            $table->string('nombre'); // Ej: Tarifa general
-            $table->decimal('porcentaje', 5, 2)->nullable(); // 15.00, 8.00, 5.00, 0.00; NULL para exento/no objeto
-            $table->text('descripcion')->nullable(); // Base legal / referencia
+            $table->string('code')->unique(); // Ej: IVA_15, IVA_0, EXENTO, NO_OBJETO
+            $table->string('name'); // Ej: Tarifa general
+            $table->decimal('percentage', 5, 2)->nullable(); // 15.00, 8.00, 5.00, 0.00; NULL para exento/no objeto
+            $table->text('description')->nullable(); // Base legal / referencia
             $table->timestamps();
         });
     }

@@ -14,7 +14,7 @@ class AssignMenuRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rol_id' => 'required|integer|exists:roles,id',
+            'role_id' => 'required|integer|exists:roles,id',
         ];
     }
 }

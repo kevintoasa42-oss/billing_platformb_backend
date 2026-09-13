@@ -32,7 +32,7 @@ class UserMapper implements UserMapperInterface
 
         return new User(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
+            name: $data['name'] ?? null,
             email: $data['email'] ?? null,
             password: $data['password'] ?? null,
             roles: $roles,
@@ -43,7 +43,7 @@ class UserMapper implements UserMapperInterface
     public function toEloquent(User $user): array
     {
         return [
-            'nombre' => $user->nombre,
+            'name' => $user->name,
             'email' => $user->email,
             'password' => $user->password,
         ];

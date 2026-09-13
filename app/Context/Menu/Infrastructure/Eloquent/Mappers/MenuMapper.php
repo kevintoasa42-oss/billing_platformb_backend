@@ -18,11 +18,11 @@ class MenuMapper implements MenuMapperInterface
 
         return new Menu(
             id: $data['id'] ?? null,
-            nombre: $data['nombre'] ?? null,
-            ruta: $data['ruta'] ?? null,
-            icono: $data['icono'] ?? null,
+            name: $data['name'] ?? null,
+            route: $data['route'] ?? null,
+            icon: $data['icon'] ?? null,
             parent_id: $data['parent_id'] ?? null,
-            orden: $data['orden'] ?? 0,
+            order: $data['order'] ?? 0,
             hijos: $hijos,
         );
     }
@@ -30,11 +30,11 @@ class MenuMapper implements MenuMapperInterface
     public function toEloquent(Menu $menu): array
     {
         return [
-            'nombre' => $menu->nombre,
-            'ruta' => $menu->ruta,
-            'icono' => $menu->icono,
+            'name' => $menu->name,
+            'route' => $menu->route,
+            'icon' => $menu->icon,
             'parent_id' => $menu->parent_id,
-            'orden' => $menu->orden,
+            'order' => $menu->order,
         ];
     }
 }
