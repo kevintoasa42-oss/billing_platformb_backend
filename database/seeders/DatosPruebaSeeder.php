@@ -127,6 +127,20 @@ class DatosPruebaSeeder extends Seeder
             'parent_id' => $menuConfig->id, 'orden' => 2,
         ]);
 
+        $menuProductos = MenuModel::create([
+            'nombre' => 'Productos', 'ruta' => '/productos', 'icono' => 'pi pi-box', 'orden' => 5,
+        ]);
+
+        $menuProductosLista = MenuModel::create([
+            'nombre' => 'Listar Productos', 'ruta' => '/productos/lista', 'icono' => 'pi pi-list',
+            'parent_id' => $menuProductos->id, 'orden' => 1,
+        ]);
+
+        $menuProductosCrear = MenuModel::create([
+            'nombre' => 'Crear Producto', 'ruta' => '/productos/crear', 'icono' => 'pi pi-plus',
+            'parent_id' => $menuProductos->id, 'orden' => 2,
+        ]);
+
         // === Asignar menus a roles ===
         // Admin: todos los menus
         $todosMenus = MenuModel::all();
@@ -134,10 +148,11 @@ class DatosPruebaSeeder extends Seeder
             $menu->roles()->attach($rolAdmin->id);
         }
 
-        // Gestor: Dashboard, Empresas, Usuarios (lista y crear)
+        // Gestor: Dashboard, Empresas, Usuarios, Productos
         $menusGestor = [
             $menuDashboard->id, $menuEmpresas->id, $menuEmpresasLista->id,
             $menuUsuarios->id, $menuUsuariosLista->id, $menuUsuariosCrear->id,
+            $menuProductos->id, $menuProductosLista->id, $menuProductosCrear->id,
         ];
         foreach ($menusGestor as $menuId) {
             DB::table('menu_rol')->insertOrIgnore([
