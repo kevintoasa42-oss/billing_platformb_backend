@@ -175,6 +175,70 @@ abstract class AbstractTenantMigrationCommand extends Command
         return $this->runForEnterprise($enterprise, $command, $options);
     }
 
+    /**
+     * Run a destructive command for one explicitly selected enterprise or for
+     * all enterprises when the caller explicitly supplies --all.
+     *
+     * @param  array<string, mixed>  $options
+     */
+    protected function runForEnterpriseOrAll(string $command, array $options): int
+    {
+        $hasEnterprise = $this->hasEnterpriseOption();
+        $all = (bool) $this->option('all');
+
+        if ($hasEnterprise && $all) {
+            $this->error('Las opciones --enterprise=<id> y --all son excluyentes.');
+
+            return Command::FAILURE;
+        }
+
+        if (! $hasEnterprise && ! $all) {
+            $this->error('Indica --enterprise=<id> o --all para esta operación.');
+
+            return Command::FAILURE;
+        }
+
+        if ($hasEnterprise) {
+            return $this->runForRequiredEnterprise($command, $options);
+        }
+
+        return $this->runForAllEnterprises($command, $options);
+    }
+
+    /**
+     * @param  array<string, mixed>  $options
+     */
+    protected function runForAllEnterprises(string $command, array $options): int
+    {
+        $enterprises = $this->enterprises();
+
+        if ($enterprises === null) {
+            return Command::FAILURE;
+        }
+
+        if ($enterprises->isEmpty()) {
+            $this->warn('No hay empresas registradas. No hay bases tenant para procesar.');
+
+            return Command::SUCCESS;
+        }
+
+        $hasFailures = false;
+
+        foreach ($enterprises as $enterprise) {
+            $status = $this->runForEnterprise($enterprise, $command, $options);
+            $hasFailures = $hasFailures || $status !== Command::SUCCESS;
+        }
+
+        return $hasFailures ? Command::FAILURE : Command::SUCCESS;
+    }
+
+    protected function hasEnterpriseOption(): bool
+    {
+        $enterpriseId = $this->option('enterprise');
+
+        return $enterpriseId !== null && $enterpriseId !== '';
+    }
+
     protected function enterpriseLabel(object $enterprise): string
     {
         $name = is_string($enterprise->name ?? null) && $enterprise->name !== ''

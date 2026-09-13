@@ -12,6 +12,7 @@ final class TenantDatabaseSeeder extends Seeder
             BranchOfficeSeeder::class,
             EmissionPointSeeder::class,
             ClientSeeder::class,
+            CarrierSeeder::class,
         ]);
     }
 }

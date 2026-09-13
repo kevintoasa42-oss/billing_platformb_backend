@@ -14,29 +14,27 @@ use Illuminate\Support\Facades\DB;
 
 final class EloquentEmissionPointRepository implements EmissionPointRepositoryInterface, NextSequentialGeneratorInterface
 {
-    public function __construct(private readonly EmissionPointMapperInterface $mapper)
-    {
-    }
+    public function __construct(private readonly EmissionPointMapperInterface $mapper) {}
 
     public function listPaginated(int $page = 1, int $perPage = 15, array $filters = []): array
     {
         $query = EmissionPointModel::query();
-        if (!empty($filters['search'])) {
-            $value = '%' . $filters['search'] . '%';
-            $query->where(fn($q) => $q->where('name', 'like', $value)->orWhere('emission_point', 'like', $value));
+        if (! empty($filters['search'])) {
+            $value = '%'.$filters['search'].'%';
+            $query->where(fn ($q) => $q->where('name', 'like', $value)->orWhere('emission_point', 'like', $value));
         }
-        if (!empty($filters['branch_office_id'])) {
-            $query->where('branch_office_id', (int)$filters['branch_office_id']);
+        if (! empty($filters['branch_office_id'])) {
+            $query->where('branch_office_id', (int) $filters['branch_office_id']);
         }
         foreach (['status', 'default'] as $field) {
             if (array_key_exists($field, $filters) && $filters[$field] !== null) {
-                $query->where($field, (bool)$filters[$field]);
+                $query->where($field, (bool) $filters[$field]);
             }
         }
         $paginator = $query->orderByDesc('id')->paginate($perPage, ['*'], 'page', $page);
 
         return [
-            'data' => $paginator->getCollection()->map(fn(EmissionPointModel $model) => $this->mapper->toDomain($model->toArray()))->all(),
+            'data' => $paginator->getCollection()->map(fn (EmissionPointModel $model) => $this->mapper->toDomain($model->toArray()))->all(),
             'total' => $paginator->total(), 'page' => $paginator->currentPage(),
             'perPage' => $paginator->perPage(), 'lastPage' => $paginator->lastPage(),
         ];
@@ -54,7 +52,7 @@ final class EloquentEmissionPointRepository implements EmissionPointRepositoryIn
         return EmissionPointModel::find($id)?->delete() ?? false;
     }
 
-    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
+    public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $carrierId = null, string $documentCode = '01', string $documentLabel = 'Factura'): EmissionPointSequential
     {
         $query = EmissionPointModel::query()
             ->with('branchOffice:id,code_sri')
@@ -64,24 +62,27 @@ final class EloquentEmissionPointRepository implements EmissionPointRepositoryIn
             : $query->where('emission_point', $emissionPoint);
 
         $point = $query->first();
-        if (!$point || !$point->branchOffice) {
+        if (! $point || ! $point->branchOffice) {
             throw new EmissionPointNotFoundException($branchOfficeId, $emissionPointId, $emissionPoint);
         }
 
-        $sequential = EmissionPointSequenceModel::query()
-            ->where('emission_point_id', $point->id)
-            ->value('next_sequential');
+        $counterQuery = EmissionPointSequenceModel::query()->where('emission_point_id', $point->id);
+        $carrierId === null
+            ? $counterQuery->whereNull('carrier_id')
+            : $counterQuery->where('carrier_id', $carrierId);
+        $counterQuery->where('document_code', $documentCode);
+        $sequential = $counterQuery->value('next_sequential');
 
         return new EmissionPointSequential(
-            branch_office_code_sri: (string)$point->branchOffice->code_sri,
-            emission_point: (string)$point->emission_point,
-            sequential: $sequential === null ? 1 : (int)$sequential,
+            branch_office_code_sri: (string) $point->branchOffice->code_sri,
+            emission_point: (string) $point->emission_point,
+            sequential: $sequential === null ? 1 : (int) $sequential,
         );
     }
 
-    public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null): EmissionPointSequential
+    public function takeNextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $carrierId = null, string $documentCode = '01', string $documentLabel = 'Factura'): EmissionPointSequential
     {
-        return DB::connection('tenant')->transaction(function () use ($branchOfficeId, $emissionPointId, $emissionPoint): EmissionPointSequential {
+        return DB::connection('tenant')->transaction(function () use ($branchOfficeId, $emissionPointId, $emissionPoint, $carrierId, $documentCode, $documentLabel): EmissionPointSequential {
             $query = EmissionPointModel::query()
                 ->with('branchOffice:id,code_sri')
                 ->where('branch_office_id', $branchOfficeId);
@@ -90,29 +91,35 @@ final class EloquentEmissionPointRepository implements EmissionPointRepositoryIn
                 : $query->where('emission_point', $emissionPoint);
 
             $point = $query->lockForUpdate()->first();
-            if (!$point || !$point->branchOffice) {
+            if (! $point || ! $point->branchOffice) {
                 throw new EmissionPointNotFoundException($branchOfficeId, $emissionPointId, $emissionPoint);
             }
 
             // The emission-point lock makes first creation and increment atomic.
-            $counter = EmissionPointSequenceModel::query()
-                ->where('emission_point_id', $point->id)
-                ->lockForUpdate()
-                ->first();
-            if (!$counter) {
+            $counterQuery = EmissionPointSequenceModel::query()
+                ->where('emission_point_id', $point->id);
+            $carrierId === null
+                ? $counterQuery->whereNull('carrier_id')
+                : $counterQuery->where('carrier_id', $carrierId);
+            $counterQuery->where('document_code', $documentCode);
+            $counter = $counterQuery->lockForUpdate()->first();
+            if (! $counter) {
                 $counter = EmissionPointSequenceModel::create([
                     'branch_office_id' => $branchOfficeId,
                     'emission_point_id' => $point->id,
+                    'carrier_id' => $carrierId,
+                    'document_code' => $documentCode,
+                    'document_label' => $documentLabel,
                     'next_sequential' => 1,
                 ]);
             }
 
-            $sequential = (int)$counter->next_sequential;
+            $sequential = (int) $counter->next_sequential;
             $counter->update(['next_sequential' => $sequential + 1]);
 
             return new EmissionPointSequential(
-                branch_office_code_sri: (string)$point->branchOffice->code_sri,
-                emission_point: (string)$point->emission_point,
+                branch_office_code_sri: (string) $point->branchOffice->code_sri,
+                emission_point: (string) $point->emission_point,
                 sequential: $sequential,
             );
         });
@@ -125,6 +132,8 @@ final class EloquentEmissionPointRepository implements EmissionPointRepositoryIn
             EmissionPointSequenceModel::create([
                 'branch_office_id' => $model->branch_office_id,
                 'emission_point_id' => $model->id,
+                'document_code' => '01',
+                'document_label' => 'Factura',
                 'next_sequential' => 1,
             ]);
 

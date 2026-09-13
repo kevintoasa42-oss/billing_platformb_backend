@@ -134,7 +134,7 @@ final class MigrationCommandsTest extends TestCase
         self::assertTrue($migration->receivedOptions['isolated']);
     }
 
-    public function test_legacy_tenant_fresh_requires_an_enterprise_before_any_database_access(): void
+    public function test_legacy_tenant_fresh_requires_an_explicit_enterprise_or_all_target_before_any_database_access(): void
     {
         $command = new TenantMigrateCommand;
         $output = new BufferedOutput;
@@ -143,10 +143,10 @@ final class MigrationCommandsTest extends TestCase
         $exitCode = $command->run(new ArrayInput(['--fresh' => true]), $output);
 
         self::assertSame(LaravelCommand::FAILURE, $exitCode);
-        self::assertStringContainsString('--enterprise=<id>', $output->fetch());
+        self::assertStringContainsString('--enterprise=<id> o --all', $output->fetch());
     }
 
-    public function test_destructive_tenant_commands_require_an_enterprise_option(): void
+    public function test_destructive_tenant_commands_require_an_explicit_enterprise_or_all_target(): void
     {
         foreach ([
             new TenantMigrateFreshCommand,
@@ -159,8 +159,51 @@ final class MigrationCommandsTest extends TestCase
             $exitCode = $command->run(new ArrayInput([]), $output);
 
             self::assertSame(LaravelCommand::FAILURE, $exitCode);
-            self::assertStringContainsString('--enterprise=<id>', $output->fetch());
+            self::assertStringContainsString('--enterprise=<id> o --all', $output->fetch());
         }
+    }
+
+    public function test_tenant_fresh_all_runs_the_tenant_migration_for_every_enterprise(): void
+    {
+        $command = new class extends TenantMigrateFreshCommand
+        {
+            protected function enterprises(): ?Collection
+            {
+                return collect([
+                    (object) ['id' => 7, 'name' => 'Acme', 'db_name' => 'acme_tenant'],
+                    (object) ['id' => 8, 'name' => 'Globex', 'db_name' => 'globex_tenant'],
+                ]);
+            }
+
+            protected function connectEnterprise(object $enterprise): bool
+            {
+                return true;
+            }
+        };
+
+        [$exitCode, $migration] = $this->runCommand(
+            $command,
+            'migrate:fresh',
+            ['--all' => true, '--seed' => true],
+        );
+
+        self::assertSame(LaravelCommand::SUCCESS, $exitCode);
+        self::assertSame(2, $migration->calls);
+        self::assertSame('tenant', $migration->receivedOptions['database']);
+        self::assertSame('database/migrations/tenant', $migration->receivedOptions['path']);
+        self::assertSame(TenantDatabaseSeeder::class, $migration->receivedOptions['seeder']);
+    }
+
+    public function test_destructive_tenant_commands_reject_enterprise_and_all_together_before_database_access(): void
+    {
+        $command = new TenantMigrateFreshCommand;
+        $output = new BufferedOutput;
+        $command->setLaravel($this->app);
+
+        $exitCode = $command->run(new ArrayInput(['--enterprise' => 7, '--all' => true]), $output);
+
+        self::assertSame(LaravelCommand::FAILURE, $exitCode);
+        self::assertStringContainsString('son excluyentes', $output->fetch());
     }
 
     public function test_wrappers_do_not_expose_connection_or_path_overrides(): void
@@ -179,6 +222,18 @@ final class MigrationCommandsTest extends TestCase
             self::assertFalse($command->getDefinition()->hasOption('database'));
             self::assertFalse($command->getDefinition()->hasOption('path'));
             self::assertFalse($command->getDefinition()->hasOption('realpath'));
+        }
+    }
+
+    public function test_destructive_tenant_commands_expose_the_all_option(): void
+    {
+        foreach ([
+            new TenantMigrateFreshCommand,
+            new TenantMigrateRefreshCommand,
+            new TenantMigrateResetCommand,
+            new TenantMigrateRollbackCommand,
+        ] as $command) {
+            self::assertTrue($command->getDefinition()->hasOption('all'));
         }
     }
 
@@ -206,6 +261,8 @@ final class CapturingMigrationCommand extends Command
     /** @var array<string, mixed> */
     public array $receivedOptions = [];
 
+    public int $calls = 0;
+
     public function __construct(string $name)
     {
         parent::__construct($name);
@@ -223,6 +280,7 @@ final class CapturingMigrationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $this->calls++;
         $this->receivedOptions = $input->getOptions();
 
         return LaravelCommand::SUCCESS;

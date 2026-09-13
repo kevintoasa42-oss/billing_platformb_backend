@@ -9,6 +9,7 @@ use App\Context\V1\EmissionPoints\Domain\Exceptions\EmissionPointNotFoundExcepti
 use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Requests\CreateEmissionPointRequest;
 use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Requests\NextSequentialRequest;
 use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Requests\UpdateEmissionPointRequest;
+use App\Context\V1\SriVoucherTypes\Domain\Exceptions\SriVoucherTypeNotFoundException;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -19,11 +20,9 @@ final class EmissionPointController extends Controller
     use ApiResponse;
 
     public function __construct(
-        private readonly EmissionPointCrudService                $service,
+        private readonly EmissionPointCrudService $service,
         private readonly EmissionPointSequentialServiceInterface $sequentialService,
-    )
-    {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -32,9 +31,9 @@ final class EmissionPointController extends Controller
             'branch_office_id' => $request->query('branch_office_id'),
             'status' => $request->has('status') ? $request->boolean('status') : null,
             'default' => $request->has('default') ? $request->boolean('default') : null,
-        ], static fn($value) => $value !== null && $value !== '');
+        ], static fn ($value) => $value !== null && $value !== '');
 
-        return $this->successResponse($this->service->list(max(1, (int)$request->query('page', 1)), min(100, max(1, (int)$request->query('perPage', 15))), $filters));
+        return $this->successResponse($this->service->list(max(1, (int) $request->query('page', 1)), min(100, max(1, (int) $request->query('perPage', 15))), $filters));
     }
 
     public function nextSequential(NextSequentialRequest $request): JsonResponse
@@ -48,9 +47,11 @@ final class EmissionPointController extends Controller
 
         try {
             $arguments = [
-                (int)$data['branch_office_id'],
-                isset($data['emission_point_id']) ? (int)$data['emission_point_id'] : null,
+                (int) $data['branch_office_id'],
+                isset($data['emission_point_id']) ? (int) $data['emission_point_id'] : null,
                 $data['emission_point'] ?? null,
+                isset($data['carrier_id']) ? (int) $data['carrier_id'] : null,
+                $data['document_code'],
             ];
             $result = $take
                 ? $this->sequentialService->takeNextSequential(...$arguments)
@@ -59,6 +60,8 @@ final class EmissionPointController extends Controller
             return $this->successResponse($result->toArray());
         } catch (EmissionPointNotFoundException) {
             return $this->errorResponse('Emission point not found for the supplied branch office.', 404);
+        } catch (SriVoucherTypeNotFoundException) {
+            return $this->errorResponse('SRI voucher type not found or is not currently valid.', 404);
         }
     }
 
