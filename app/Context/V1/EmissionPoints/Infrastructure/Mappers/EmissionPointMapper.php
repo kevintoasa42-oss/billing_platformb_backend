@@ -11,13 +11,18 @@ final class EmissionPointMapper implements EmissionPointMapperInterface
     public function toDomain(array $data): EmissionPoint
     {
         return new EmissionPoint(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            branch_office_id: isset($data['branch_office_id']) ? (int) $data['branch_office_id'] : null,
+            id: isset($data['id']) ? (int)$data['id'] : null,
+            branch_office_id: isset($data['branch_office_id']) ? (int)$data['branch_office_id'] : null,
             name: $data['name'] ?? null, emission_point: $data['emission_point'] ?? null,
-            status: (bool) ($data['status'] ?? false), default: (bool) ($data['default'] ?? false),
+            status: (bool)($data['status'] ?? false), default: (bool)($data['default'] ?? false),
             created_at: $this->date($data['created_at'] ?? null), updated_at: $this->date($data['updated_at'] ?? null),
             deleted_at: $this->date($data['deleted_at'] ?? null),
         );
+    }
+
+    private function date(mixed $value): ?string
+    {
+        return $value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : ($value === null ? null : (string)$value);
     }
 
     public function toPersistence(EmissionPoint $emissionPoint): array
@@ -38,10 +43,5 @@ final class EmissionPointMapper implements EmissionPointMapperInterface
             'created_at' => $emissionPoint->created_at, 'updated_at' => $emissionPoint->updated_at,
             'deleted_at' => $emissionPoint->deleted_at,
         ];
-    }
-
-    private function date(mixed $value): ?string
-    {
-        return $value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : ($value === null ? null : (string) $value);
     }
 }

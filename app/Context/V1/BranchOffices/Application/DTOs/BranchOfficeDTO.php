@@ -8,27 +8,29 @@ final class BranchOfficeDTO
 {
     /** @param string[] $providedFields */
     public function __construct(
-        public ?int $id = null,
+        public ?int    $id = null,
         public ?string $name = null,
         public ?string $code_sri = null,
-        public bool $status = false,
+        public bool    $status = false,
         public ?string $type = null,
-        public bool $default = false,
+        public bool    $default = false,
         public ?string $created_at = null,
         public ?string $updated_at = null,
         public ?string $deleted_at = null,
-        public array $providedFields = [],
-    ) {}
+        public array   $providedFields = [],
+    )
+    {
+    }
 
     public static function fromArray(array $data): self
     {
         return new self(
-            id: isset($data['id']) ? (int) $data['id'] : null,
+            id: isset($data['id']) ? (int)$data['id'] : null,
             name: $data['name'] ?? null,
             code_sri: $data['code_sri'] ?? null,
-            status: (bool) ($data['status'] ?? false),
+            status: (bool)($data['status'] ?? false),
             type: $data['type'] ?? null,
-            default: (bool) ($data['default'] ?? false),
+            default: (bool)($data['default'] ?? false),
             created_at: $data['created_at'] ?? null,
             updated_at: $data['updated_at'] ?? null,
             deleted_at: $data['deleted_at'] ?? null,
@@ -51,6 +53,11 @@ final class BranchOfficeDTO
         );
     }
 
+    public function inputArray(): array
+    {
+        return array_intersect_key($this->toArray(), array_flip($this->providedFields));
+    }
+
     public function toArray(): array
     {
         return [
@@ -58,10 +65,5 @@ final class BranchOfficeDTO
             'status' => $this->status, 'type' => $this->type, 'default' => $this->default,
             'created_at' => $this->created_at, 'updated_at' => $this->updated_at, 'deleted_at' => $this->deleted_at,
         ];
-    }
-
-    public function inputArray(): array
-    {
-        return array_intersect_key($this->toArray(), array_flip($this->providedFields));
     }
 }

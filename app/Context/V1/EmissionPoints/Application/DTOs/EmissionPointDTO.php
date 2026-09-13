@@ -8,25 +8,27 @@ final class EmissionPointDTO
 {
     /** @param string[] $providedFields */
     public function __construct(
-        public ?int $id = null,
-        public ?int $branch_office_id = null,
+        public ?int    $id = null,
+        public ?int    $branch_office_id = null,
         public ?string $name = null,
         public ?string $emission_point = null,
-        public bool $status = false,
-        public bool $default = false,
+        public bool    $status = false,
+        public bool    $default = false,
         public ?string $created_at = null,
         public ?string $updated_at = null,
         public ?string $deleted_at = null,
-        public array $providedFields = [],
-    ) {}
+        public array   $providedFields = [],
+    )
+    {
+    }
 
     public static function fromArray(array $data): self
     {
         return new self(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            branch_office_id: isset($data['branch_office_id']) ? (int) $data['branch_office_id'] : null,
+            id: isset($data['id']) ? (int)$data['id'] : null,
+            branch_office_id: isset($data['branch_office_id']) ? (int)$data['branch_office_id'] : null,
             name: $data['name'] ?? null, emission_point: $data['emission_point'] ?? null,
-            status: (bool) ($data['status'] ?? false), default: (bool) ($data['default'] ?? false),
+            status: (bool)($data['status'] ?? false), default: (bool)($data['default'] ?? false),
             created_at: $data['created_at'] ?? null, updated_at: $data['updated_at'] ?? null,
             deleted_at: $data['deleted_at'] ?? null, providedFields: array_keys($data),
         );
@@ -43,6 +45,11 @@ final class EmissionPointDTO
         );
     }
 
+    public function inputArray(): array
+    {
+        return array_intersect_key($this->toArray(), array_flip($this->providedFields));
+    }
+
     public function toArray(): array
     {
         return [
@@ -52,10 +59,5 @@ final class EmissionPointDTO
             'created_at' => $this->created_at, 'updated_at' => $this->updated_at,
             'deleted_at' => $this->deleted_at,
         ];
-    }
-
-    public function inputArray(): array
-    {
-        return array_intersect_key($this->toArray(), array_flip($this->providedFields));
     }
 }

@@ -16,13 +16,15 @@ final class ClientController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(private ClientCrudService $service) {}
+    public function __construct(private readonly ClientCrudService $service)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
-        $filters = array_filter($request->only(['search', 'status', 'type', 'identification_type']), static fn ($value) => $value !== null && $value !== '');
+        $filters = array_filter($request->only(['search', 'status', 'type', 'identification_type']), static fn($value) => $value !== null && $value !== '');
 
-        return $this->successResponse($this->service->list(max(1, (int) $request->query('page', 1)), min(100, max(1, (int) $request->query('perPage', 15))), $filters));
+        return $this->successResponse($this->service->list(max(1, (int)$request->query('page', 1)), min(100, max(1, (int)$request->query('perPage', 15))), $filters));
     }
 
     public function show(int $id): JsonResponse

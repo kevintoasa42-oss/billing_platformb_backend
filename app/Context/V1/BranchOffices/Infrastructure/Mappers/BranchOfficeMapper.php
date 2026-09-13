@@ -11,16 +11,21 @@ final class BranchOfficeMapper implements BranchOfficeMapperInterface
     public function toDomain(array $data): BranchOffice
     {
         return new BranchOffice(
-            id: isset($data['id']) ? (int) $data['id'] : null,
+            id: isset($data['id']) ? (int)$data['id'] : null,
             name: $data['name'] ?? null,
             code_sri: $data['code_sri'] ?? null,
-            status: (bool) ($data['status'] ?? false),
+            status: (bool)($data['status'] ?? false),
             type: $data['type'] ?? null,
-            default: (bool) ($data['default'] ?? false),
+            default: (bool)($data['default'] ?? false),
             created_at: $this->date($data['created_at'] ?? null),
             updated_at: $this->date($data['updated_at'] ?? null),
             deleted_at: $this->date($data['deleted_at'] ?? null),
         );
+    }
+
+    private function date(mixed $value): ?string
+    {
+        return $value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : ($value === null ? null : (string)$value);
     }
 
     public function toPersistence(BranchOffice $branchOffice): array
@@ -40,10 +45,5 @@ final class BranchOfficeMapper implements BranchOfficeMapperInterface
             'created_at' => $branchOffice->created_at, 'updated_at' => $branchOffice->updated_at,
             'deleted_at' => $branchOffice->deleted_at,
         ];
-    }
-
-    private function date(mixed $value): ?string
-    {
-        return $value instanceof DateTimeInterface ? $value->format(DateTimeInterface::ATOM) : ($value === null ? null : (string) $value);
     }
 }

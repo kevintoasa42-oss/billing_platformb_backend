@@ -5,12 +5,14 @@ namespace App\Context\V1\EmissionPoints\Application\DTOs;
 final class NextSequentialDTO
 {
     public function __construct(
-        public int $branch_office_id,
-        public ?int $emission_point_id,
+        public int     $branch_office_id,
+        public ?int    $emission_point_id,
         public ?string $emission_point,
-        public int $sequential,
-        public string $formatted_sequential,
-    ) {}
+        public int     $sequential,
+        public string  $formatted_sequential,
+    )
+    {
+    }
 
     public function toArray(): array
     {

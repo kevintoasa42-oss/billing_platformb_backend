@@ -13,13 +13,15 @@ final readonly class BranchOfficeCrudService
     public function __construct(
         private BranchOfficeRepositoryInterface $repository,
         private BranchOfficeMapperInterface     $mapper,
-    ) {}
+    )
+    {
+    }
 
     public function list(int $page = 1, int $perPage = 15, array $filters = []): array
     {
         $result = $this->repository->listPaginated($page, $perPage, $filters);
         $result['data'] = array_map(
-            fn (BranchOffice $branchOffice) => BranchOfficeDTO::fromDomain($branchOffice)->toArray(),
+            fn(BranchOffice $branchOffice) => BranchOfficeDTO::fromDomain($branchOffice)->toArray(),
             $result['data'],
         );
 
@@ -42,9 +44,9 @@ final readonly class BranchOfficeCrudService
 
     public function update(BranchOfficeDTO $dto): BranchOfficeDTO
     {
-        $existing = $this->repository->findById((int) $dto->id);
-        if (! $existing) {
-            throw new BranchOfficeNotFoundException((int) $dto->id);
+        $existing = $this->repository->findById((int)$dto->id);
+        if (!$existing) {
+            throw new BranchOfficeNotFoundException((int)$dto->id);
         }
 
         $branchOffice = $this->mapper->toDomain(

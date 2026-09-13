@@ -8,8 +8,10 @@ final class EmissionPointSequential
     public function __construct(
         public string $branch_office_code_sri,
         public string $emission_point,
-        public int $sequential,
-    ) {}
+        public int    $sequential,
+    )
+    {
+    }
 
     public function formatted(): string
     {
@@ -17,7 +19,7 @@ final class EmissionPointSequential
             '%s-%s-%s',
             $this->branch_office_code_sri,
             $this->emission_point,
-            str_pad((string) $this->sequential, 9, '0', STR_PAD_LEFT),
+            str_pad((string)$this->sequential, 9, '0', STR_PAD_LEFT),
         );
     }
 }

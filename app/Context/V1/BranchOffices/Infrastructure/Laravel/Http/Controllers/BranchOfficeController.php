@@ -16,7 +16,9 @@ final class BranchOfficeController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(private readonly BranchOfficeCrudService $service) {}
+    public function __construct(private readonly BranchOfficeCrudService $service)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -24,9 +26,9 @@ final class BranchOfficeController extends Controller
             'search' => $request->query('search'),
             'status' => $request->has('status') ? $request->boolean('status') : null,
             'default' => $request->has('default') ? $request->boolean('default') : null,
-        ], static fn ($value) => $value !== null && $value !== '');
+        ], static fn($value) => $value !== null && $value !== '');
 
-        return $this->successResponse($this->service->list(max(1, (int) $request->query('page', 1)), min(100, max(1, (int) $request->query('perPage', 15))), $filters));
+        return $this->successResponse($this->service->list(max(1, (int)$request->query('page', 1)), min(100, max(1, (int)$request->query('perPage', 15))), $filters));
     }
 
     public function show(int $id): JsonResponse

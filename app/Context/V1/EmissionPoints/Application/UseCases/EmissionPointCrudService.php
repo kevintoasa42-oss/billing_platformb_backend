@@ -8,17 +8,19 @@ use App\Context\V1\EmissionPoints\Domain\Mappers\EmissionPointMapperInterface;
 use App\Context\V1\EmissionPoints\Domain\Models\EmissionPoint;
 use App\Context\V1\EmissionPoints\Domain\Repositories\EmissionPointRepositoryInterface;
 
-final class EmissionPointCrudService
+final readonly class EmissionPointCrudService
 {
     public function __construct(
         private EmissionPointRepositoryInterface $repository,
-        private EmissionPointMapperInterface $mapper,
-    ) {}
+        private EmissionPointMapperInterface     $mapper,
+    )
+    {
+    }
 
     public function list(int $page = 1, int $perPage = 15, array $filters = []): array
     {
         $result = $this->repository->listPaginated($page, $perPage, $filters);
-        $result['data'] = array_map(fn (EmissionPoint $point) => EmissionPointDTO::fromDomain($point)->toArray(), $result['data']);
+        $result['data'] = array_map(fn(EmissionPoint $point) => EmissionPointDTO::fromDomain($point)->toArray(), $result['data']);
 
         return $result;
     }
@@ -37,9 +39,9 @@ final class EmissionPointCrudService
 
     public function update(EmissionPointDTO $dto): EmissionPointDTO
     {
-        $existing = $this->repository->findById((int) $dto->id);
-        if (! $existing) {
-            throw new EmissionPointNotFoundException((int) ($dto->branch_office_id ?? 0), $dto->id);
+        $existing = $this->repository->findById((int)$dto->id);
+        if (!$existing) {
+            throw new EmissionPointNotFoundException((int)($dto->branch_office_id ?? 0), $dto->id);
         }
         $point = $this->mapper->toDomain(array_merge($this->mapper->toArray($existing), $dto->inputArray()));
 

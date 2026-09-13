@@ -19,9 +19,11 @@ final class EmissionPointController extends Controller
     use ApiResponse;
 
     public function __construct(
-        private EmissionPointCrudService $service,
-        private EmissionPointSequentialServiceInterface $sequentialService,
-    ) {}
+        private readonly EmissionPointCrudService                $service,
+        private readonly EmissionPointSequentialServiceInterface $sequentialService,
+    )
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -30,19 +32,14 @@ final class EmissionPointController extends Controller
             'branch_office_id' => $request->query('branch_office_id'),
             'status' => $request->has('status') ? $request->boolean('status') : null,
             'default' => $request->has('default') ? $request->boolean('default') : null,
-        ], static fn ($value) => $value !== null && $value !== '');
+        ], static fn($value) => $value !== null && $value !== '');
 
-        return $this->successResponse($this->service->list(max(1, (int) $request->query('page', 1)), min(100, max(1, (int) $request->query('perPage', 15))), $filters));
+        return $this->successResponse($this->service->list(max(1, (int)$request->query('page', 1)), min(100, max(1, (int)$request->query('perPage', 15))), $filters));
     }
 
     public function nextSequential(NextSequentialRequest $request): JsonResponse
     {
         return $this->sequentialResponse($request, false);
-    }
-
-    public function takeNextSequential(NextSequentialRequest $request): JsonResponse
-    {
-        return $this->sequentialResponse($request, true);
     }
 
     private function sequentialResponse(NextSequentialRequest $request, bool $take): JsonResponse
@@ -51,8 +48,8 @@ final class EmissionPointController extends Controller
 
         try {
             $arguments = [
-                (int) $data['branch_office_id'],
-                isset($data['emission_point_id']) ? (int) $data['emission_point_id'] : null,
+                (int)$data['branch_office_id'],
+                isset($data['emission_point_id']) ? (int)$data['emission_point_id'] : null,
                 $data['emission_point'] ?? null,
             ];
             $result = $take
@@ -63,6 +60,11 @@ final class EmissionPointController extends Controller
         } catch (EmissionPointNotFoundException) {
             return $this->errorResponse('Emission point not found for the supplied branch office.', 404);
         }
+    }
+
+    public function takeNextSequential(NextSequentialRequest $request): JsonResponse
+    {
+        return $this->sequentialResponse($request, true);
     }
 
     public function show(int $id): JsonResponse

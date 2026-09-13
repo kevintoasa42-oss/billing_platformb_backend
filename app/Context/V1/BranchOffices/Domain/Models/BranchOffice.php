@@ -6,14 +6,16 @@ namespace App\Context\V1\BranchOffices\Domain\Models;
 final class BranchOffice
 {
     public function __construct(
-        public ?int $id = null,
+        public ?int    $id = null,
         public ?string $name = null,
         public ?string $code_sri = null,
-        public bool $status = false,
+        public bool    $status = false,
         public ?string $type = null,
-        public bool $default = false,
+        public bool    $default = false,
         public ?string $created_at = null,
         public ?string $updated_at = null,
         public ?string $deleted_at = null,
-    ) {}
+    )
+    {
+    }
 }

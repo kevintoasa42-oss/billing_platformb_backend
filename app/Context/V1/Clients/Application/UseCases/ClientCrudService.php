@@ -8,17 +8,19 @@ use App\Context\V1\Clients\Domain\Mappers\ClientMapperInterface;
 use App\Context\V1\Clients\Domain\Models\Client;
 use App\Context\V1\Clients\Domain\Repositories\ClientRepositoryInterface;
 
-final class ClientCrudService
+final readonly class ClientCrudService
 {
     public function __construct(
         private ClientRepositoryInterface $repository,
-        private ClientMapperInterface $mapper,
-    ) {}
+        private ClientMapperInterface     $mapper,
+    )
+    {
+    }
 
     public function list(int $page = 1, int $perPage = 15, array $filters = []): array
     {
         $result = $this->repository->listPaginated($page, $perPage, $filters);
-        $result['data'] = array_map(fn (Client $client) => ClientDTO::fromDomain($client)->toArray(), $result['data']);
+        $result['data'] = array_map(fn(Client $client) => ClientDTO::fromDomain($client)->toArray(), $result['data']);
 
         return $result;
     }
@@ -37,9 +39,9 @@ final class ClientCrudService
 
     public function update(ClientDTO $dto): ClientDTO
     {
-        $existing = $this->repository->findById((int) $dto->id);
-        if (! $existing) {
-            throw new ClientNotFoundException((int) $dto->id);
+        $existing = $this->repository->findById((int)$dto->id);
+        if (!$existing) {
+            throw new ClientNotFoundException((int)$dto->id);
         }
         $client = $this->mapper->toDomain(array_merge($this->mapper->toArray($existing), $dto->inputArray()));
 
