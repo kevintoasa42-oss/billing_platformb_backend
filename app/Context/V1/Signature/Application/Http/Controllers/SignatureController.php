@@ -5,7 +5,6 @@ namespace App\Context\V1\Signature\Application\Http\Controllers;
 use App\Context\V1\Signature\Application\UseCases\UpdateSignatureUseCase;
 use App\Context\V1\Signature\Application\UseCases\ChangeSignatureStatusUseCase;
 use App\Context\V1\Signature\Application\UseCases\CreateSignatureUseCase;
-use App\Context\V1\Signature\Application\UseCases\ListSignaturesUseCase;
 use App\Context\V1\Signature\Application\UseCases\GetSignatureByIdUseCase;
 use App\Context\V1\Signature\Application\Http\Requests\UpdateSignatureRequest;
 use App\Context\V1\Signature\Application\Http\Requests\ChangeSignatureStatusRequest;
@@ -14,9 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\ApiResponse;
 use App\Models\CarrierModel;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class SignatureController extends Controller
 {
@@ -24,26 +21,10 @@ class SignatureController extends Controller
 
     public function __construct(
         private CreateSignatureUseCase $createUseCase,
-        private ListSignaturesUseCase $listUseCase,
         private GetSignatureByIdUseCase $getByIdUseCase,
         private UpdateSignatureUseCase $updateUseCase,
         private ChangeSignatureStatusUseCase $changeStatusUseCase,
     ) {}
-
-    /**
-     * GET /api/signatures?page=1&perPage=15&search=...
-     * Paginated list of signatures.
-     */
-    public function index(Request $request): JsonResponse
-    {
-        $page = (int) $request->query('page', 1);
-        $perPage = (int) $request->query('perPage', 15);
-        $search = $request->query('search');
-
-        $result = $this->listUseCase->execute($page, $perPage, $search);
-
-        return $this->successResponse($result);
-    }
 
     /**
      * GET /api/signatures/{id}

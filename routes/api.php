@@ -66,7 +66,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/carriers/{id}/status', [CarrierController::class, 'changeStatus']);
 
         // --- Signatures (tenant) ---
-        Route::get('/signatures', [SignatureController::class, 'index']);
         Route::get('/signatures/{id}', [SignatureController::class, 'show']);
         Route::post('/signatures', [SignatureController::class, 'store']);
         Route::put('/signatures/{id}', [SignatureController::class, 'update']);
