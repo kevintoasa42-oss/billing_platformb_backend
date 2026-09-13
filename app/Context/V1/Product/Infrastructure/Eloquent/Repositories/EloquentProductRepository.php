@@ -39,11 +39,11 @@ class EloquentProductRepository implements ProductRepositoryInterface
         ];
     }
 
-    public function getById(int $id): ?Product
+    public function getById(int $id): ?array
     {
         $model = ProductModel::find($id);
 
-        return $model ? EloquentProductMapper::toDomain($model) : null;
+        return $model ? ProductMapper::toDtoArray(EloquentProductMapper::toDomain($model)) : null;
     }
 
     public function create(Product $product): array

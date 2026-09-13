@@ -16,7 +16,7 @@ interface ProductRepositoryInterface
      */
     public function listPaginated(int $page = 1, int $perPage = 15, ?string $search = null): array;
 
-    public function getById(int $id): ?Product;
+    public function getById(int $id): ?array;
 
     public function create(Product $product): array;
 
