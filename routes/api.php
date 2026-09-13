@@ -4,6 +4,7 @@ use App\Contexto\Enterprise\Aplicacion\Http\Controllers\AuthController;
 use App\Contexto\Enterprise\Aplicacion\Http\Controllers\EmpresaController;
 use App\Contexto\Enterprise\Aplicacion\Http\Controllers\UsuarioController;
 use App\Contexto\Menu\Aplicacion\Http\Controllers\MenuController;
+use App\Contexto\Product\Aplicacion\Http\Controllers\IvaController;
 use App\Contexto\Product\Aplicacion\Http\Controllers\ProductoController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,4 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/productos/{id}', [ProductoController::class, 'update']);
         Route::patch('/productos/{id}/estado', [ProductoController::class, 'cambiarEstado']);
     });
+
+    // --- Ivas (catálogo central, no requiere tenant) ---
+    Route::get('/ivas', [IvaController::class, 'index']);
 });
