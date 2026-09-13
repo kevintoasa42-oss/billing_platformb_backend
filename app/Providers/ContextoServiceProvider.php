@@ -54,6 +54,16 @@ class ContextoServiceProvider extends ServiceProvider
             \App\Contexto\Menu\Dominio\Repositorios\MenuRepositoryInterface::class,
             \App\Contexto\Menu\Infraestructura\Eloquent\Repositorios\EloquentMenuRepository::class
         );
+
+        // Product
+        $this->app->bind(
+            \App\Contexto\Product\Dominio\Mappers\ProductoMapperInterface::class,
+            \App\Contexto\Product\Infraestructura\Eloquent\Mappers\EloquentProductoMapper::class
+        );
+        $this->app->bind(
+            \App\Contexto\Product\Dominio\Repositorios\ProductoRepositoryInterface::class,
+            \App\Contexto\Product\Infraestructura\Eloquent\Repositories\EloquentProductoRepository::class
+        );
     }
 
     /**

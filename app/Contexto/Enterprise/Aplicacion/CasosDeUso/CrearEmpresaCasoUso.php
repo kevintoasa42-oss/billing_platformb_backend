@@ -38,6 +38,9 @@ class CrearEmpresaCasoUso
         // Crear la base de datos del tenant (nombre = RUC).
         $this->crearBaseDeDatosTenant($empresa->db_name);
 
+        // Ejecutar migraciones tenant en la nueva DB.
+        $this->migrarTenant($empresa->db_name);
+
         return EmpresaDTO::fromArray($empresa->id ? [
             'id' => $empresa->id,
             'nombre' => $empresa->nombre,
@@ -76,5 +79,28 @@ class CrearEmpresaCasoUso
         if ($stmt->fetch() === false) {
             $pdo->exec("CREATE DATABASE \"{$dbName}\"");
         }
+    }
+
+    /**
+     * Ejecuta las migraciones tenant en la nueva DB.
+     *
+     * @param  string  $dbName
+     * @return void
+     */
+    private function migrarTenant(string $dbName): void
+    {
+        $dbName = preg_replace('/[^a-zA-Z0-9_]/', '', $dbName);
+
+        // Configurar conexion tenant.
+        config(['database.connections.tenant.database' => $dbName]);
+        DB::purge('tenant');
+        DB::reconnect('tenant');
+
+        // Ejecutar migraciones de la carpeta tenant.
+        Artisan::call('migrate', [
+            '--path' => database_path('migrations/tenant'),
+            '--database' => 'tenant',
+            '--force' => true,
+        ]);
     }
 }

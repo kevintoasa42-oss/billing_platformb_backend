@@ -4,6 +4,7 @@ use App\Contexto\Enterprise\Aplicacion\Http\Controllers\AuthController;
 use App\Contexto\Enterprise\Aplicacion\Http\Controllers\EmpresaController;
 use App\Contexto\Enterprise\Aplicacion\Http\Controllers\UsuarioController;
 use App\Contexto\Menu\Aplicacion\Http\Controllers\MenuController;
+use App\Contexto\Product\Aplicacion\Http\Controllers\ProductoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -43,4 +44,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Obtener menus por rol del usuario autenticado ---
     Route::get('/menus/por-rol', [MenuController::class, 'menusPorRol'])
         ->middleware('tenant');
+
+    // --- Productos (requiere tenant) ---
+    Route::middleware('tenant')->group(function () {
+        Route::get('/productos', [ProductoController::class, 'index']);
+        Route::get('/productos/{id}', [ProductoController::class, 'show']);
+        Route::post('/productos', [ProductoController::class, 'store']);
+        Route::put('/productos/{id}', [ProductoController::class, 'update']);
+        Route::patch('/productos/{id}', [ProductoController::class, 'update']);
+        Route::patch('/productos/{id}/estado', [ProductoController::class, 'cambiarEstado']);
+    });
 });
