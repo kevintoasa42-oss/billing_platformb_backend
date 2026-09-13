@@ -63,14 +63,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/carriers/{id}', [CarrierController::class, 'update']);
         Route::patch('/carriers/{id}', [CarrierController::class, 'update']);
         Route::patch('/carriers/{id}/status', [CarrierController::class, 'changeStatus']);
-
-        // --- Carriers (tenant) ---
-        Route::get('/carriers', [CarrierController::class, 'index']);
-        Route::get('/carriers/{id}', [CarrierController::class, 'show']);
-        Route::post('/carriers', [CarrierController::class, 'store']);
-        Route::put('/carriers/{id}', [CarrierController::class, 'update']);
-        Route::patch('/carriers/{id}', [CarrierController::class, 'update']);
-        Route::patch('/carriers/{id}/status', [CarrierController::class, 'changeStatus']);
     });
 
     // --- Ivas (catálogo central, no requiere tenant) ---
