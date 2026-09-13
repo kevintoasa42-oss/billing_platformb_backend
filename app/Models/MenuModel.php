@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Context\V1\Menu\Infrastructure\Eloquent\Models;
+namespace App\Models;
 
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\RoleModel;
+use App\Models\RoleModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

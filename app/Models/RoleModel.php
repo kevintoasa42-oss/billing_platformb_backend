@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Context\V1\Enterprise\Infrastructure\Eloquent\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -29,7 +29,7 @@ class RoleModel extends Model
     public function menus(): BelongsToMany
     {
         return $this->belongsToMany(
-            \App\Context\V1\Menu\Infrastructure\Eloquent\Models\MenuModel::class,
+            \App\Models\MenuModel::class,
             'menu_role',
             'role_id',
             'menu_id'

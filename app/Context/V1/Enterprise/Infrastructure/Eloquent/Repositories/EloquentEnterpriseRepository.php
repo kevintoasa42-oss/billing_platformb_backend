@@ -5,7 +5,7 @@ namespace App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories;
 use App\Context\V1\Enterprise\Domain\Mappers\EnterpriseMapperInterface;
 use App\Context\V1\Enterprise\Domain\Models\Enterprise;
 use App\Context\V1\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\EnterpriseModel;
+use App\Models\EnterpriseModel;
 
 class EloquentEnterpriseRepository implements EnterpriseRepositoryInterface
 {
@@ -44,7 +44,7 @@ class EloquentEnterpriseRepository implements EnterpriseRepositoryInterface
 
     public function listarPorUser(int $userId): array
     {
-        $user = \App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel::find($userId);
+        $user = \App\Models\UserModel::find($userId);
 
         if (!$user) {
             return [];

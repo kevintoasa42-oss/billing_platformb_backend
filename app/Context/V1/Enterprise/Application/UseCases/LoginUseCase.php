@@ -5,7 +5,7 @@ namespace App\Context\V1\Enterprise\Application\UseCases;
 use App\Context\V1\Enterprise\Application\DTOs\LoginDTO;
 use App\Context\V1\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface;
 use App\Context\V1\Enterprise\Domain\Repositories\UserRepositoryInterface;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use App\Models\UserModel;
 
 class LoginUseCase
 {

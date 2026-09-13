@@ -5,7 +5,7 @@ namespace App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories;
 use App\Context\V1\Enterprise\Domain\Mappers\UserMapperInterface;
 use App\Context\V1\Enterprise\Domain\Models\User;
 use App\Context\V1\Enterprise\Domain\Repositories\UserRepositoryInterface;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use App\Models\UserModel;
 
 class EloquentUserRepository implements UserRepositoryInterface
 {

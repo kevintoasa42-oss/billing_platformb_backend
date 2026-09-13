@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Product;
 
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\EnterpriseModel;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use App\Models\EnterpriseModel;
+use App\Models\UserModel;
 use Tests\TestCase;
 
 class ProductApiTest extends TestCase

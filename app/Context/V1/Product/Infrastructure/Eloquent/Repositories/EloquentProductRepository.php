@@ -5,8 +5,8 @@ namespace App\Context\V1\Product\Infrastructure\Eloquent\Repositories;
 use App\Context\V1\Product\Domain\Models\Product;
 use App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface;
 use App\Context\V1\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper;
-use App\Context\V1\Product\Infrastructure\Eloquent\Models\ProductModel;
-use App\Context\V1\Product\Infrastructure\Eloquent\Models\ProductTaxModel;
+use App\Models\ProductModel;
+use App\Models\ProductTaxModel;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class EloquentProductRepository implements ProductRepositoryInterface

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Menu;
 
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\RoleModel;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
-use App\Context\V1\Menu\Infrastructure\Eloquent\Models\MenuModel;
+use App\Models\RoleModel;
+use App\Models\UserModel;
+use App\Models\MenuModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;

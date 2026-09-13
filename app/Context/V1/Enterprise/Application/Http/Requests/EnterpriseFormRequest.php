@@ -14,7 +14,7 @@ abstract class EnterpriseFormRequest extends FormRequest
     /**
      * Obtiene el user autenticado.
      *
-     * @return \App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel|null
+     * @return \App\Models\UserModel|null
      */
     public function getAuthUser()
     {
@@ -56,7 +56,7 @@ abstract class EnterpriseFormRequest extends FormRequest
             return null;
         }
 
-        return \App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\EnterpriseModel::where('id', $enterpriseId)
+        return \App\Models\EnterpriseModel::where('id', $enterpriseId)
             ->value('ruc');
     }
 

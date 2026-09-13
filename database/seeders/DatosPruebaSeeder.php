@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\EnterpriseModel;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\RoleModel;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
-use App\Context\V1\Menu\Infrastructure\Eloquent\Models\MenuModel;
+use App\Models\EnterpriseModel;
+use App\Models\RoleModel;
+use App\Models\UserModel;
+use App\Models\MenuModel;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 

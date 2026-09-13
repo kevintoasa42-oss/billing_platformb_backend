@@ -5,8 +5,8 @@ namespace App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories;
 use App\Context\V1\Enterprise\Domain\Mappers\RoleMapperInterface;
 use App\Context\V1\Enterprise\Domain\Models\Role;
 use App\Context\V1\Enterprise\Domain\Repositories\RoleRepositoryInterface;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\RoleModel;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use App\Models\RoleModel;
+use App\Models\UserModel;
 
 class EloquentRoleRepository implements RoleRepositoryInterface
 {

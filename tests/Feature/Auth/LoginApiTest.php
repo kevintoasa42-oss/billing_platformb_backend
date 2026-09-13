@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\EnterpriseModel;
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use App\Models\EnterpriseModel;
+use App\Models\UserModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

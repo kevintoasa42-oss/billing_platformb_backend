@@ -4,7 +4,7 @@ namespace App\Context\V1\Product\Infrastructure\Eloquent\Mappers;
 
 use App\Context\V1\Product\Domain\Mappers\ProductMapperInterface;
 use App\Context\V1\Product\Domain\Models\Product;
-use App\Context\V1\Product\Infrastructure\Eloquent\Models\ProductModel;
+use App\Models\ProductModel;
 
 class EloquentProductMapper implements ProductMapperInterface
 {

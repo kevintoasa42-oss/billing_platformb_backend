@@ -2,7 +2,7 @@
 
 namespace App\Context\V1\Enterprise\Application\UseCases;
 
-use App\Context\V1\Enterprise\Infrastructure\Eloquent\Models\UserModel;
+use App\Models\UserModel;
 
 class InitialLoginUseCase
 {

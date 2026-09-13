@@ -5,7 +5,7 @@ namespace App\Context\V1\Menu\Infrastructure\Eloquent\Repositories;
 use App\Context\V1\Menu\Domain\Mappers\MenuMapperInterface;
 use App\Context\V1\Menu\Domain\Models\Menu;
 use App\Context\V1\Menu\Domain\Repositories\MenuRepositoryInterface;
-use App\Context\V1\Menu\Infrastructure\Eloquent\Models\MenuModel;
+use App\Models\MenuModel;
 
 class EloquentMenuRepository implements MenuRepositoryInterface
 {
