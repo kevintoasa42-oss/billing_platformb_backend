@@ -34,14 +34,4 @@ class ProductMapper
             'taxes' => $product->taxes,
         ];
     }
-
-    public static function activate(Product $product): void
-    {
-        $product->status = true;
-    }
-
-    public static function deactivate(Product $product): void
-    {
-        $product->status = false;
-    }
 }

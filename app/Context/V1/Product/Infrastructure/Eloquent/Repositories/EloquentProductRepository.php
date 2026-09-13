@@ -2,6 +2,7 @@
 
 namespace App\Context\V1\Product\Infrastructure\Eloquent\Repositories;
 
+use App\Context\V1\Product\Domain\Mappers\ProductMapper;
 use App\Context\V1\Product\Domain\Models\Product;
 use App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface;
 use App\Context\V1\Product\Infrastructure\Eloquent\Mappers\EloquentProductMapper;
@@ -45,7 +46,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
         return $model ? EloquentProductMapper::toDomain($model) : null;
     }
 
-    public function create(Product $product): Product
+    public function create(Product $product): array
     {
         $model = ProductModel::create(EloquentProductMapper::toModel($product));
 
@@ -53,10 +54,10 @@ class EloquentProductRepository implements ProductRepositoryInterface
             $this->assignTaxes($model->id, $product->taxes);
         }
 
-        return EloquentProductMapper::toDomain($model->fresh());
+        return ProductMapper::toDtoArray(EloquentProductMapper::toDomain($model->fresh()));
     }
 
-    public function update(Product $product): Product
+    public function update(Product $product): array
     {
         $model = ProductModel::findOrFail($product->id);
         $model->update(EloquentProductMapper::toModel($product));
@@ -65,7 +66,7 @@ class EloquentProductRepository implements ProductRepositoryInterface
             $this->assignTaxes($model->id, $product->taxes);
         }
 
-        return EloquentProductMapper::toDomain($model->fresh());
+        return ProductMapper::toDtoArray(EloquentProductMapper::toDomain($model->fresh()));
     }
 
     public function changeStatus(int $id, bool $status): bool

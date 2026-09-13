@@ -16,8 +16,6 @@ class CreateProductUseCase
     {
         $product = ProductMapper::fromDto($dto);
 
-        $product = $this->repository->create($product);
-
-        return ProductDTO::fromArray(ProductMapper::toDtoArray($product));
+        return ProductDTO::fromArray($this->repository->create($product));
     }
 }

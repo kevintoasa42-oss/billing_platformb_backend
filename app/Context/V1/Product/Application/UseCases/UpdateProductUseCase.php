@@ -16,8 +16,6 @@ class UpdateProductUseCase
     {
         $product = ProductMapper::fromDto($dto);
 
-        $product = $this->repository->update($product);
-
-        return ProductDTO::fromArray(ProductMapper::toDtoArray($product));
+        return ProductDTO::fromArray($this->repository->update($product));
     }
 }

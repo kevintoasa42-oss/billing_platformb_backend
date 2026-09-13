@@ -18,9 +18,9 @@ interface ProductRepositoryInterface
 
     public function getById(int $id): ?Product;
 
-    public function create(Product $product): Product;
+    public function create(Product $product): array;
 
-    public function update(Product $product): Product;
+    public function update(Product $product): array;
 
     public function changeStatus(int $id, bool $status): bool;
 
