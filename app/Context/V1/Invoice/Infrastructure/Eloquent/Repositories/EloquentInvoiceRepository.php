@@ -121,8 +121,8 @@ class EloquentInvoiceRepository implements InvoiceRepositoryInterface
                     'code' => $tax->code,
                     'percentage_code' => $tax->percentage_code,
                     'rate' => $tax->rate,
-                    'taxable_base' => $tax->taxable_base,
-                    'value' => $tax->value,
+                    'tax_base' => $tax->tax_base,
+                    'tax' => $tax->tax,
                 ]);
             }
         }
@@ -139,8 +139,9 @@ class EloquentInvoiceRepository implements InvoiceRepositoryInterface
                 'sri_iva_percentage_id' => $tax->sri_iva_percentage_id,
                 'code' => $tax->code,
                 'percentage_code' => $tax->percentage_code,
-                'taxable_base' => $tax->taxable_base,
-                'value' => $tax->value,
+                'rate' => $tax->rate,
+                'tax_base' => $tax->tax_base,
+                'tax' => $tax->tax,
             ]);
         }
     }

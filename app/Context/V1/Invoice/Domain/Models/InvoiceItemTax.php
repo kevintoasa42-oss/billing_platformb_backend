@@ -11,7 +11,7 @@ class InvoiceItemTax
         public ?string $code = null,
         public ?string $percentage_code = null,
         public float $rate = 0,
-        public float $taxable_base = 0,
-        public float $value = 0,
+        public float $tax_base = 0,
+        public float $tax = 0,
     ) {}
 }

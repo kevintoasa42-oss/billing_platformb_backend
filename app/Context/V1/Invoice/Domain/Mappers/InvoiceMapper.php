@@ -32,8 +32,8 @@ class InvoiceMapper
                 code: $t['code'] ?? null,
                 percentage_code: $t['percentage_code'] ?? null,
                 rate: $t['rate'] ?? 0,
-                taxable_base: $t['taxable_base'] ?? 0,
-                value: $t['value'] ?? 0,
+                tax_base: $t['tax_base'] ?? 0,
+                tax: $t['tax'] ?? 0,
             ), $i['taxes'] ?? []),
         ), $dto->items);
 
@@ -43,8 +43,9 @@ class InvoiceMapper
             sri_iva_percentage_id: $t['sri_iva_percentage_id'] ?? null,
             code: $t['code'] ?? null,
             percentage_code: $t['percentage_code'] ?? null,
-            taxable_base: $t['taxable_base'] ?? 0,
-            value: $t['value'] ?? 0,
+            rate: $t['rate'] ?? 0,
+            tax_base: $t['tax_base'] ?? 0,
+            tax: $t['tax'] ?? 0,
         ), $dto->taxes);
 
         $payments = array_map(fn ($p) => new InvoicePayment(
@@ -149,8 +150,8 @@ class InvoiceMapper
                     'code' => $t->code,
                     'percentage_code' => $t->percentage_code,
                     'rate' => $t->rate,
-                    'taxable_base' => $t->taxable_base,
-                    'value' => $t->value,
+                    'tax_base' => $t->tax_base,
+                    'tax' => $t->tax,
                 ], $i->taxes),
             ], $invoice->items),
             'taxes' => array_map(fn ($t) => [
@@ -159,8 +160,9 @@ class InvoiceMapper
                 'sri_iva_percentage_id' => $t->sri_iva_percentage_id,
                 'code' => $t->code,
                 'percentage_code' => $t->percentage_code,
-                'taxable_base' => $t->taxable_base,
-                'value' => $t->value,
+                'rate' => $t->rate,
+                'tax_base' => $t->tax_base,
+                'tax' => $t->tax,
             ], $invoice->taxes),
             'payments' => array_map(fn ($p) => [
                 'id' => $p->id,

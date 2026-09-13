@@ -35,8 +35,8 @@ class EloquentInvoiceMapper
                 code: $t->code,
                 percentage_code: $t->percentage_code,
                 rate: (float) $t->rate,
-                taxable_base: (float) $t->taxable_base,
-                value: (float) $t->value,
+                tax_base: (float) $t->tax_base,
+                tax: (float) $t->tax,
             ))->toArray(),
         ))->toArray();
 
@@ -46,8 +46,9 @@ class EloquentInvoiceMapper
             sri_iva_percentage_id: $t->sri_iva_percentage_id,
             code: $t->code,
             percentage_code: $t->percentage_code,
-            taxable_base: (float) $t->taxable_base,
-            value: (float) $t->value,
+            rate: (float) $t->rate,
+            tax_base: (float) $t->tax_base,
+            tax: (float) $t->tax,
         ))->toArray();
 
         $payments = $model->payments->map(fn ($p) => new InvoicePayment(

@@ -45,11 +45,11 @@ return new class extends Migration
 
             // Totals
             $table->decimal('subtotal', 14, 2)->default(0); // sum of (quantity * unit_price) before discount
-            $table->decimal('total_without_taxes', 14, 2)->default(0); // taxable base (subtotal - discount)
-            $table->decimal('total_discount', 14, 2)->default(0); // total discount
-            $table->decimal('total_tax', 14, 2)->default(0); // total tax (IVA)
+            $table->decimal('discount', 14, 2)->default(0); // total discount
+            $table->decimal('tax_base', 14, 2)->default(0); // taxable base (subtotal - discount)
+            $table->decimal('tax', 14, 2)->default(0); // total tax (IVA)
             $table->decimal('tip', 14, 2)->default(0); // tip
-            $table->decimal('total_amount', 14, 2)->default(0); // grand total
+            $table->decimal('total', 14, 2)->default(0); // grand total
             $table->string('currency', 10)->default('DOLAR'); // currency
             $table->string('plate', 20)->nullable(); // optional, for transport
 
