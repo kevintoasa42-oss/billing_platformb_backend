@@ -39,6 +39,9 @@ Route::prefix('core')
         // Establishments + emission points (EstablishmentController, EmissionPointController)
         Route::group([], base_path('routes/v3/core/establishments.php'));
 
+        // Branches + issuance points (BranchController, IssuancePointController) — legacy_id surface
+        Route::group([], base_path('routes/v3/core/branches.php'));
+
         // Vehicles (VehicleController) — core.vehicles, tenant-scoped unique plate
         Route::group([], base_path('routes/v3/core/vehicles.php'));
 

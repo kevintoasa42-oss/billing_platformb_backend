@@ -13,4 +13,15 @@ interface EstablishmentRepositoryInterface
     public function create(Establishment $establishment): Establishment;
 
     public function update(string $id, Establishment $establishment): ?Establishment;
+
+    /**
+     * Branch surface — list branches with nested issuance points.
+     *
+     * @return Establishment[]
+     */
+    public function allBranches(): array;
+
+    public function findByLegacyId(int $legacyId): ?Establishment;
+
+    public function deleteByLegacyId(int $legacyId): bool;
 }

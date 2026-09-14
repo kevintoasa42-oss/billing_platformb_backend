@@ -1,0 +1,33 @@
+Add Branches + Issuance Points module (9 routes, no IAM/capabilities).
+
+Extends existing Establishment module with branch surface matching
+ArtraFiscalBackEnd ConsolidatedWebController:
+- 9 routes with URIs preserved (branches, branches/{id}, issuance-points/{id})
+- Routing by legacy_id (numeric, whereNumber)
+- Response shape matches reference: id=legacy_id, sri_establishment_number,
+  issuance_point_number, nested issuance_points, last_issued_sequential,
+  next_sequential, document_number
+- Input accepts sri_establishment_number, issuance_point_number
+- DELETE returns {deleted: true} (soft delete via is_active=false)
+- nextSequential queries fiscal.sequences for last_number
+- Spanish messages matching reference
+- Existing establishments routes preserved (backward compat, toLegacyArray)
+- No new tables, no migrations needed
+- No capabilities, no IAM, no assertCapability
+
+New files (11):
+- routes/v3/core/branches.php
+- BranchController, IssuancePointController
+- BranchCreateDTO, BranchUpdateDTO, IssuancePointCreateDTO, IssuancePointUpdateDTO
+- BranchCreateRequest, BranchUpdateRequest, IssuancePointCreateRequest, IssuancePointUpdateRequest
+
+Modified files (9):
+- routes/v3/routes.php (activate group)
+- Establishment.php, EmissionPoint.php (toArray + toLegacyArray)
+- Repository interfaces (add legacy_id methods)
+- Postgres repositories (implement branch surface)
+- UseCases (add branch methods)
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>

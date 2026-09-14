@@ -63,6 +63,83 @@ class EstablishmentRepository implements EstablishmentRepositoryInterface
         });
     }
 
+    public function allBranches(): array
+    {
+        $records = EstablishmentModel::query()
+            ->orderBy('name')
+            ->get();
+
+        return $records->map(fn ($r): Establishment => $this->toBranchDomain($r))->all();
+    }
+
+    public function findByLegacyId(int $legacyId): ?Establishment
+    {
+        $record = EstablishmentModel::query()->where('legacy_id', $legacyId)->first();
+
+        return $record !== null ? $this->toBranchDomain($record) : null;
+    }
+
+    public function deleteByLegacyId(int $legacyId): bool
+    {
+        return (bool) DB::connection('master_v3')->transaction(function () use ($legacyId): int {
+            $branch = EstablishmentModel::query()->where('legacy_id', $legacyId)->first();
+
+            if ($branch === null) {
+                return 0;
+            }
+
+            return (int) $branch->update(['is_active' => false]);
+        });
+    }
+
+    /**
+     * Build Establishment with nested issuance_points (branch shape).
+     */
+    private function toBranchDomain(EstablishmentModel $record): Establishment
+    {
+        $points = DB::connection('master_v3')
+            ->table('core.emission_points')
+            ->where('establishment_id', $record->id)
+            ->orderBy('legacy_id')
+            ->get()
+            ->map(function ($point) use ($record): array {
+                $last = (int) (DB::connection('master_v3')
+                    ->table('fiscal.sequences')
+                    ->where('emission_point_id', $point->id)
+                    ->where('document_type', 'invoice')
+                    ->value('last_number') ?? 0);
+
+                return [
+                    'id' => (int) $point->legacy_id,
+                    'branch_id' => (int) $record->legacy_id,
+                    'name' => trim((string) ($point->name ?? '')) !== '' ? $point->name : 'Punto '.$point->sri_code,
+                    'issuance_point_number' => (string) $point->sri_code,
+                    'is_active' => (bool) $point->is_active,
+                    'is_default' => (bool) $point->is_default,
+                    'has_tax_validity' => (bool) $point->has_tax_validity,
+                    'last_issued_sequential' => $last,
+                    'next_sequential' => $last + 1,
+                ];
+            })
+            ->all();
+
+        return new Establishment(
+            id: (string) $record->id,
+            tenantId: (string) $record->tenant_id,
+            companyId: (string) $record->company_id,
+            sriCode: (string) $record->sri_code,
+            name: $record->name,
+            legacyId: (int) $record->legacy_id,
+            branchCode: $record->branch_code ?? $record->sri_code,
+            address: $record->address,
+            phone: $record->phone,
+            email: $record->email,
+            cityId: $record->city_id !== null ? (int) $record->city_id : null,
+            isActive: (bool) $record->is_active,
+            issuancePoints: $points,
+        );
+    }
+
     /**
      * @param  array<int, string>|null  $activityIds
      */
