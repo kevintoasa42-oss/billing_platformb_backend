@@ -4,7 +4,7 @@ namespace App\Context\V3\Modules\Core\Establishment\Infrastructure\Mappers;
 
 use App\Context\V3\Modules\Core\Establishment\Domain\Models\Establishment;
 use App\Context\V3\Modules\Core\Establishment\Infrastructure\Laravel\Eloquent\Models\EstablishmentModel;
-use Illuminate\Support\Facades\DB;
+use App\Context\V3\Modules\Fiscal\Infrastructure\Laravel\Eloquent\Models\SequenceModel;
 
 class EstablishmentMapper
 {
@@ -44,8 +44,7 @@ class EstablishmentMapper
             $points = $record->emissionPoints
                 ->sortBy('legacy_id')
                 ->map(function ($point) use ($record): array {
-                    $last = (int) (DB::connection('master_v3')
-                        ->table('fiscal.sequences')
+                    $last = (int) (SequenceModel::query()
                         ->where('emission_point_id', $point->id)
                         ->where('document_type', 'invoice')
                         ->value('last_number') ?? 0);

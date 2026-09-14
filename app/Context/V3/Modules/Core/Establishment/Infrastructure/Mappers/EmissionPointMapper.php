@@ -4,7 +4,7 @@ namespace App\Context\V3\Modules\Core\Establishment\Infrastructure\Mappers;
 
 use App\Context\V3\Modules\Core\Establishment\Domain\Models\EmissionPoint;
 use App\Context\V3\Modules\Core\Establishment\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
-use Illuminate\Support\Facades\DB;
+use App\Context\V3\Modules\Fiscal\Infrastructure\Laravel\Eloquent\Models\SequenceModel;
 
 class EmissionPointMapper
 {
@@ -32,8 +32,7 @@ class EmissionPointMapper
     {
         $branchLegacyId = $record->establishment?->legacy_id;
 
-        $last = (int) (DB::connection('master_v3')
-            ->table('fiscal.sequences')
+        $last = (int) (SequenceModel::query()
             ->where('emission_point_id', $record->id)
             ->where('document_type', 'invoice')
             ->value('last_number') ?? 0);
