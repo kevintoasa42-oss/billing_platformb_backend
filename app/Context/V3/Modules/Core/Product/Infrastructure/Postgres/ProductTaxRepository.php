@@ -6,10 +6,15 @@ use App\Context\V3\Modules\Core\Product\Domain\Models\ProductTax;
 use App\Context\V3\Modules\Core\Product\Domain\Repository\ProductTaxRepositoryInterface;
 use App\Context\V3\Modules\Core\Product\Infrastructure\Laravel\Eloquent\Models\ProductModel;
 use App\Context\V3\Modules\Core\Product\Infrastructure\Laravel\Eloquent\Models\ProductTaxAssignmentModel;
+use App\Context\V3\Modules\Core\Product\Infrastructure\Mappers\ProductTaxMapper;
 use Illuminate\Support\Facades\DB;
 
 class ProductTaxRepository implements ProductTaxRepositoryInterface
 {
+    public function __construct(
+        private readonly ProductTaxMapper $mapper,
+    ) {}
+
     public function create(int $productLegacyId, array $data): ?ProductTax
     {
         return DB::connection('master_v3')->transaction(function () use ($productLegacyId, $data): ?ProductTax {
@@ -39,7 +44,7 @@ class ProductTaxRepository implements ProductTaxRepositoryInterface
                 ]);
                 $existing->refresh();
 
-                return $this->toDomain($existing, $productLegacyId);
+                return $this->mapper->toDomain($existing, $productLegacyId);
             }
 
             $record = ProductTaxAssignmentModel::query()->create([
@@ -53,7 +58,7 @@ class ProductTaxRepository implements ProductTaxRepositoryInterface
             ]);
             $record->refresh();
 
-            return $this->toDomain($record, $productLegacyId);
+            return $this->mapper->toDomain($record, $productLegacyId);
         });
     }
 
@@ -91,19 +96,7 @@ class ProductTaxRepository implements ProductTaxRepositoryInterface
             ->where('is_active', true)
             ->first();
 
-        return $record !== null ? $this->toDomain($record, $productLegacyId) : null;
+        return $record !== null ? $this->mapper->toDomain($record, $productLegacyId) : null;
     }
 
-    private function toDomain(ProductTaxAssignmentModel $record, int $productLegacyId): ProductTax
-    {
-        return new ProductTax(
-            id: (int) $record->legacy_id,
-            productId: $productLegacyId,
-            sriIvaTypeId: (int) $record->sri_iva_type_id,
-            taxName: $record->tax_name,
-            percentage: (string) $record->percentage,
-            sriCode: $record->sri_code,
-            isActive: (bool) $record->is_active,
-        );
-    }
 }
