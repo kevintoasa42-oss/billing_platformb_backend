@@ -6,6 +6,13 @@ use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Providers\Emiss
 use App\Context\V1\Modules\SriVoucherTypes\Infrastructure\Laravel\Providers\SriVoucherTypeServiceProvider;
 use App\Context\V3\Modules\Authentication\Infrastructure\Laravel\Http\Middleware\AuthenticateV3SessionCookie;
 use App\Context\V3\Modules\Authentication\Infrastructure\Laravel\Providers\AuthenticationServiceProvider;
+use App\Context\V3\Modules\Core\Carrier\CarrierServiceProvider;
+use App\Context\V3\Modules\Core\Company\CompanyServiceProvider;
+use App\Context\V3\Modules\Core\EconomicActivity\EconomicActivityServiceProvider;
+use App\Context\V3\Modules\Core\Establishment\EstablishmentServiceProvider;
+use App\Context\V3\Modules\Core\Notification\NotificationServiceProvider;
+use App\Context\V3\Modules\Core\Vehicle\VehicleServiceProvider;
+use App\Context\V3\Shared\Mail\MailServiceProvider;
 use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Http\Middleware\CaptureTenantContext;
 use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Http\Middleware\SetTenantConnection;
 use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Providers\TenantServiceProvider;
@@ -43,5 +50,12 @@ return Application::configure(basePath: dirname(__DIR__))
         SriVoucherTypeServiceProvider::class,
         TenantServiceProvider::class,
         AuthenticationServiceProvider::class,
+        CarrierServiceProvider::class,
+        CompanyServiceProvider::class,
+        EstablishmentServiceProvider::class,
+        VehicleServiceProvider::class,
+        EconomicActivityServiceProvider::class,
+        MailServiceProvider::class,
+        NotificationServiceProvider::class,
     ])
     ->create();
