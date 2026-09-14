@@ -12,6 +12,7 @@ Route::prefix('auth')->group(function (): void {
 
     Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])->group(function (): void {
         Route::get('me', [AuthenticationController::class, 'me']);
+        Route::post('refresh', [AuthenticationController::class, 'refresh']);
         Route::post('switch-enterprise', [AuthenticationController::class, 'switchEnterprise']);
         Route::delete('session', [AuthenticationController::class, 'destroySession']);
     });

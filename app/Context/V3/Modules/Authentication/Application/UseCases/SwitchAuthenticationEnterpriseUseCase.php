@@ -31,6 +31,12 @@ final readonly class SwitchAuthenticationEnterpriseUseCase
         );
         $this->repository->revokeSession($currentSession->tokenHash);
 
-        return new AuthenticationSessionDTO($token, $user, $enterprise, $record->expiresAt);
+        return new AuthenticationSessionDTO(
+            token: $token,
+            user: $user,
+            enterprise: $enterprise,
+            expiresAt: $record->expiresAt,
+            enterprises: $this->repository->enterprisesForUser($user->id),
+        );
     }
 }

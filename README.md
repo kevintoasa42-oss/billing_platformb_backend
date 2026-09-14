@@ -7,11 +7,12 @@ php artisan landlord --help
 php artisan tenant --help
 
 # migrations / seeders
+php artisan  landlord:migrate:fresh --seed
 php artisan  tenant:migrate:fresh --seed --all
 php artisan  tenant:migrate:fresh --seed --enterprise=1
 ```
 
-### V3 Commands
+### V3 Commands0
 
 ```bash
 # migrations / seeders

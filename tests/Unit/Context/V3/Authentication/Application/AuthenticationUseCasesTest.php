@@ -6,6 +6,7 @@ use App\Context\V3\Modules\Authentication\Application\DTOs\CompleteSessionDTO;
 use App\Context\V3\Modules\Authentication\Application\DTOs\CredentialsDTO;
 use App\Context\V3\Modules\Authentication\Application\UseCases\CompleteAuthenticationSessionUseCase;
 use App\Context\V3\Modules\Authentication\Application\UseCases\CreateLoginChallengeUseCase;
+use App\Context\V3\Modules\Authentication\Application\UseCases\RefreshAuthenticationSessionUseCase;
 use App\Context\V3\Modules\Authentication\Domain\Exceptions\AuthenticationException;
 use App\Context\V3\Modules\Authentication\Domain\Models\AccessibleEnterprise;
 use App\Context\V3\Modules\Authentication\Domain\Models\AuthenticatedUser;
@@ -45,6 +46,43 @@ final class AuthenticationUseCasesTest extends TestCase
         self::assertNotEmpty($session->token);
         self::assertSame('00000000-0000-4000-8000-000000000002', $session->enterprise->id);
         self::assertSame('admin@billing.com', $session->user->email);
+        self::assertCount(2, $session->enterprises);
+        self::assertSame(1, $session->toArray()['enterprises'][0]['id']);
+        self::assertSame('00000000-0000-4000-8000-000000000001', $session->toArray()['enterprises'][0]['uuid']);
+        self::assertSame([1, 2], $session->toArray()['user']['platform_admin_enterprise_ids']);
+    }
+
+    public function test_it_accepts_an_enterprise_legacy_id_from_the_login_challenge(): void
+    {
+        $session = (new CompleteAuthenticationSessionUseCase($this->repository()))->execute(
+            new CompleteSessionDTO(
+                '00000000-0000-4000-8000-000000000010',
+                ['00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000002'],
+                time() + 60,
+                '2',
+            ),
+        );
+
+        self::assertSame('00000000-0000-4000-8000-000000000002', $session->enterprise->id);
+    }
+
+    public function test_it_refreshes_a_valid_session(): void
+    {
+        $session = (new RefreshAuthenticationSessionUseCase($this->repository()))->execute(
+            new AuthenticationSession(
+                tokenHash: 'current-token-hash',
+                tenantId: '00000000-0000-4000-8000-000000000001',
+                userId: '00000000-0000-4000-8000-000000000010',
+                membershipId: '10000000-0000-4000-8000-000000000001',
+                authorizationVersion: 1,
+                expiresAt: now()->addMinute()->toDateTimeString(),
+                capabilities: ['*'],
+                platformAdmin: true,
+            ),
+        );
+
+        self::assertNotEmpty($session->token);
+        self::assertCount(2, $session->enterprises);
     }
 
     public function test_it_rejects_an_enterprise_that_was_not_in_the_login_challenge(): void
@@ -123,7 +161,7 @@ final class AuthenticationUseCasesTest extends TestCase
             public function enterpriseForUser(string $userId, string $enterpriseId): ?AccessibleEnterprise
             {
                 foreach ($this->enterprisesForUser($userId) as $enterprise) {
-                    if ($enterprise->id === $enterpriseId) {
+                    if ($enterprise->id === $enterpriseId || (string) $enterprise->legacyId === $enterpriseId) {
                         return $enterprise;
                     }
                 }

@@ -17,18 +17,26 @@ final class AuthenticatedUser
         public readonly bool $active,
     ) {}
 
-    /** @return array{id: string, legacy_id: ?int, name: string, email: string} */
+    /** @return array<string, bool|int|null|string> */
     public function toArray(): array
     {
+        $fullName = trim($this->firstName.' '.$this->lastName) ?: $this->name;
+
         return [
-            'id' => $this->id,
+            'id' => $this->legacyId ?? $this->id,
+            'uuid' => $this->id,
             'legacy_id' => $this->legacyId,
             'name' => $this->name,
             'email' => $this->email,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName,
+            'full_name' => $fullName,
+            'phone' => null,
             'platform_admin' => $this->platformAdmin,
             'active' => $this->active,
+            'is_platform_admin' => $this->platformAdmin,
+            'is_super_admin' => false,
+            'is_active' => $this->active,
         ];
     }
 }

@@ -27,9 +27,18 @@ final class LoginChallengeDTO
     /** @return array{user: array<string, mixed>, enterprises: array<int, array<string, mixed>>} */
     public function toArray(): array
     {
+        $enterprises = array_map(static fn (AccessibleEnterprise $enterprise): array => $enterprise->toArray(), $this->enterprises);
+        $user = $this->user->toArray();
+        $user['platform_admin_enterprise_ids'] = $this->user->platformAdmin
+            ? array_values(array_filter(array_map(
+                static fn (array $enterprise): int => (int) ($enterprise['legacy_id'] ?? 0),
+                $enterprises,
+            )))
+            : [];
+
         return [
-            'user' => $this->user->toArray(),
-            'enterprises' => array_map(static fn (AccessibleEnterprise $enterprise): array => $enterprise->toArray(), $this->enterprises),
+            'user' => $user,
+            'enterprises' => $enterprises,
         ];
     }
 }
