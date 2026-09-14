@@ -2,7 +2,7 @@
 
 namespace App\Context\V1\Modules\Menu\Application\UseCases;
 
-use App\Context\V1\Modules\Enterprise\Domain\Repositories\RoleRepositoryInterface;
+use App\Context\V1\Modules\Clients\Enterprise\Domain\Repositories\RoleRepositoryInterface;
 use App\Context\V1\Modules\Menu\Application\DTOs\MenuDTO;
 use App\Context\V1\Modules\Menu\Domain\Repositories\MenuRepositoryInterface;
 

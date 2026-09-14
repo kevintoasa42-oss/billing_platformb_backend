@@ -2,11 +2,11 @@
 
 use App\Context\V1\Modules\BranchOffices\Infrastructure\Laravel\Http\Controllers\BranchOfficeController;
 use App\Context\V1\Modules\Carrier\Application\Http\Controllers\CarrierController;
+use App\Context\V1\Modules\Clients\Enterprise\Application\Http\Controllers\AuthController;
+use App\Context\V1\Modules\Clients\Enterprise\Application\Http\Controllers\EnterpriseController;
+use App\Context\V1\Modules\Clients\Enterprise\Application\Http\Controllers\UserController;
 use App\Context\V1\Modules\Clients\Infrastructure\Laravel\Http\Controllers\ClientController;
 use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Http\Controllers\EmissionPointController;
-use App\Context\V1\Modules\Enterprise\Application\Http\Controllers\AuthController;
-use App\Context\V1\Modules\Enterprise\Application\Http\Controllers\EnterpriseController;
-use App\Context\V1\Modules\Enterprise\Application\Http\Controllers\UserController;
 use App\Context\V1\Modules\Invoice\Application\Http\Controllers\InvoiceController;
 use App\Context\V1\Modules\Invoice\Application\Http\Controllers\PaymentMethodController;
 use App\Context\V1\Modules\Menu\Application\Http\Controllers\MenuController;

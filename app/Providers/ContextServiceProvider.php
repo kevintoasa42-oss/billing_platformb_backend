@@ -15,16 +15,16 @@ class ContextServiceProvider extends ServiceProvider
 
         // Enterprise
         $this->app->bind(
-            \App\Context\V1\Modules\Enterprise\Domain\Mappers\EnterpriseMapperInterface::class,
-            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Mappers\EnterpriseMapper::class
+            \App\Context\V1\Modules\Clients\Enterprise\Domain\Mappers\EnterpriseMapperInterface::class,
+            \App\Context\V1\Modules\Clients\Enterprise\Infrastructure\Eloquent\Mappers\EnterpriseMapper::class
         );
         $this->app->bind(
-            \App\Context\V1\Modules\Enterprise\Domain\Mappers\UserMapperInterface::class,
-            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Mappers\UserMapper::class
+            \App\Context\V1\Modules\Clients\Enterprise\Domain\Mappers\UserMapperInterface::class,
+            \App\Context\V1\Modules\Clients\Enterprise\Infrastructure\Eloquent\Mappers\UserMapper::class
         );
         $this->app->bind(
-            \App\Context\V1\Modules\Enterprise\Domain\Mappers\RoleMapperInterface::class,
-            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Mappers\RoleMapper::class
+            \App\Context\V1\Modules\Clients\Enterprise\Domain\Mappers\RoleMapperInterface::class,
+            \App\Context\V1\Modules\Clients\Enterprise\Infrastructure\Eloquent\Mappers\RoleMapper::class
         );
 
         // Menu
@@ -37,16 +37,16 @@ class ContextServiceProvider extends ServiceProvider
 
         // Enterprise
         $this->app->bind(
-            \App\Context\V1\Modules\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface::class,
-            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Repositories\EloquentEnterpriseRepository::class
+            \App\Context\V1\Modules\Clients\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface::class,
+            \App\Context\V1\Modules\Clients\Enterprise\Infrastructure\Eloquent\Repositories\EloquentEnterpriseRepository::class
         );
         $this->app->bind(
-            \App\Context\V1\Modules\Enterprise\Domain\Repositories\UserRepositoryInterface::class,
-            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Repositories\EloquentUserRepository::class
+            \App\Context\V1\Modules\Clients\Enterprise\Domain\Repositories\UserRepositoryInterface::class,
+            \App\Context\V1\Modules\Clients\Enterprise\Infrastructure\Eloquent\Repositories\EloquentUserRepository::class
         );
         $this->app->bind(
-            \App\Context\V1\Modules\Enterprise\Domain\Repositories\RoleRepositoryInterface::class,
-            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Repositories\EloquentRoleRepository::class
+            \App\Context\V1\Modules\Clients\Enterprise\Domain\Repositories\RoleRepositoryInterface::class,
+            \App\Context\V1\Modules\Clients\Enterprise\Infrastructure\Eloquent\Repositories\EloquentRoleRepository::class
         );
 
         // Menu

@@ -106,12 +106,12 @@ return new class extends Migration
                 WITH CHECK (tenant_id = auth.tenant_id());
 
             CREATE OR REPLACE FUNCTION auth.resolve_session(token text)
-            RETURNS TABLE(tenant_id uuid, user_id uuid, capabilities text[], platform_admin boolean)
+            RETURNS TABLE(tenant_id uuid, user_id uuid, capabilities text[], platform_admin boolean, expires_at timestamptz)
             LANGUAGE sql
             SECURITY DEFINER
             SET search_path = pg_catalog
             AS $$
-                SELECT s.tenant_id, s.user_id, m.capabilities, u.platform_admin
+                SELECT s.tenant_id, s.user_id, m.capabilities, u.platform_admin, s.expires_at
                 FROM auth.sessions s
                 JOIN auth.tenant_memberships m
                     ON m.tenant_id = s.tenant_id
