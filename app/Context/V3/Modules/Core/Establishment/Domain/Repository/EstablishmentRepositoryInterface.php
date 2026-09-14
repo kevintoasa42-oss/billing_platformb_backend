@@ -24,4 +24,28 @@ interface EstablishmentRepositoryInterface
     public function findByLegacyId(int $legacyId): ?Establishment;
 
     public function deleteByLegacyId(int $legacyId): bool;
+
+    /**
+     * Check if an establishment with the given SRI code already exists.
+     */
+    public function sriCodeExists(string $sriCode): bool;
+
+    /**
+     * Get the tenant's company ID (first company).
+     */
+    public function getTenantCompanyId(): ?string;
+
+    /**
+     * Create a branch (establishment) with an optional emission point.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function createBranch(array $data): ?Establishment;
+
+    /**
+     * Update a branch (establishment) by legacy ID, with an optional emission point update.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function updateBranch(int $legacyId, array $data): ?Establishment;
 }

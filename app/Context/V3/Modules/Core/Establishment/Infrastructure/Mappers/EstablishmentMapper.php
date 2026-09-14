@@ -4,6 +4,7 @@ namespace App\Context\V3\Modules\Core\Establishment\Infrastructure\Mappers;
 
 use App\Context\V3\Modules\Core\Establishment\Domain\Models\Establishment;
 use App\Context\V3\Modules\Core\Establishment\Infrastructure\Laravel\Eloquent\Models\EstablishmentModel;
+use Illuminate\Support\Facades\DB;
 
 class EstablishmentMapper
 {
@@ -31,11 +32,76 @@ class EstablishmentMapper
         ]);
     }
 
+    /**
+     * Build Establishment with nested issuance_points (branch shape).
+     *
+     * Requires the `emissionPoints` relation to be eager-loaded on the model.
+     */
+    public function toBranchDomain(EstablishmentModel $record): Establishment
+    {
+        $points = [];
+        if ($record->relationLoaded('emissionPoints')) {
+            $points = $record->emissionPoints
+                ->sortBy('legacy_id')
+                ->map(function ($point) use ($record): array {
+                    $last = (int) (DB::connection('master_v3')
+                        ->table('fiscal.sequences')
+                        ->where('emission_point_id', $point->id)
+                        ->where('document_type', 'invoice')
+                        ->value('last_number') ?? 0);
+
+                    return [
+                        'id' => (int) $point->legacy_id,
+                        'branch_id' => (int) $record->legacy_id,
+                        'name' => trim((string) ($point->name ?? '')) !== '' ? $point->name : 'Punto '.$point->sri_code,
+                        'issuance_point_number' => (string) $point->sri_code,
+                        'is_active' => (bool) $point->is_active,
+                        'is_default' => (bool) $point->is_default,
+                        'has_tax_validity' => (bool) $point->has_tax_validity,
+                        'last_issued_sequential' => $last,
+                        'next_sequential' => $last + 1,
+                    ];
+                })
+                ->values()
+                ->all();
+        }
+
+        return new Establishment(
+            id: (string) $record->id,
+            tenantId: (string) $record->tenant_id,
+            companyId: (string) $record->company_id,
+            sriCode: (string) $record->sri_code,
+            name: $record->name,
+            legacyId: (int) $record->legacy_id,
+            branchCode: $record->branch_code ?? $record->sri_code,
+            address: $record->address,
+            phone: $record->phone,
+            email: $record->email,
+            cityId: $record->city_id !== null ? (int) $record->city_id : null,
+            isActive: (bool) $record->is_active,
+            issuancePoints: $points,
+        );
+    }
+
     public function toDomainList(iterable $records): array
     {
         $list = [];
         foreach ($records as $record) {
             $list[] = $this->toDomain($record);
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param  iterable<int, EstablishmentModel>  $records
+     * @return array<int, Establishment>
+     */
+    public function toBranchDomainList(iterable $records): array
+    {
+        $list = [];
+        foreach ($records as $record) {
+            $list[] = $this->toBranchDomain($record);
         }
 
         return $list;
