@@ -5,10 +5,15 @@ namespace App\Context\V3\Modules\Core\Product\Infrastructure\Postgres;
 use App\Context\V3\Modules\Core\Product\Domain\Models\Product;
 use App\Context\V3\Modules\Core\Product\Domain\Repository\ProductRepositoryInterface;
 use App\Context\V3\Modules\Core\Product\Infrastructure\Laravel\Eloquent\Models\ProductModel;
+use App\Context\V3\Modules\Core\Product\Infrastructure\Mappers\ProductMapper;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository implements ProductRepositoryInterface
 {
+    public function __construct(
+        private readonly ProductMapper $mapper,
+    ) {}
+
     public function all(?string $search = null, int $limit = 500): array
     {
         $query = ProductModel::query()->with('taxAssignments')->limit($limit);
@@ -19,7 +24,7 @@ class ProductRepository implements ProductRepositoryInterface
 
         $records = $query->orderBy('name')->get();
 
-        return $records->map(fn (ProductModel $record): Product => $this->toDomain($record))->all();
+        return $this->mapper->toDomainList($records);
     }
 
     public function findByLegacyId(int $legacyId): ?Product
@@ -28,7 +33,7 @@ class ProductRepository implements ProductRepositoryInterface
             ->where('legacy_id', $legacyId)
             ->first();
 
-        return $record !== null ? $this->toDomain($record) : null;
+        return $record !== null ? $this->mapper->toDomain($record) : null;
     }
 
     public function create(array $data): Product
@@ -38,7 +43,7 @@ class ProductRepository implements ProductRepositoryInterface
             $record->refresh();
             $record->load('taxAssignments');
 
-            return $this->toDomain($record);
+            return $this->mapper->toDomain($record);
         });
     }
 
@@ -55,7 +60,7 @@ class ProductRepository implements ProductRepositoryInterface
             $record->refresh();
             $record->load('taxAssignments');
 
-            return $this->toDomain($record);
+            return $this->mapper->toDomain($record);
         });
     }
 
@@ -72,7 +77,7 @@ class ProductRepository implements ProductRepositoryInterface
             $record->refresh();
             $record->load('taxAssignments');
 
-            return $this->toDomain($record);
+            return $this->mapper->toDomain($record);
         });
     }
 
@@ -102,39 +107,6 @@ class ProductRepository implements ProductRepositoryInterface
                 ->where('legacy_id', '<>', $exclude)
                 ->exists(),
         ];
-    }
-
-    private function toDomain(ProductModel $record): Product
-    {
-        $taxes = [];
-        if ($record->relationLoaded('taxAssignments')) {
-            $taxes = $record->taxAssignments->where('is_active', true)->map(fn ($t): array => [
-                'id' => (int) $t->legacy_id,
-                'product_id' => (int) $record->legacy_id,
-                'sri_iva_type_id' => (int) $t->sri_iva_type_id,
-                'tax_name' => $t->tax_name,
-                'percentage' => (string) $t->percentage,
-                'sri_code' => $t->sri_code,
-                'is_active' => (bool) $t->is_active,
-            ])->values()->all();
-        }
-
-        return new Product(
-            uuid: (string) $record->id,
-            id: (int) $record->legacy_id,
-            name: $record->name,
-            referencePrice: (string) $record->unit_price,
-            unitPrice: (string) $record->unit_price,
-            sriPrincipalCode: $record->sri_principal_code,
-            isActive: (bool) $record->is_active,
-            type: $record->type,
-            barcode: $record->barcode,
-            auxiliaryCode: $record->auxiliary_code,
-            otherCode: $record->other_code,
-            description: $record->description,
-            activityId: $record->activity_id,
-            taxes: $taxes,
-        );
     }
 
     private function nullableText(mixed $value): ?string
