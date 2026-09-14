@@ -13,11 +13,15 @@ use Illuminate\Support\Facades\Route;
  */
 Route::patch('customer-settings', [CustomerSettingsController::class, 'update']);
 
-Route::get('payment-method-settings', [PaymentMethodSettingsController::class, 'index']);
-Route::patch('payment-method-settings/{code}', [PaymentMethodSettingsController::class, 'update']);
+Route::prefix('payment-method-settings')->group(function (): void {
+    Route::get('/', [PaymentMethodSettingsController::class, 'index']);
+    Route::patch('/{code}', [PaymentMethodSettingsController::class, 'update']);
+});
 
-Route::get('additional-info-presets', [AdditionalInfoPresetController::class, 'index']);
-Route::get('additional-info-presets/available', [AdditionalInfoPresetController::class, 'available']);
-Route::post('additional-info-presets', [AdditionalInfoPresetController::class, 'store']);
-Route::patch('additional-info-presets/{id}', [AdditionalInfoPresetController::class, 'update'])->whereNumber('id');
-Route::delete('additional-info-presets/{id}', [AdditionalInfoPresetController::class, 'destroy'])->whereNumber('id');
+Route::prefix('additional-info-presets')->group(function (): void {
+    Route::get('/', [AdditionalInfoPresetController::class, 'index']);
+    Route::get('/available', [AdditionalInfoPresetController::class, 'available']);
+    Route::post('/', [AdditionalInfoPresetController::class, 'store']);
+    Route::patch('/{id}', [AdditionalInfoPresetController::class, 'update'])->whereNumber('id');
+    Route::delete('/{id}', [AdditionalInfoPresetController::class, 'destroy'])->whereNumber('id');
+});
