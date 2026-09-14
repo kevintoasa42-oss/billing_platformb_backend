@@ -17,8 +17,12 @@ Autenticación: cookie de sesión (enviada automáticamente por el navegador/cur
 | 7 | [Emission Points](#emission-points) | `GET/POST /core/emission-points`, `GET/PATCH /core/emission-points/{id}` |
 | 8 | [Vehicles](#vehicles) | `GET/POST /core/vehicles`, `GET/PATCH /core/vehicles/{id}` |
 | 9 | [Economic Activities](#economic-activities) | `GET/POST /core/economic-activities`, `GET/PATCH /core/economic-activities/{id}` |
-| 10 | [Notifications](#notifications) | `POST /core/notifications/test-email` |
-| 11 | [Notas](#notas) | Notas técnicas generales |
+| 10 | [SRI IVA Types](#sri-iva-types) | `GET/POST /core/sri-iva-types`, `PATCH/DELETE /core/sri-iva-types/{id}`, `GET/POST /core/sri-iva-types/{type}/percentages`, `PATCH/DELETE /core/sri-iva-percentages/{id}` |
+| 11 | [Products](#products) | `GET/POST /core/products`, `PATCH/DELETE /core/products/{id}`, `PATCH /core/products/{id}/status`, `GET /core/products/duplicates` |
+| 12 | [Product Taxes](#product-taxes) | `POST /core/products/{product}/taxes`, `DELETE /core/products/{product}/taxes/{tax}` |
+| 13 | [Product Settings](#product-settings) | `GET/POST /core/product-settings` |
+| 14 | [Notifications](#notifications) | `POST /core/notifications/test-email` |
+| 15 | [Notas](#notas) | Notas técnicas generales |
 
 ---
 
@@ -1305,6 +1309,580 @@ Actualiza una actividad económica.
 ```
 
 > **Bug conocido:** Cambiar `catalog_version` de `synthetic-lab-v1` a `staging-legacy-v1` falla con HTTP 500 (`economic_activities_catalog_version_check` check constraint). La validación de la request permite ambos valores, pero la BD solo permite `synthetic-lab-v1` en updates.
+
+---
+
+## SRI IVA Types
+
+### GET /core/sri-iva-types
+
+Lista los tipos de IVA del tenant.
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Tipos de IVA cargados.",
+  "data": [
+    {
+      "id": 1,
+      "name": "IVA 15%",
+      "percentage": "15.00",
+      "sri_code": "IVA15",
+      "is_active": true,
+      "percentages": []
+    }
+  ]
+}
+```
+
+---
+
+### POST /core/sri-iva-types
+
+Crea un tipo de IVA.
+
+**Request body:**
+```json
+{
+  "name": "IVA 15% (required, string, max 100)",
+  "percentage": 15 (required, numeric, 0-100),
+  "sri_code": "IVA15" (required, string, max 10)
+}
+```
+
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Tipo de IVA creado.",
+  "data": {
+    "id": 1,
+    "name": "IVA 15%",
+    "percentage": "15.00",
+    "sri_code": "IVA15",
+    "is_active": true,
+    "percentages": []
+  }
+}
+```
+
+**Response 422:** validation error.
+
+---
+
+### PATCH /core/sri-iva-types/{id}
+
+Actualiza un tipo de IVA.
+
+**URL param:** `id` (numérico)
+
+**Request body:**
+```json
+{
+  "name": "IVA Actualizado (sometimes, string, max 100)"
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Tipo de IVA actualizado.",
+  "data": {
+    "id": 1,
+    "name": "IVA Actualizado",
+    "percentage": "15.00",
+    "sri_code": "IVA15",
+    "is_active": true,
+    "percentages": []
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "SRI IVA Type not found.",
+  "data": null
+}
+```
+
+---
+
+### DELETE /core/sri-iva-types/{id}
+
+Desactiva (soft delete) un tipo de IVA.
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Tipo de IVA desactivado.",
+  "data": null
+}
+```
+
+**Response 404:** `SRI IVA Type not found.`
+
+---
+
+### GET /core/sri-iva-types/{type}/percentages
+
+Lista los porcentajes de un tipo de IVA.
+
+**URL param:** `type` (numérico, ID del tipo)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Porcentajes de IVA cargados.",
+  "data": [
+    {
+      "id": 1,
+      "sri_iva_type_id": 1,
+      "percentage": "15.00",
+      "start_date": "2026-01-01",
+      "end_date": null,
+      "code": "P15",
+      "is_active": true
+    }
+  ]
+}
+```
+
+---
+
+### POST /core/sri-iva-types/{type}/percentages
+
+Crea un porcentaje de IVA para un tipo.
+
+**Request body:**
+```json
+{
+  "percentage": 15 (required, numeric, 0-100),
+  "start_date": "2026-01-01" (required, date),
+  "end_date": null (nullable, date, >= start_date),
+  "code": "P15" (nullable, string, max 20)
+}
+```
+
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Porcentaje de IVA creado.",
+  "data": {
+    "id": 1,
+    "sri_iva_type_id": 1,
+    "percentage": "15.00",
+    "start_date": "2026-01-01",
+    "end_date": null,
+    "code": "P15",
+    "is_active": true
+  }
+}
+```
+
+**Response 422:** validation error (ej: `The start date field is required.`)
+
+---
+
+### PATCH /core/sri-iva-percentages/{id}
+
+Actualiza un porcentaje de IVA.
+
+**URL param:** `id` (numérico)
+
+**Request body:**
+```json
+{
+  "percentage": 12 (sometimes, numeric, 0-100),
+  "start_date": "2026-01-01" (sometimes, date),
+  "end_date": null (nullable, date, >= start_date),
+  "code": "P12" (sometimes, string, max 20)
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Porcentaje de IVA actualizado.",
+  "data": {
+    "id": 1,
+    "sri_iva_type_id": 1,
+    "percentage": "12.00",
+    "start_date": "2026-01-01",
+    "end_date": null,
+    "code": "P12",
+    "is_active": true
+  }
+}
+```
+
+---
+
+### DELETE /core/sri-iva-percentages/{id}
+
+Desactiva (soft delete) un porcentaje de IVA.
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Porcentaje de IVA desactivado.",
+  "data": null
+}
+```
+
+---
+
+## Products
+
+### GET /core/products
+
+Lista los productos del tenant.
+
+**Query params:**
+- `search` o `q`: texto para buscar por nombre (opcional)
+- `per_page`: límite de resultados (default 500)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Productos cargados.",
+  "data": [
+    {
+      "id": 1,
+      "uuid": "01a0a183-df11-71b1-b4f4-5dc3162493b0",
+      "name": "Producto Test",
+      "reference_price": "10.500000",
+      "unit_price": "10.500000",
+      "sri_principal_code": "P1",
+      "is_active": true,
+      "type": "product",
+      "barcode": "BAR001",
+      "auxiliary_code": null,
+      "other_code": null,
+      "description": null,
+      "taxes": []
+    }
+  ]
+}
+```
+
+> `sri_principal_code` se autogenera como `P` + `legacy_id` (trigger en BD). Es inmutable después de creado.
+
+---
+
+### POST /core/products
+
+Crea un producto.
+
+**Request body:**
+```json
+{
+  "name": "Producto Test (required, string, max 200)",
+  "reference_price": 10.50 (required, numeric, min 0, decimal 0-6),
+  "activity_id": "A1234B" (required, string, max 100, debe existir en economic_activities),
+  "barcode": "BAR001" (nullable, string, max 100),
+  "auxiliary_code": "AUX01" (nullable, string, max 50),
+  "other_code": "OTH01" (nullable, string, max 50),
+  "description": "Descripción" (nullable, string),
+  "type": "product" (nullable, in: product, service),
+  "is_active": true (nullable, boolean),
+  "sri_iva_type_ids": [1, 2] (nullable, array of integers)
+}
+```
+
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Producto creado.",
+  "data": {
+    "id": 1,
+    "uuid": "01a0a183-df11-71b1-b4f4-5dc3162493b0",
+    "name": "Producto Test",
+    "reference_price": "10.500000",
+    "unit_price": "10.500000",
+    "sri_principal_code": "P1",
+    "is_active": true,
+    "type": "product",
+    "barcode": "BAR001",
+    "auxiliary_code": null,
+    "other_code": null,
+    "description": null,
+    "taxes": []
+  }
+}
+```
+
+**Response 422:** validation error (ej: `The name field is required.`)
+
+---
+
+### PATCH /core/products/{id}
+
+Actualiza un producto.
+
+**URL param:** `id` (numérico, legacy_id)
+
+**Request body (cualquier combinación):**
+```json
+{
+  "name": "Producto Actualizado (sometimes, string, max 200)",
+  "reference_price": 20.00 (sometimes, numeric, min 0),
+  "activity_id": "A1234B" (sometimes, string, max 100),
+  "barcode": "BAR002" (nullable, string, max 100),
+  "auxiliary_code": "AUX02" (nullable, string, max 50),
+  "other_code": "OTH02" (nullable, string, max 50),
+  "description": "Nueva descripción" (nullable, string),
+  "type": "service" (sometimes, in: product, service),
+  "is_active": true (sometimes, boolean),
+  "sri_iva_type_ids": [1] (nullable, array of integers)
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Producto actualizado.",
+  "data": {
+    "id": 1,
+    "uuid": "01a0a183-df11-71b1-b4f4-5dc3162493b0",
+    "name": "Producto Actualizado",
+    "reference_price": "20.000000",
+    "unit_price": "20.000000",
+    "sri_principal_code": "P1",
+    "is_active": true,
+    "type": "product",
+    "barcode": "BAR001",
+    "auxiliary_code": null,
+    "other_code": null,
+    "description": null,
+    "taxes": []
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "No se encontró el producto solicitado.",
+  "data": { "code": "product_not_found" }
+}
+```
+
+---
+
+### PATCH /core/products/{id}/status
+
+Cambia el estado activo/inactivo de un producto.
+
+**URL param:** `id` (numérico, legacy_id)
+
+**Request body:**
+```json
+{
+  "is_active": false (boolean, default true)
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Estado del producto actualizado.",
+  "data": { "...producto con is_active actualizado..." }
+}
+```
+
+**Response 404:** `No se encontró el producto solicitado.`
+
+---
+
+### DELETE /core/products/{id}
+
+Desactiva (soft delete) un producto. Equivalente a `PATCH /{id}/status` con `is_active: false`.
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Producto desactivado.",
+  "data": { "...producto con is_active: false..." }
+}
+```
+
+**Response 404:** `No se encontró el producto solicitado.`
+
+---
+
+### GET /core/products/duplicates
+
+Verifica disponibilidad de barcode, auxiliary_code y name.
+
+**Query params:**
+- `barcode`: valor a verificar (opcional)
+- `auxiliary_code`: valor a verificar (opcional)
+- `name`: valor a verificar (opcional)
+- `exclude_id`: legacy_id a excluir de la verificación (opcional, default 0)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Disponibilidad del producto verificada.",
+  "data": {
+    "barcode_exists": true,
+    "auxiliary_code_exists": false,
+    "name_exists": false
+  }
+}
+```
+
+---
+
+## Product Taxes
+
+### POST /core/products/{product}/taxes
+
+Asigna un impuesto (tipo de IVA) a un producto.
+
+**URL param:** `product` (numérico, legacy_id del producto)
+
+**Request body:**
+```json
+{
+  "sri_iva_type_id": 2 (required, integer, ID del tipo de IVA),
+  "tax_name": "IVA 0%" (nullable, string, max 100),
+  "percentage": 0 (nullable, numeric, 0-100, decimal 0-6),
+  "sri_code": "IVA0" (nullable, string, max 25),
+  "sri_iva_percentage_id": null (nullable, integer)
+}
+```
+
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Impuesto del producto guardado.",
+  "data": {
+    "id": 1,
+    "product_id": 1,
+    "sri_iva_type_id": 2,
+    "tax_name": "IVA 0%",
+    "percentage": "0.000000",
+    "sri_code": "IVA0",
+    "is_active": true,
+    "sri_iva_type": null
+  }
+}
+```
+
+**Response 422:** validation error (ej: `The sri iva type id field is required.`)
+
+**Response 500:** si el tipo de IVA ya está asignado al producto: `This tax type is already assigned to the product.`
+
+> El impuesto aparece anidado en el campo `taxes` del producto cuando se hace `GET /core/products`.
+
+---
+
+### DELETE /core/products/{product}/taxes/{tax}
+
+Desactiva (soft delete) un impuesto asignado a un producto.
+
+**URL params:**
+- `product` (numérico, legacy_id del producto)
+- `tax` (numérico, legacy_id del tax assignment o sri_iva_type_id)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Impuesto del producto eliminado.",
+  "data": { "deleted": true }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "No se encontró el impuesto solicitado.",
+  "data": { "code": "product_tax_not_found" }
+}
+```
+
+---
+
+## Product Settings
+
+### GET /core/product-settings
+
+Obtiene la configuración de productos del tenant.
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Configuración de productos cargada.",
+  "data": {
+    "allow_duplicate_names": false,
+    "require_barcode": false,
+    "require_auxiliary_code": false,
+    "auxiliary_code_prefix": "",
+    "default_product_type": "product",
+    "default_iva_type_id": null,
+    "require_description": false
+  }
+}
+```
+
+---
+
+### POST /core/product-settings
+
+Actualiza la configuración de productos del tenant.
+
+**Request body:**
+```json
+{
+  "allow_duplicate_names": true (required, boolean),
+  "require_barcode": false (required, boolean),
+  "require_auxiliary_code": false (required, boolean),
+  "auxiliary_code_prefix": "PRE" (nullable, string, max 20, regex: ^[A-Za-z0-9._-]*$),
+  "default_product_type": "product" (required, in: product, service),
+  "default_iva_type_id": 2 (nullable, integer),
+  "require_description": false (required, boolean)
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Configuración de productos guardada.",
+  "data": {
+    "allow_duplicate_names": true,
+    "require_barcode": false,
+    "require_auxiliary_code": false,
+    "auxiliary_code_prefix": "PRE",
+    "default_product_type": "product",
+    "default_iva_type_id": 2,
+    "require_description": false
+  }
+}
+```
+
+**Response 422:** validation error (todos los campos boolean son required).
 
 ---
 
