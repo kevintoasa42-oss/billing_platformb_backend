@@ -8,9 +8,9 @@ Autenticación: cookie de sesión (enviada automáticamente por el navegador/cur
 
 | # | Sección | Endpoints |
 |---|---------|-----------|
-| 1 | [Auth](#auth) | `POST /auth/challenges`, `POST /auth/session`, `DELETE /auth/session`, `GET /auth/me` |
-| 2 | [Carrier Establishments](#carrier-establishments) | `GET/POST /core/carrier-establishments`, `GET/PATCH /core/carrier-establishments/{id}` |
-| 3 | [Carrier Emission Points](#carrier-emission-points) | `GET/POST /core/carrier-emission-points`, `GET/PATCH /core/carrier-emission-points/{id}` |
+| 1 | [Auth](#auth) | `POST /auth/challenges`, `POST /auth/sessions`, `GET /auth/me`, `POST /auth/refresh`, `POST /auth/switch-enterprise`, `DELETE /auth/session` |
+| 2 | [Carrier Establishments](#carrier-establishments) | `GET/POST /core/carrier-establishments`, `GET /core/carrier-establishments/{id}`, `GET /core/carrier-establishments/{id}/emission-points` |
+| 3 | [Carrier Emission Points](#carrier-emission-points) | `GET/POST /core/carrier-emission-points`, `GET /core/carrier-emission-points/{id}` |
 | 4 | [Carrier Affiliations](#carrier-affiliations) | `GET/POST /core/carrier-affiliations`, `GET/PATCH /core/carrier-affiliations/{id}` |
 | 5 | [Companies](#companies) | `GET/POST /core/companies`, `GET/PATCH /core/companies/{id}` |
 | 6 | [Vehicles](#vehicles) | `GET/POST /core/vehicles`, `GET/PATCH /core/vehicles/{id}` |
@@ -22,7 +22,10 @@ Autenticación: cookie de sesión (enviada automáticamente por el navegador/cur
 | 12 | [Branches](#branches) | `GET/POST /core/branches`, `PATCH/DELETE /core/branches/{id}`, `GET/POST /core/branches/{branch}/issuance-points`, `GET /core/branches/{branch}/issuance-points/{point}/next-sequential` |
 | 13 | [Issuance Points](#issuance-points) | `PATCH/DELETE /core/issuance-points/{id}` |
 | 14 | [Notifications](#notifications) | `POST /core/notifications/test-email` |
-| 15 | [Notas](#notas) | Notas técnicas generales |
+| 15 | [Customer Settings](#customer-settings) | `PATCH /core/customer-settings` |
+| 16 | [Payment Method Settings](#payment-method-settings) | `GET /core/payment-method-settings`, `PATCH /core/payment-method-settings/{code}` |
+| 17 | [Additional Info Presets](#additional-info-presets) | `GET /core/additional-info-presets`, `GET /core/additional-info-presets/available`, `POST /core/additional-info-presets`, `PATCH/DELETE /core/additional-info-presets/{id}` |
+| 18 | [Notas](#notas) | Notas técnicas generales |
 
 ---
 
@@ -30,13 +33,98 @@ Autenticación: cookie de sesión (enviada automáticamente por el navegador/cur
 
 ### POST /auth/challenges
 
-Inicia sesión y crea una sesión cookie.
+Inicia sesión con email/password. Si el usuario tiene una sola empresa, crea la sesión automáticamente. Si tiene múltiples, devuelve un challenge cookie para completar con `POST /auth/sessions`.
 
 **Request body:**
 ```json
 {
-  "email": "admin@billing-v3.local",
-  "password": "Admin123!"
+  "email": "admin@billing-v3.local (required, email, max 150)",
+  "password": "Admin123! (required, string, min 8)"
+}
+```
+
+**Response 200 (una sola empresa — sesión creada):**
+```json
+{
+  "status": true,
+  "message": "Sesión creada.",
+  "data": {
+    "user": {
+      "id": 1,
+      "uuid": "d2ac88c1-759e-405c-8f89-6315da9ed6f7",
+      "legacy_id": 1,
+      "name": "Administrador V3",
+      "email": "admin@billing-v3.local",
+      "first_name": "Administrador",
+      "last_name": "V3",
+      "full_name": "Administrador V3",
+      "phone": null,
+      "platform_admin": true,
+      "active": true,
+      "is_platform_admin": true,
+      "is_super_admin": false,
+      "is_active": true,
+      "platform_admin_enterprise_ids": [1]
+    },
+    "enterprise": {
+      "id": 1,
+      "uuid": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "legacy_id": 1,
+      "name": "Empresa V3 Demo",
+      "legal_name": "Empresa V3 Demo",
+      "trade_name": "Empresa V3 Demo",
+      "short_name": "Empresa V3 Demo",
+      "ruc": "1790000000001",
+      "matrix_address": null,
+      "operations_start_date": null,
+      "city_id": null,
+      "phone": null,
+      "corporate_email": null
+    },
+    "enterprises": [
+      { "id": 1, "uuid": "...", "name": "Empresa V3 Demo", "ruc": "1790000000001" }
+    ],
+    "platform_admin_enterprise_ids": [1],
+    "expires_at": "2026-09-15 00:13:34",
+    "requires_enterprise": false,
+    "session_ready": true
+  }
+}
+```
+
+**Response 200 (múltiples empresas — requiere selección):**
+```json
+{
+  "status": true,
+  "message": "Credenciales verificadas.",
+  "data": {
+    "user": { "id": 1, "name": "...", "email": "..." },
+    "enterprises": [
+      { "id": 1, "name": "Empresa A", "ruc": "..." },
+      { "id": 2, "name": "Empresa B", "ruc": "..." }
+    ],
+    "requires_enterprise": true,
+    "session_ready": false
+  }
+}
+```
+
+Set-Cookie: `billing_v3_session=...` (si sesión creada) o `billing_v3_challenge=...` (si requiere selección).
+
+**Response 401:** credenciales inválidas.
+
+**Response 422:** validación de campos.
+
+---
+
+### POST /auth/sessions
+
+Completa la sesión después de seleccionar empresa cuando `POST /auth/challenges` devuelve `requires_enterprise: true`. Requiere el challenge cookie.
+
+**Request body:**
+```json
+{
+  "enterprise_id": "uuid-de-la-empresa (required, string, max 36)"
 }
 ```
 
@@ -46,28 +134,17 @@ Inicia sesión y crea una sesión cookie.
   "status": true,
   "message": "Sesión creada.",
   "data": {
-    "user": {
-      "id": "uuid",
-      "legacy_id": 1,
-      "name": "Administrador V3",
-      "email": "admin@billing-v3.local",
-      "first_name": "Administrador",
-      "last_name": "V3",
-      "platform_admin": true,
-      "active": true
-    },
-    "enterprise": {
-      "id": "uuid",
-      "legacy_id": 1,
-      "name": "Empresa V3 Demo",
-      "ruc": "1790000000001"
-    },
-    "expires_at": "2026-09-14 16:35:53",
-    "requires_enterprise": false,
+    "user": { "id": 1, "uuid": "...", "name": "...", "email": "..." },
+    "enterprise": { "id": 1, "uuid": "...", "name": "...", "ruc": "..." },
+    "expires_at": "2026-09-15 00:13:34",
     "session_ready": true
   }
 }
 ```
+
+Set-Cookie: `billing_v3_session=...` (reemplaza el challenge cookie).
+
+**Response 500:** `El desafío de autenticación expiró.` — si no hay challenge cookie válida.
 
 ---
 
@@ -83,12 +160,106 @@ Devuelve la sesión activa del usuario autenticado.
   "status": true,
   "message": "Sesión activa.",
   "data": {
-    "user": { "id": "uuid", "name": "...", "email": "..." },
-    "enterprise": { "id": "uuid", "name": "...", "ruc": "..." },
-    "expires_at": "2026-09-14 16:35:53+00"
+    "user": {
+      "id": 1,
+      "uuid": "d2ac88c1-759e-405c-8f89-6315da9ed6f7",
+      "legacy_id": 1,
+      "name": "Administrador V3",
+      "email": "admin@billing-v3.local",
+      "first_name": "Administrador",
+      "last_name": "V3",
+      "full_name": "Administrador V3",
+      "phone": null,
+      "platform_admin": true,
+      "active": true,
+      "is_platform_admin": true,
+      "is_super_admin": false,
+      "is_active": true,
+      "platform_admin_enterprise_ids": [1]
+    },
+    "enterprise": {
+      "id": 1,
+      "uuid": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "legacy_id": 1,
+      "name": "Empresa V3 Demo",
+      "legal_name": "Empresa V3 Demo",
+      "trade_name": "Empresa V3 Demo",
+      "short_name": "Empresa V3 Demo",
+      "ruc": "1790000000001",
+      "matrix_address": null,
+      "operations_start_date": null,
+      "city_id": null,
+      "phone": null,
+      "corporate_email": null
+    },
+    "enterprises": [
+      { "id": 1, "uuid": "...", "name": "Empresa V3 Demo", "ruc": "1790000000001" }
+    ],
+    "platform_admin_enterprise_ids": [1],
+    "expires_at": "2026-09-15 00:13:34+00"
   }
 }
 ```
+
+**Response 401:** sesión no válida.
+
+---
+
+### POST /auth/refresh
+
+Renueva la sesión actual, extendiendo `expires_at`. Reemplaza el cookie de sesión con uno nuevo.
+
+**Request body:** ninguno
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Sesión renovada.",
+  "data": {
+    "user": {
+      "id": 1,
+      "uuid": "d2ac88c1-759e-405c-8f89-6315da9ed6f7",
+      "legacy_id": 1,
+      "name": "Administrador V3",
+      "email": "admin@billing-v3.local",
+      "first_name": "Administrador",
+      "last_name": "V3",
+      "full_name": "Administrador V3",
+      "phone": null,
+      "platform_admin": true,
+      "active": true,
+      "is_platform_admin": true,
+      "is_super_admin": false,
+      "is_active": true,
+      "platform_admin_enterprise_ids": [1]
+    },
+    "enterprise": {
+      "id": 1,
+      "uuid": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "legacy_id": 1,
+      "name": "Empresa V3 Demo",
+      "legal_name": "Empresa V3 Demo",
+      "trade_name": "Empresa V3 Demo",
+      "short_name": "Empresa V3 Demo",
+      "ruc": "1790000000001",
+      "matrix_address": null,
+      "operations_start_date": null,
+      "city_id": null,
+      "phone": null,
+      "corporate_email": null
+    },
+    "enterprises": [
+      { "id": 1, "uuid": "...", "name": "Empresa V3 Demo", "ruc": "1790000000001" }
+    ],
+    "platform_admin_enterprise_ids": [1],
+    "expires_at": "2026-09-15 00:13:34",
+    "session_ready": true
+  }
+}
+```
+
+Set-Cookie: `billing_v3_session=...` (nuevo token — el cookie anterior se invalida).
 
 **Response 401:** sesión no válida.
 
@@ -101,7 +272,7 @@ Cambia la empresa activa de la sesión.
 **Request body:**
 ```json
 {
-  "enterprise_id": "uuid-de-la-empresa"
+  "enterprise_id": "uuid-de-la-empresa (required, string, max 36)"
 }
 ```
 
@@ -111,12 +282,52 @@ Cambia la empresa activa de la sesión.
   "status": true,
   "message": "Empresa activa cambiada.",
   "data": {
-    "user": { "id": "uuid", "name": "..." },
-    "enterprise": { "id": "uuid", "name": "..." },
-    "expires_at": "2026-09-14 16:35:53"
+    "user": {
+      "id": 1,
+      "uuid": "d2ac88c1-759e-405c-8f89-6315da9ed6f7",
+      "legacy_id": 1,
+      "name": "Administrador V3",
+      "email": "admin@billing-v3.local",
+      "first_name": "Administrador",
+      "last_name": "V3",
+      "full_name": "Administrador V3",
+      "phone": null,
+      "platform_admin": true,
+      "active": true,
+      "is_platform_admin": true,
+      "is_super_admin": false,
+      "is_active": true,
+      "platform_admin_enterprise_ids": [1]
+    },
+    "enterprise": {
+      "id": 1,
+      "uuid": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "legacy_id": 1,
+      "name": "Empresa V3 Demo",
+      "legal_name": "Empresa V3 Demo",
+      "trade_name": "Empresa V3 Demo",
+      "short_name": "Empresa V3 Demo",
+      "ruc": "1790000000001",
+      "matrix_address": null,
+      "operations_start_date": null,
+      "city_id": null,
+      "phone": null,
+      "corporate_email": null
+    },
+    "enterprises": [
+      { "id": 1, "uuid": "...", "name": "Empresa V3 Demo", "ruc": "1790000000001" }
+    ],
+    "platform_admin_enterprise_ids": [1],
+    "expires_at": "2026-09-15 00:13:42"
   }
 }
 ```
+
+Set-Cookie: `billing_v3_session=...` (nuevo token).
+
+**Response 401:** sesión no válida.
+
+**Response 422:** `enterprise_id` inválido.
 
 ---
 
@@ -134,6 +345,8 @@ Cierra la sesión actual.
   "data": null
 }
 ```
+
+Set-Cookie: `billing_v3_session=; expires=...` (cookie eliminado).
 
 ---
 
@@ -1810,6 +2023,314 @@ Envía un email de prueba.
 ```
 
 **Response 422:** validation error.
+
+---
+
+## Customer Settings
+
+### PATCH /core/customer-settings
+
+Guarda la configuración de clientes del tenant. Los campos no enviados se conservan (merge con valores existentes).
+
+**Request body:**
+```json
+{
+  "allow_multiple_plates": true
+}
+```
+
+| Campo | Tipo | Validación |
+|-------|------|------------|
+| `allow_multiple_plates` | boolean | nullable |
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Configuración de clientes guardada.",
+  "data": {
+    "allow_multiple_plates": true
+  }
+}
+```
+
+**Response 401:** sesión no válida.
+
+**Response 422:** validación de campos.
+
+---
+
+## Payment Method Settings
+
+### GET /core/payment-method-settings
+
+Lista los métodos de pago del tenant. Si no hay configuración guardada, se inicializan con los valores por defecto y se persisten.
+
+**Request body:** ninguno
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Métodos de pago cargados.",
+  "data": [
+    {
+      "code": "01",
+      "name": "Sin utilización del sistema financiero",
+      "alias": "Efectivo",
+      "display_name": "Efectivo",
+      "requires_term": false,
+      "is_active": true,
+      "is_default": true
+    },
+    {
+      "code": "19",
+      "name": "Tarjeta de crédito",
+      "alias": "Tarjeta de crédito",
+      "display_name": "Tarjeta de crédito",
+      "requires_term": false,
+      "is_active": true,
+      "is_default": false
+    }
+  ]
+}
+```
+
+---
+
+### PATCH /core/payment-method-settings/{code}
+
+Actualiza el alias y/o estado de un método de pago.
+
+**Path params:**
+- `code` — código del método de pago (ej: `01`, `19`)
+
+**Request body:**
+```json
+{
+  "alias": "Efectivo (nullable, string, max 100)",
+  "is_active": true
+}
+```
+
+| Campo | Tipo | Validación |
+|-------|------|------------|
+| `alias` | string | nullable, max 100 |
+| `is_active` | boolean | nullable |
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Método de pago actualizado.",
+  "data": {
+    "code": "01",
+    "name": "Sin utilización del sistema financiero",
+    "alias": "Efectivo",
+    "display_name": "Efectivo",
+    "requires_term": false,
+    "is_active": true,
+    "is_default": true
+  }
+}
+```
+
+**Response 404:** `El método de pago no existe.` — código no encontrado.
+
+---
+
+## Additional Info Presets
+
+### GET /core/additional-info-presets
+
+Lista todos los presets de datos adicionales del tenant (activos e inactivos).
+
+**Request body:** ninguno
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Datos adicionales cargados.",
+  "data": [
+    {
+      "id": 1,
+      "code": "DOC01",
+      "name": "Número de orden",
+      "default_value": null,
+      "auto_apply": false,
+      "value_editable": true,
+      "is_required": false,
+      "is_active": true,
+      "sort_order": 1,
+      "access_rules": [],
+      "can_view": true,
+      "can_edit": true,
+      "can_delete": true
+    }
+  ]
+}
+```
+
+---
+
+### GET /core/additional-info-presets/available
+
+Lista solo los presets activos (`is_active = true`).
+
+**Request body:** ninguno
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Datos adicionales disponibles.",
+  "data": [
+    {
+      "id": 1,
+      "code": "DOC01",
+      "name": "Número de orden",
+      "default_value": null,
+      "auto_apply": false,
+      "value_editable": true,
+      "is_required": false,
+      "is_active": true,
+      "sort_order": 1,
+      "access_rules": [],
+      "can_view": true,
+      "can_edit": true,
+      "can_delete": true
+    }
+  ]
+}
+```
+
+---
+
+### POST /core/additional-info-presets
+
+Crea un nuevo preset de dato adicional.
+
+**Request body:**
+```json
+{
+  "code": "DOC01 (nullable, string, max 50 — se autogenera si no se envía)",
+  "name": "Número de orden (nullable, string, max 150)",
+  "default_value": null,
+  "auto_apply": false,
+  "value_editable": true,
+  "is_required": false,
+  "is_active": true,
+  "sort_order": 1,
+  "access_rules": []
+}
+```
+
+| Campo | Tipo | Validación |
+|-------|------|------------|
+| `code` | string | nullable, max 50 |
+| `name` | string | nullable, max 150 |
+| `default_value` | string | nullable, max 500 |
+| `auto_apply` | boolean | nullable |
+| `value_editable` | boolean | nullable |
+| `is_required` | boolean | nullable |
+| `is_active` | boolean | nullable |
+| `sort_order` | integer | nullable, min 0 |
+| `access_rules` | array | nullable |
+
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Dato adicional creado.",
+  "data": {
+    "id": 2,
+    "code": "DOC01",
+    "name": "Número de orden",
+    "default_value": null,
+    "auto_apply": false,
+    "value_editable": true,
+    "is_required": false,
+    "is_active": true,
+    "sort_order": 1,
+    "access_rules": [],
+    "can_view": true,
+    "can_edit": true,
+    "can_delete": true
+  }
+}
+```
+
+---
+
+### PATCH /core/additional-info-presets/{id}
+
+Actualiza un preset existente. Solo se actualizan los campos enviados.
+
+**Path params:**
+- `id` — `legacy_id` del preset (integer)
+
+**Request body:**
+```json
+{
+  "code": "DOC01 (nullable, string, max 50)",
+  "name": "Número actualizado (nullable, string, max 150)",
+  "default_value": null,
+  "auto_apply": false,
+  "value_editable": true,
+  "is_required": true,
+  "is_active": true,
+  "sort_order": 1,
+  "access_rules": []
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Dato adicional actualizado.",
+  "data": {
+    "id": 2,
+    "code": "DOC01",
+    "name": "Número actualizado",
+    "default_value": null,
+    "auto_apply": false,
+    "value_editable": true,
+    "is_required": true,
+    "is_active": true,
+    "sort_order": 1,
+    "access_rules": [],
+    "can_view": true,
+    "can_edit": true,
+    "can_delete": true
+  }
+}
+```
+
+**Response 404:** `No se encontró el dato adicional.` — ID no encontrado.
+
+---
+
+### DELETE /core/additional-info-presets/{id}
+
+Desactiva un preset (`is_active = false`). No elimina el registro.
+
+**Path params:**
+- `id` — `legacy_id` del preset (integer)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Dato adicional desactivado.",
+  "data": {
+    "deleted": true
+  }
+}
+```
+
+**Response 404:** `No se encontró el dato adicional.` — ID no encontrado.
 
 ---
 
