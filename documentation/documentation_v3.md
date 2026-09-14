@@ -21,8 +21,10 @@ Autenticación: cookie de sesión (enviada automáticamente por el navegador/cur
 | 11 | [Products](#products) | `GET/POST /core/products`, `PATCH/DELETE /core/products/{id}`, `PATCH /core/products/{id}/status`, `GET /core/products/duplicates` |
 | 12 | [Product Taxes](#product-taxes) | `POST /core/products/{product}/taxes`, `DELETE /core/products/{product}/taxes/{tax}` |
 | 13 | [Product Settings](#product-settings) | `GET/POST /core/product-settings` |
-| 14 | [Notifications](#notifications) | `POST /core/notifications/test-email` |
-| 15 | [Notas](#notas) | Notas técnicas generales |
+| 14 | [Branches](#branches) | `GET/POST /core/branches`, `PATCH/DELETE /core/branches/{id}`, `GET/POST /core/branches/{branch}/issuance-points`, `GET /core/branches/{branch}/issuance-points/{point}/next-sequential` |
+| 15 | [Issuance Points](#issuance-points) | `PATCH/DELETE /core/issuance-points/{id}` |
+| 16 | [Notifications](#notifications) | `POST /core/notifications/test-email` |
+| 17 | [Notas](#notas) | Notas técnicas generales |
 
 ---
 
@@ -1886,6 +1888,278 @@ Actualiza la configuración de productos del tenant.
 
 ---
 
+## Branches
+
+### GET /core/branches
+
+Lista las sucursales (establishments) del tenant con sus puntos de emisión anidados.
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Sucursales cargadas.",
+  "data": [
+    {
+      "id": 1,
+      "name": "Matriz",
+      "branch_code": "001",
+      "sri_establishment_number": "001",
+      "address": "Av. Amazonas N1",
+      "phone": "0991112223",
+      "email": "matriz@demo.local",
+      "city_id": null,
+      "is_active": true,
+      "issuance_points": [
+        {
+          "id": 1,
+          "branch_id": 1,
+          "name": "Punto 1",
+          "issuance_point_number": "001",
+          "is_active": false,
+          "is_default": true,
+          "has_tax_validity": true,
+          "last_issued_sequential": 0,
+          "next_sequential": 1
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+### POST /core/branches
+
+Crea una sucursal (establishment).
+
+**Request body:**
+```json
+{
+  "company_id": "182db7da-... (required, UUID, debe existir en core.companies)",
+  "sri_code": "003" (required, string, 3 dígitos, único por tenant),
+  "name": "Sucursal Test" (required, string),
+  "address": "Av. Test" (optional, string),
+  "phone": "0999999999" (optional, string),
+  "email": "test@demo.local" (optional, string),
+  "city_id": null (optional)
+}
+```
+
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Sucursal creada.",
+  "data": {
+    "id": 4,
+    "name": "Sucursal Test",
+    "branch_code": "003",
+    "sri_establishment_number": "003",
+    "address": "Av. Test",
+    "phone": null,
+    "email": null,
+    "city_id": null,
+    "is_active": true,
+    "issuance_points": []
+  }
+}
+```
+
+**Response 422:** validation error o `El código de establecimiento ya está registrado.`
+
+---
+
+### PATCH /core/branches/{id}
+
+Actualiza una sucursal.
+
+**URL param:** `id` (numérico, legacy_id de la sucursal)
+
+**Request body:**
+```json
+{
+  "name": "Sucursal Actualizada" (sometimes, string),
+  "address": "Nueva dirección" (optional, string),
+  "phone": "0999999999" (optional, string),
+  "email": "nuevo@demo.local" (optional, string)
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Sucursal actualizada.",
+  "data": { "...sucursal actualizada..." }
+}
+```
+
+---
+
+### DELETE /core/branches/{id}
+
+Desactiva (soft delete) una sucursal.
+
+**URL param:** `id` (numérico, legacy_id)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Sucursal desactivada.",
+  "data": { "deleted": true }
+}
+```
+
+---
+
+### GET /core/branches/{branch}/issuance-points
+
+Lista los puntos de emisión de una sucursal.
+
+**URL param:** `branch` (numérico, legacy_id de la sucursal)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Puntos de emisión cargados.",
+  "data": [
+    {
+      "id": 1,
+      "branch_id": 1,
+      "name": "Punto 1",
+      "issuance_point_number": "001",
+      "is_active": true,
+      "is_default": false,
+      "has_tax_validity": true,
+      "last_issued_sequential": 0,
+      "next_sequential": 1
+    }
+  ]
+}
+```
+
+---
+
+### POST /core/branches/{branch}/issuance-points
+
+Crea un punto de emisión para una sucursal.
+
+**URL param:** `branch` (numérico, legacy_id)
+
+**Request body:**
+```json
+{
+  "sri_code": "001" (required, string, 3 dígitos),
+  "name": "Punto Test" (required, string)
+}
+```
+
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Punto de emisión creado.",
+  "data": {
+    "id": 4,
+    "branch_id": 4,
+    "name": "Punto Test",
+    "issuance_point_number": "001",
+    "is_active": true,
+    "is_default": false,
+    "has_tax_validity": true,
+    "last_issued_sequential": 0,
+    "next_sequential": 1
+  }
+}
+```
+
+---
+
+### GET /core/branches/{branch}/issuance-points/{point}/next-sequential
+
+Consulta el siguiente número de secuencia disponible para un punto de emisión.
+
+**URL params:**
+- `branch` (numérico, legacy_id de la sucursal)
+- `point` (numérico, legacy_id del punto de emisión)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Secuencial consultado.",
+  "data": {
+    "sequential_number": 1,
+    "sequential": "000000001",
+    "document_number": "003-001-000000001"
+  }
+}
+```
+
+> `document_number` tiene el formato `{establecimiento}-{puntoEmision}-{secuencial}`.
+
+---
+
+## Issuance Points
+
+### PATCH /core/issuance-points/{id}
+
+Actualiza un punto de emisión.
+
+**URL param:** `id` (numérico, legacy_id)
+
+**Request body:**
+```json
+{
+  "name": "Punto Actualizado" (sometimes, string),
+  "is_active": true (sometimes, boolean),
+  "is_default": false (sometimes, boolean),
+  "has_tax_validity": true (sometimes, boolean)
+}
+```
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Punto de emisión actualizado.",
+  "data": {
+    "id": 4,
+    "branch_id": 4,
+    "name": "Punto Actualizado",
+    "issuance_point_number": "001",
+    "is_active": true,
+    "is_default": false,
+    "has_tax_validity": true,
+    "last_issued_sequential": 0,
+    "next_sequential": 1
+  }
+}
+```
+
+---
+
+### DELETE /core/issuance-points/{id}
+
+Desactiva (soft delete) un punto de emisión.
+
+**URL param:** `id` (numérico, legacy_id)
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Punto de emisión desactivado.",
+  "data": { "deleted": true }
+}
+```
+
+---
+
 ## Notifications
 
 ### POST /core/notifications/test-email
@@ -1917,8 +2191,23 @@ Envía un email de prueba.
 
 ## Notas
 
+### Generales
+
 - **Formato de fechas (daterange):** El frontend envía `start/end` (ej: `2026-01-01/2026-12-31`). El backend lo normaliza a formato PostgreSQL `[2026-01-01,2026-12-31)` y lo devuelve en ese formato.
 - **sri_code de carrier establishments:** Debe ser exactamente 3 dígitos (`^[0-9]{3}$`).
+- **sri_code de establishments:** Debe ser exactamente 3 dígitos (`^[0-9]{3}$`). Valores como `0999` causan check constraint violation.
 - **Vehicle assignments:** Un vehículo no puede tener dos asignaciones con validez solapada (PostgreSQL EXCLUDE constraint).
 - **PATCH de carrier-affiliations:** Los `vehicle_assignments` se reemplazan completamente — los existentes se borran y se crean los nuevos.
 - **Tenant isolation:** Todas las APIs de `/core/*` requieren sesión autenticada y tenant context (RLS activo).
+- **sri_principal_code de products:** Se autogenera como `P` + `legacy_id` (trigger en BD). Es inmutable después de creado.
+
+### Bugs conocidos
+
+- **POST /core/companies:** Unique constraint en `tenant_id` — solo se permite 1 company por tenant. Intentar crear una segunda company devuelve HTTP 500 en lugar de 422.
+- **POST /core/emission-points:** El campo `establishment_id` no se persiste (null violation). El modelo `EmissionPointModel` no incluye `establishment_id` en `$fillable`.
+- **PATCH /core/emission-points/{id}:** Intenta actualizar `id` con `legacy_id` en lugar del UUID, causando `invalid input syntax for type uuid`. Bug en el repositorio/controller.
+- **POST /core/vehicles:** `legacy_id` se autogenera con IDENTITY pero puede colisionar con registros existentes. Devuelve HTTP 500 en lugar de 422.
+- **POST /core/products/{product}/taxes (duplicado):** Si el tipo de IVA ya está asignado, devuelve HTTP 500 con `RuntimeException` en lugar de 422.
+- **POST /core/carrier-establishments:** `carrier_company_id` debe existir en `core.carrier_companies` (no en `core.companies`). FK violation si se usa company_id equivocado.
+- **POST /core/economic-activities:** `catalog_version` debe ser uno de los valores permitidos por el check constraint. `v3` no es válido — usar `synthetic-lab-v1`.
+- **POST /core/notifications/test-email:** Requiere campos `to`, `subject`, `body` (no `email`).
