@@ -62,12 +62,15 @@ final class EloquentAuthenticationRepository implements AuthenticationRepository
 
     public function enterpriseForUser(string $userId, string $enterpriseId): ?AccessibleEnterprise
     {
-        $tenant = AuthenticationEnterpriseModel::query()->find($enterpriseId);
+        $tenant = ctype_digit($enterpriseId)
+            ? AuthenticationEnterpriseModel::query()->where('legacy_id', (int) $enterpriseId)->first()
+            : AuthenticationEnterpriseModel::query()->find($enterpriseId);
+
         if (! $tenant) {
             return null;
         }
 
-        return $this->withinTenantContext($enterpriseId, function () use ($tenant, $userId): ?AccessibleEnterprise {
+        return $this->withinTenantContext((string) $tenant->getKey(), function () use ($tenant, $userId): ?AccessibleEnterprise {
             $membership = AuthenticationMembershipModel::query()
                 ->where('user_id', $userId)
                 ->where('active', true)

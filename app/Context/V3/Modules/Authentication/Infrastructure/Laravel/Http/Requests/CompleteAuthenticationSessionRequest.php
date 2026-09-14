@@ -13,6 +13,6 @@ final class CompleteAuthenticationSessionRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['enterprise_id' => ['required', 'uuid']];
+        return ['enterprise_id' => ['required', 'string', 'max:36']];
     }
 }

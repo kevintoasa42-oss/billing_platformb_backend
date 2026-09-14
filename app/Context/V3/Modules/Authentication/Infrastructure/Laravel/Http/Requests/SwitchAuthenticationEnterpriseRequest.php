@@ -14,7 +14,7 @@ final class SwitchAuthenticationEnterpriseRequest extends FormRequest
 
     public function rules(): array
     {
-        return ['enterprise_id' => ['required', 'uuid']];
+        return ['enterprise_id' => ['required', 'string', 'max:36']];
     }
 
     public function switchEnterprise(): SwitchEnterpriseDTO
