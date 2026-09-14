@@ -112,7 +112,7 @@ final class EloquentAuthenticationRepository implements AuthenticationRepository
     public function resolveSession(string $tokenHash): ?AuthenticationSession
     {
         $row = DB::connection('master_v3')->selectOne(
-            'SELECT tenant_id, user_id, capabilities, platform_admin FROM auth.resolve_session(?) LIMIT 1',
+            'SELECT tenant_id, user_id, capabilities, platform_admin, expires_at FROM auth.resolve_session(?) LIMIT 1',
             [$tokenHash],
         );
 
