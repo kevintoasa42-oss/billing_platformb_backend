@@ -3,10 +3,10 @@
 namespace App\Context\V3\Modules\Core\Carrier\Infrastructure\Mappers;
 
 use App\Context\V3\Modules\Core\Carrier\Infrastructure\Laravel\Eloquent\Models\CarrierAffiliationModel as CarrierAffiliationEloquentModel;
-use App\Context\V3\Modules\Core\Carrier\Domain\Mappers\CarrierAffiliationMapperInterface;
 use App\Context\V3\Modules\Core\Carrier\Domain\Models\CarrierAffiliation;
+use App\Context\V3\Shared\Infrastructure\Postgres\DaterangeNormalizer;
 
-class CarrierAffiliationMapper implements CarrierAffiliationMapperInterface
+class CarrierAffiliationMapper
 {
     public function toDomain(CarrierAffiliationEloquentModel $record): CarrierAffiliation
     {
@@ -42,7 +42,7 @@ class CarrierAffiliationMapper implements CarrierAffiliationMapperInterface
     {
         $data = [
             'third_party_id' => $affiliation->thirdPartyId,
-            'validity' => $affiliation->validity,
+            'validity' => DaterangeNormalizer::normalize($affiliation->validity),
         ];
 
         if ($affiliation->id !== null) {

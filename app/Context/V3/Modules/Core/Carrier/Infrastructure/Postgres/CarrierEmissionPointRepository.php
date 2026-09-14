@@ -20,16 +20,16 @@ class CarrierEmissionPointRepository implements CarrierEmissionPointRepositoryIn
             ->orderBy('name')
             ->get();
 
-        return $this->mapper->toDomainList($records);
+        return $this->mapper->toResponseArrayList($records);
     }
 
-    public function find(string $id): ?CarrierEmissionPoint
+    public function find(string $id): ?array
     {
         $record = CarrierEmissionPointEloquentModel::query()
             ->with(['establishment.carrierCompany.thirdParty'])
             ->find($id);
 
-        return $record !== null ? $this->mapper->toDomain($record) : null;
+        return $record !== null ? $this->mapper->toResponseArray($record) : null;
     }
 
     public function byEstablishment(string $establishmentId): array
@@ -40,15 +40,15 @@ class CarrierEmissionPointRepository implements CarrierEmissionPointRepositoryIn
             ->orderBy('name')
             ->get();
 
-        return $this->mapper->toDomainList($records);
+        return $this->mapper->toResponseArrayList($records);
     }
 
-    public function create(CarrierEmissionPoint $emissionPoint): CarrierEmissionPoint
+    public function create(CarrierEmissionPoint $emissionPoint): array
     {
         $record = CarrierEmissionPointEloquentModel::query()->create(
             $this->mapper->toDatabaseArray($emissionPoint)
         );
 
-        return $this->mapper->toDomain($record->load(['establishment.carrierCompany.thirdParty']));
+        return $this->mapper->toResponseArray($record->load(['establishment.carrierCompany.thirdParty']));
     }
 }

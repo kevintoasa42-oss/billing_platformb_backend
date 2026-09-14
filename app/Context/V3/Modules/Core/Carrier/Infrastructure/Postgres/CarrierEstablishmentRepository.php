@@ -22,28 +22,28 @@ class CarrierEstablishmentRepository implements CarrierEstablishmentRepositoryIn
             ->orderBy('name')
             ->get();
 
-        return $this->mapper->toDomainList($records);
+        return $this->mapper->toResponseArrayList($records);
     }
 
-    public function find(string $id): ?CarrierEstablishment
+    public function find(string $id): ?array
     {
         $record = CarrierEstablishmentEloquentModel::query()
             ->with(['carrierCompany.thirdParty', 'carrierCompany.activities.economicActivity'])
             ->find($id);
 
-        return $record !== null ? $this->mapper->toDomain($record) : null;
+        return $record !== null ? $this->mapper->toResponseArray($record) : null;
     }
 
-    public function create(CarrierEstablishment $establishment): CarrierEstablishment
+    public function create(CarrierEstablishment $establishment): array
     {
-        return DB::connection('master_v3')->transaction(function () use ($establishment): CarrierEstablishment {
+        return DB::connection('master_v3')->transaction(function () use ($establishment): array {
             $record = CarrierEstablishmentEloquentModel::query()->create(
                 $this->mapper->toDatabaseArray($establishment)
             );
 
             $this->syncActivities($record, $establishment->activityIds);
 
-            return $this->mapper->toDomain($record->load(['carrierCompany.thirdParty', 'carrierCompany.activities.economicActivity']));
+            return $this->mapper->toResponseArray($record->load(['carrierCompany.thirdParty', 'carrierCompany.activities.economicActivity']));
         });
     }
 

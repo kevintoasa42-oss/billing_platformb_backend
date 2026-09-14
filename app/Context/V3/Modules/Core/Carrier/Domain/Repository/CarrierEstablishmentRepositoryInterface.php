@@ -7,11 +7,17 @@ use App\Context\V3\Modules\Core\Carrier\Domain\Models\CarrierEstablishment;
 interface CarrierEstablishmentRepositoryInterface
 {
     /**
-     * @return array<int, CarrierEstablishment>
+     * @return array<int, array<string, mixed>>
      */
     public function all(): array;
 
-    public function find(string $id): ?CarrierEstablishment;
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function find(string $id): ?array;
 
-    public function create(CarrierEstablishment $establishment): CarrierEstablishment;
+    /**
+     * @return array<string, mixed>
+     */
+    public function create(CarrierEstablishment $establishment): array;
 }

@@ -62,4 +62,65 @@ class CarrierEstablishmentMapper
 
         return $data;
     }
+
+    /**
+     * Build the enriched response array with the nested carrier company
+     * (including third-party info) and its activities.
+     *
+     * @return array<string, mixed>
+     */
+    public function toResponseArray(CarrierEstablishmentEloquentModel $record): array
+    {
+        $carrierCompany = null;
+        if ($record->carrierCompany !== null) {
+            $cc = $record->carrierCompany;
+            $carrierCompany = [
+                'id' => $cc->id,
+                'legal_name' => $cc->legal_name,
+                'trade_name' => $cc->trade_name,
+                'is_active' => $cc->is_active,
+                'third_party_name' => $cc->thirdParty?->name,
+                'third_party_identification' => $cc->thirdParty?->identification,
+            ];
+        }
+
+        $activities = [];
+        if ($record->carrierCompany !== null && $record->carrierCompany->relationLoaded('activities')) {
+            foreach ($record->carrierCompany->activities as $activity) {
+                $activities[] = [
+                    'activity_id' => $activity->activity_id,
+                    'name' => $activity->economicActivity?->name,
+                    'is_primary' => $activity->is_primary,
+                ];
+            }
+        }
+
+        return [
+            'id' => $record->id,
+            'tenant_id' => $record->tenant_id,
+            'carrier_company_id' => $record->carrier_company_id,
+            'carrier_company' => $carrierCompany,
+            'sri_code' => $record->sri_code,
+            'name' => $record->name,
+            'address' => $record->address,
+            'phone' => $record->phone,
+            'email' => $record->email,
+            'city_id' => $record->city_id,
+            'is_active' => $record->is_active,
+            'activities' => $activities,
+        ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function toResponseArrayList(iterable $records): array
+    {
+        $list = [];
+        foreach ($records as $record) {
+            $list[] = $this->toResponseArray($record);
+        }
+
+        return $list;
+    }
 }

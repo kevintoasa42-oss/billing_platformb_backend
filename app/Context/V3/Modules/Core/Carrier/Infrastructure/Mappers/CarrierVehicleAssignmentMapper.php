@@ -2,35 +2,38 @@
 
 namespace App\Context\V3\Modules\Core\Carrier\Infrastructure\Mappers;
 
-use App\Context\V3\Modules\Core\Carrier\Infrastructure\Laravel\Eloquent\Models\CarrierVehicleAssignmentModel as CarrierVehicleAssignmentEloquentModel;
-use App\Context\V3\Modules\Core\Carrier\Domain\Mappers\CarrierVehicleAssignmentMapperInterface;
-use App\Context\V3\Modules\Core\Carrier\Domain\Models\CarrierVehicleAssignment;
+use App\Context\V3\Shared\Infrastructure\Postgres\DaterangeNormalizer;
+use Illuminate\Support\Str;
 
-class CarrierVehicleAssignmentMapper implements CarrierVehicleAssignmentMapperInterface
+/**
+ * Maps raw vehicle assignment arrays (from DTOs) into database-ready rows
+ * for core.carrier_vehicle_assignments.
+ */
+class CarrierVehicleAssignmentMapper
 {
-    public function toDomain(CarrierVehicleAssignmentEloquentModel $record): CarrierVehicleAssignment
+    /**
+     * @param  array<string, mixed>  $va
+     * @return array<string, mixed>
+     */
+    public function toDatabaseArray(string $tenantId, array $va): array
     {
-        return CarrierVehicleAssignment::fromArray([
-            'id' => $record->id,
-            'tenant_id' => $record->tenant_id,
-            'affiliation_id' => $record->affiliation_id,
-            'vehicle_id' => $record->vehicle_id,
-            'validity' => $record->validity,
-        ]);
+        return [
+            'id' => Str::uuid()->toString(),
+            'tenant_id' => $tenantId,
+            'vehicle_id' => $va['vehicle_id'],
+            'validity' => DaterangeNormalizer::normalize($va['validity'] ?? null),
+        ];
     }
 
-    public function toDomainList(iterable $records): array
+    /**
+     * @param  array<int, array<string, mixed>>  $vehicleAssignments
+     * @return array<int, array<string, mixed>>
+     */
+    public function toDatabaseArrayList(string $tenantId, array $vehicleAssignments): array
     {
-        $list = [];
-        foreach ($records as $record) {
-            $list[] = $this->toDomain($record);
-        }
-
-        return $list;
-    }
-
-    public function toDatabaseArray(CarrierVehicleAssignment $assignment): array
-    {
-        return $assignment->toArray();
+        return array_map(
+            fn (array $va) => $this->toDatabaseArray($tenantId, $va),
+            $vehicleAssignments
+        );
     }
 }

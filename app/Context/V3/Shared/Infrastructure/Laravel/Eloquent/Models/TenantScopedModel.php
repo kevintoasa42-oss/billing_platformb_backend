@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Context\V3\Shared\Infrastructure\Laravel\Eloquent\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use LogicException;
@@ -16,9 +17,16 @@ use LogicException;
  * tenant.v3.context middleware). This global scope adds a second
  * application-level guard so queries are always tenant-bound even
  * when RLS is not active (e.g. console, tests).
+ *
+ * Uses HasUuids so the primary key UUID is generated in PHP before
+ * insert. This ensures the model's id is available immediately after
+ * create() — needed for relationships (e.g. carrier_affiliations →
+ * carrier_vehicle_assignments) and for create response payloads.
  */
 abstract class TenantScopedModel extends Model
 {
+    use HasUuids;
+
     protected static function booted(): void
     {
         static::addGlobalScope('tenant', function (Builder $query): void {

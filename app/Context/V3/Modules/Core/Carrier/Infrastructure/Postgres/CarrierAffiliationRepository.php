@@ -6,13 +6,14 @@ use App\Context\V3\Modules\Core\Carrier\Infrastructure\Laravel\Eloquent\Models\C
 use App\Context\V3\Modules\Core\Carrier\Domain\Models\CarrierAffiliation;
 use App\Context\V3\Modules\Core\Carrier\Domain\Repository\CarrierAffiliationRepositoryInterface;
 use App\Context\V3\Modules\Core\Carrier\Infrastructure\Mappers\CarrierAffiliationMapper;
+use App\Context\V3\Modules\Core\Carrier\Infrastructure\Mappers\CarrierVehicleAssignmentMapper;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class CarrierAffiliationRepository implements CarrierAffiliationRepositoryInterface
 {
     public function __construct(
         private readonly CarrierAffiliationMapper $mapper,
+        private readonly CarrierVehicleAssignmentMapper $vehicleAssignmentMapper,
     ) {}
 
     public function all(): array
@@ -38,7 +39,7 @@ class CarrierAffiliationRepository implements CarrierAffiliationRepositoryInterf
 
             if ($affiliation->vehicleAssignments !== null) {
                 $record->vehicleAssignments()->createMany(
-                    $this->mapVehicleAssignments($record->tenant_id, $affiliation->vehicleAssignments)
+                    $this->vehicleAssignmentMapper->toDatabaseArrayList($record->tenant_id, $affiliation->vehicleAssignments)
                 );
             }
 
@@ -60,7 +61,7 @@ class CarrierAffiliationRepository implements CarrierAffiliationRepositoryInterf
             if ($affiliation->vehicleAssignments !== null) {
                 $record->vehicleAssignments()->delete();
                 $record->vehicleAssignments()->createMany(
-                    $this->mapVehicleAssignments($record->tenant_id, $affiliation->vehicleAssignments)
+                    $this->vehicleAssignmentMapper->toDatabaseArrayList($record->tenant_id, $affiliation->vehicleAssignments)
                 );
             }
 
@@ -103,19 +104,5 @@ class CarrierAffiliationRepository implements CarrierAffiliationRepositoryInterf
         }
 
         return $map;
-    }
-
-    /**
-     * @param  array<int, array<string, mixed>>  $vehicleAssignments
-     * @return array<int, array<string, mixed>>
-     */
-    private function mapVehicleAssignments(string $tenantId, array $vehicleAssignments): array
-    {
-        return array_map(fn (array $va) => [
-            'id' => Str::uuid()->toString(),
-            'tenant_id' => $tenantId,
-            'vehicle_id' => $va['vehicle_id'],
-            'validity' => $va['validity'] ?? null,
-        ], $vehicleAssignments);
     }
 }
