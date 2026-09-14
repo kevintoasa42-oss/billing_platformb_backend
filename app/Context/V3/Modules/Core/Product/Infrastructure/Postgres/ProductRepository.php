@@ -89,9 +89,9 @@ class ProductRepository implements ProductRepositoryInterface
     public function duplicates(array $filters): array
     {
         $exclude = max(0, (int) ($filters['exclude_id'] ?? 0));
-        $barcode = $this->nullableText($filters['barcode'] ?? null);
-        $auxiliaryCode = $this->nullableText($filters['auxiliary_code'] ?? null);
-        $name = $this->nullableText($filters['name'] ?? null);
+        $barcode = trim((string) ($filters['barcode'] ?? '')) ?: null;
+        $auxiliaryCode = trim((string) ($filters['auxiliary_code'] ?? '')) ?: null;
+        $name = trim((string) ($filters['name'] ?? '')) ?: null;
 
         return [
             'barcode_exists' => $barcode !== null && ProductModel::query()
@@ -109,13 +109,4 @@ class ProductRepository implements ProductRepositoryInterface
         ];
     }
 
-    private function nullableText(mixed $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-        $value = trim((string) $value);
-
-        return $value === '' ? null : $value;
-    }
 }
