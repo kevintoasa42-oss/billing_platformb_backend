@@ -53,4 +53,7 @@ Route::prefix('core')
 
         // Products + product settings + product taxes (ProductController, ProductSettingsController, ProductTaxController)
         Route::group([], base_path('routes/v3/core/products.php'));
+
+        // Settings — customer settings, payment method settings, additional info presets
+        Route::group([], base_path('routes/v3/core/settings.php'));
     });

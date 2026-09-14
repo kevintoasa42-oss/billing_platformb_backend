@@ -1,32 +1,35 @@
-Add Branches + Issuance Points module (9 routes, no IAM/capabilities).
+Add Settings DDD module: customer-settings, payment-method-settings, additional-info-presets (8 routes, no IAM).
 
-Extends existing Establishment module with branch surface matching
-ArtraFiscalBackEnd ConsolidatedWebController:
-- 9 routes with URIs preserved (branches, branches/{id}, issuance-points/{id})
-- Routing by legacy_id (numeric, whereNumber)
-- Response shape matches reference: id=legacy_id, sri_establishment_number,
-  issuance_point_number, nested issuance_points, last_issued_sequential,
-  next_sequential, document_number
-- Input accepts sri_establishment_number, issuance_point_number
-- DELETE returns {deleted: true} (soft delete via is_active=false)
-- nextSequential queries fiscal.sequences for last_number
-- Spanish messages matching reference
-- Existing establishments routes preserved (backward compat, toLegacyArray)
-- No new tables, no migrations needed
-- No capabilities, no IAM, no assertCapability
+New module under Core/Settings:
+- 3 Domain models (CustomerSettings, PaymentMethod, AdditionalInfoPreset)
+- 3 Repository interfaces
+- 2 Eloquent models (TenantSettingsModel, AdditionalInfoPresetModel)
+- 3 Postgres repositories (CustomerSettings, PaymentMethodSettings, AdditionalInfoPreset)
+- 4 DTOs (CustomerSettings, PaymentMethodUpdate, AdditionalInfoPresetCreate, AdditionalInfoPresetUpdate)
+- 4 Form Requests
+- 3 UseCases (CustomerSettings, PaymentMethodSettings, AdditionalInfoPreset)
+- 3 Controllers (CustomerSettings, PaymentMethodSettings, AdditionalInfoPreset)
+- 1 ServiceProvider
 
-New files (11):
-- routes/v3/core/branches.php
-- BranchController, IssuancePointController
-- BranchCreateDTO, BranchUpdateDTO, IssuancePointCreateDTO, IssuancePointUpdateDTO
-- BranchCreateRequest, BranchUpdateRequest, IssuancePointCreateRequest, IssuancePointUpdateRequest
+8 routes with URIs preserved from ArtraFiscalBackEnd reference:
+- PATCH customer-settings — saves allow_multiple_plates in core.tenant_settings.customer_settings
+- GET payment-method-settings — lists methods, seeds 2 defaults if empty
+- PATCH payment-method-settings/{code} — updates alias/is_active
+- GET additional-info-presets — lists all presets
+- GET additional-info-presets/available — lists active presets only
+- POST additional-info-presets — creates preset, 201
+- PATCH additional-info-presets/{id} — updates preset by legacy_id
+- DELETE additional-info-presets/{id} — soft delete, returns {deleted: true}
 
-Modified files (9):
-- routes/v3/routes.php (activate group)
-- Establishment.php, EmissionPoint.php (toArray + toLegacyArray)
-- Repository interfaces (add legacy_id methods)
-- Postgres repositories (implement branch surface)
-- UseCases (add branch methods)
+Response shapes match reference exactly:
+- Payment methods: code, name, alias, display_name, requires_term, is_active, is_default
+- Presets: id (legacy_id), code, name, default_value, auto_apply, value_editable,
+  is_required, is_active, sort_order, access_rules, can_view, can_edit, can_delete
+- DELETE returns {deleted: true}
+
+AdditionalInfoPresetRepository uses Eloquent AdditionalInfoPresetModel.
+No new tables, no migrations needed.
+No capabilities, no IAM.
 
 Generated with [Devin](https://devin.ai)
 
