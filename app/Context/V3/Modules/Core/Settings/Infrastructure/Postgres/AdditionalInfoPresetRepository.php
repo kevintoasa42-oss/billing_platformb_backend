@@ -5,10 +5,15 @@ namespace App\Context\V3\Modules\Core\Settings\Infrastructure\Postgres;
 use App\Context\V3\Modules\Core\Settings\Domain\Models\AdditionalInfoPreset;
 use App\Context\V3\Modules\Core\Settings\Domain\Repository\AdditionalInfoPresetRepositoryInterface;
 use App\Context\V3\Modules\Core\Settings\Infrastructure\Laravel\Eloquent\Models\AdditionalInfoPresetModel;
+use App\Context\V3\Modules\Core\Settings\Infrastructure\Mappers\AdditionalInfoPresetMapper;
 use Illuminate\Support\Str;
 
 class AdditionalInfoPresetRepository implements AdditionalInfoPresetRepositoryInterface
 {
+    public function __construct(
+        private readonly AdditionalInfoPresetMapper $mapper,
+    ) {}
+
     public function all(bool $availableOnly = false): array
     {
         $query = AdditionalInfoPresetModel::query()
@@ -19,9 +24,7 @@ class AdditionalInfoPresetRepository implements AdditionalInfoPresetRepositoryIn
             $query->where('is_active', true);
         }
 
-        return $query->get()
-            ->map(fn (AdditionalInfoPresetModel $record): AdditionalInfoPreset => $this->toDomain($record))
-            ->all();
+        return $this->mapper->toDomainList($query->get());
     }
 
     public function create(array $data): AdditionalInfoPreset
@@ -39,9 +42,7 @@ class AdditionalInfoPresetRepository implements AdditionalInfoPresetRepositoryIn
             'access_rules' => $data['access_rules'] ?? [],
         ]);
 
-        $record->refresh();
-
-        return $this->toDomain($record);
+        return $this->mapper->toDomain($record->refresh());
     }
 
     public function update(int $legacyId, array $data): ?AdditionalInfoPreset
@@ -68,7 +69,7 @@ class AdditionalInfoPresetRepository implements AdditionalInfoPresetRepositoryIn
             $record->refresh();
         }
 
-        return $this->toDomain($record);
+        return $this->mapper->toDomain($record);
     }
 
     public function delete(int $legacyId): bool
@@ -76,21 +77,5 @@ class AdditionalInfoPresetRepository implements AdditionalInfoPresetRepositoryIn
         return (bool) AdditionalInfoPresetModel::query()
             ->where('legacy_id', $legacyId)
             ->update(['is_active' => false]);
-    }
-
-    private function toDomain(AdditionalInfoPresetModel $record): AdditionalInfoPreset
-    {
-        return new AdditionalInfoPreset(
-            id: (int) $record->legacy_id,
-            code: (string) $record->code,
-            name: (string) $record->name,
-            defaultValue: $record->default_value,
-            autoApply: (bool) $record->auto_apply,
-            valueEditable: (bool) $record->value_editable,
-            isRequired: (bool) $record->is_required,
-            isActive: (bool) $record->is_active,
-            sortOrder: (int) $record->sort_order,
-            accessRules: $record->access_rules ?? [],
-        );
     }
 }
