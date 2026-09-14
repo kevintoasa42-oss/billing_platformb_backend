@@ -47,4 +47,7 @@ Route::prefix('core')
 
         // Notifications (NotificationController) — email via Mail facade
         Route::group([], base_path('routes/v3/core/notifications.php'));
+
+        // SRI IVA types + percentages (SriIvaTypeController, SriIvaPercentageController)
+        Route::group([], base_path('routes/v3/core/sri_iva_types.php'));
     });
