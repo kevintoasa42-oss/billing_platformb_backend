@@ -42,6 +42,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -113,5 +117,14 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    /* V3 authentication uses an HttpOnly token backed by auth.sessions. */
+    'v3_session_cookie_name' => env('AUTH_V3_SESSION_COOKIE', 'billing_v3_session'),
+    'v3_challenge_cookie_name' => env('AUTH_V3_CHALLENGE_COOKIE', 'billing_v3_challenge'),
+    'v3_cookie_path' => env('AUTH_V3_COOKIE_PATH', '/'),
+    'v3_cookie_domain' => env('AUTH_V3_COOKIE_DOMAIN'),
+    'v3_cookie_secure' => env('AUTH_V3_COOKIE_SECURE', false),
+    'v3_cookie_same_site' => env('AUTH_V3_COOKIE_SAME_SITE', 'lax'),
+    'v3_session_ttl' => (int) env('AUTH_V3_SESSION_TTL', 120),
 
 ];
