@@ -70,7 +70,7 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             ->where('legacy_id', $legacyId)
             ->first();
 
-        return $record !== null ? $this->toBranchDomain($record) : null;
+        return $record !== null ? $this->mapper->toBranchDomain($record) : null;
     }
 
     public function deleteByLegacyId(int $legacyId): bool
@@ -90,7 +90,7 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             ->orderBy('legacy_id')
             ->get();
 
-        return $records->map(fn ($r): EmissionPoint => $this->toBranchDomain($r))->all();
+        return $this->mapper->toBranchDomainList($records);
     }
 
     public function createForBranch(int $branchLegacyId, array $data): ?EmissionPoint
@@ -103,7 +103,7 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             return null;
         }
 
-        $code = $this->code((string) ($data['issuance_point_number'] ?? '001'));
+        $code = $this->mapper->code((string) ($data['issuance_point_number'] ?? '001'));
 
         $record = EmissionPointModel::query()->create([
             'establishment_id' => $branch->id,
@@ -114,7 +114,7 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             'has_tax_validity' => (bool) ($data['has_tax_validity'] ?? true),
         ]);
 
-        return $this->toBranchDomain($record->fresh('establishment'));
+        return $this->mapper->toBranchDomain($record->fresh('establishment'));
     }
 
     public function updateByLegacyId(int $legacyId, array $data): ?EmissionPoint
@@ -130,7 +130,7 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
 
         $values = array_filter([
             'name' => $data['name'] ?? null,
-            'sri_code' => isset($data['issuance_point_number']) ? $this->code((string) $data['issuance_point_number']) : null,
+            'sri_code' => isset($data['issuance_point_number']) ? $this->mapper->code((string) $data['issuance_point_number']) : null,
             'is_active' => array_key_exists('is_active', $data) ? (bool) $data['is_active'] : null,
             'is_default' => array_key_exists('is_default', $data) ? (bool) $data['is_default'] : null,
             'has_tax_validity' => array_key_exists('has_tax_validity', $data) ? (bool) $data['has_tax_validity'] : null,
@@ -140,7 +140,7 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             $record->update($values);
         }
 
-        return $this->toBranchDomain($record->fresh('establishment'));
+        return $this->mapper->toBranchDomain($record->fresh('establishment'));
     }
 
     public function nextSequential(int $branchLegacyId, int $pointLegacyId): ?array
@@ -170,41 +170,5 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             'sequential' => str_pad((string) $next, 9, '0', STR_PAD_LEFT),
             'document_number' => sprintf('%s-%s-%09d', $point->establishment->sri_code, $point->sri_code, $next),
         ];
-    }
-
-    /**
-     * Build EmissionPoint with branch-legacy-id + sequential fields.
-     */
-    private function toBranchDomain(EmissionPointModel $record): EmissionPoint
-    {
-        $branchLegacyId = $record->establishment?->legacy_id;
-
-        $last = (int) (DB::connection('master_v3')
-            ->table('fiscal.sequences')
-            ->where('emission_point_id', $record->id)
-            ->where('document_type', 'invoice')
-            ->value('last_number') ?? 0);
-
-        return new EmissionPoint(
-            id: (string) $record->id,
-            tenantId: (string) $record->tenant_id,
-            establishmentId: (string) $record->establishment_id,
-            sriCode: (string) $record->sri_code,
-            name: $record->name,
-            legacyId: (int) $record->legacy_id,
-            branchLegacyId: (int) $branchLegacyId,
-            isActive: (bool) $record->is_active,
-            isDefault: (bool) $record->is_default,
-            hasTaxValidity: (bool) $record->has_tax_validity,
-            lastIssuedSequential: $last,
-            nextSequential: $last + 1,
-        );
-    }
-
-    private function code(string $value): string
-    {
-        $digits = preg_replace('/\D+/', '', $value) ?: '001';
-
-        return str_pad(substr($digits, -3), 3, '0', STR_PAD_LEFT);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Context\V3\Modules\Core\Establishment\Infrastructure\Mappers;
 
 use App\Context\V3\Modules\Core\Establishment\Domain\Models\EmissionPoint;
 use App\Context\V3\Modules\Core\Establishment\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
+use Illuminate\Support\Facades\DB;
 
 class EmissionPointMapper
 {
@@ -22,11 +23,60 @@ class EmissionPointMapper
         ]);
     }
 
+    /**
+     * Build EmissionPoint enriched with branch-legacy-id + sequential fields.
+     *
+     * Requires the `establishment` relation to be eager-loaded on the model.
+     */
+    public function toBranchDomain(EmissionPointModel $record): EmissionPoint
+    {
+        $branchLegacyId = $record->establishment?->legacy_id;
+
+        $last = (int) (DB::connection('master_v3')
+            ->table('fiscal.sequences')
+            ->where('emission_point_id', $record->id)
+            ->where('document_type', 'invoice')
+            ->value('last_number') ?? 0);
+
+        return new EmissionPoint(
+            id: (string) $record->id,
+            tenantId: (string) $record->tenant_id,
+            establishmentId: (string) $record->establishment_id,
+            sriCode: (string) $record->sri_code,
+            name: $record->name,
+            legacyId: (int) $record->legacy_id,
+            branchLegacyId: (int) $branchLegacyId,
+            isActive: (bool) $record->is_active,
+            isDefault: (bool) $record->is_default,
+            hasTaxValidity: (bool) $record->has_tax_validity,
+            lastIssuedSequential: $last,
+            nextSequential: $last + 1,
+        );
+    }
+
+    /**
+     * @param  iterable<int, EmissionPointModel>  $records
+     * @return array<int, EmissionPoint>
+     */
     public function toDomainList(iterable $records): array
     {
         $list = [];
         foreach ($records as $record) {
             $list[] = $this->toDomain($record);
+        }
+
+        return $list;
+    }
+
+    /**
+     * @param  iterable<int, EmissionPointModel>  $records
+     * @return array<int, EmissionPoint>
+     */
+    public function toBranchDomainList(iterable $records): array
+    {
+        $list = [];
+        foreach ($records as $record) {
+            $list[] = $this->toBranchDomain($record);
         }
 
         return $list;
@@ -53,5 +103,15 @@ class EmissionPointMapper
         $data['has_tax_validity'] = $data['has_tax_validity'] ?? true;
 
         return $data;
+    }
+
+    /**
+     * Normalize an issuance-point number into a 3-digit SRI code.
+     */
+    public function code(string $value): string
+    {
+        $digits = preg_replace('/\D+/', '', $value) ?: '001';
+
+        return str_pad(substr($digits, -3), 3, '0', STR_PAD_LEFT);
     }
 }
