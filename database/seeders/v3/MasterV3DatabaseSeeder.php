@@ -14,6 +14,11 @@ use Illuminate\Database\Seeder;
  *   4. Establishments + emission points
  *   5. Vehicles
  *   6. SRI IVA types + percentages
+ *   7. Third parties (clientes/proveedores)
+ *   8. Carrier companies (needs third parties)
+ *   9. Carrier establishments + emission points (needs carrier companies)
+ *  10. Carrier affiliations + vehicle assignments (needs third parties + vehicles)
+ *  11. Products + tax assignments (needs economic activities + SRI IVA types)
  */
 final class MasterV3DatabaseSeeder extends Seeder
 {
@@ -26,6 +31,11 @@ final class MasterV3DatabaseSeeder extends Seeder
             V3EstablishmentSeeder::class,
             V3VehicleSeeder::class,
             V3SriIvaSeeder::class,
+            V3ThirdPartySeeder::class,
+            V3CarrierCompanySeeder::class,
+            V3CarrierEstablishmentSeeder::class,
+            V3CarrierAffiliationSeeder::class,
+            V3ProductSeeder::class,
         ]);
     }
 }
