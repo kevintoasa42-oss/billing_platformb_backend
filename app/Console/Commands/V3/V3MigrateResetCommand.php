@@ -11,12 +11,12 @@ final class V3MigrateResetCommand extends AbstractV3MigrationCommand
 
     public function handle(): int
     {
-        $options = $this->v3Options();
+        $extra = [];
 
         if ($this->option('pretend')) {
-            $options['--pretend'] = true;
+            $extra['--pretend'] = true;
         }
 
-        return $this->call('migrate:reset', $options);
+        return $this->runAcrossPaths('migrate:reset', $extra);
     }
 }

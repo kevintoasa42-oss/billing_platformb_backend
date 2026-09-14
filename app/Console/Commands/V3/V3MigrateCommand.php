@@ -8,20 +8,20 @@ final class V3MigrateCommand extends AbstractV3MigrationCommand
                             {--pretend : Muestra SQL sin ejecutar cambios}
                             {--step : Registra cada migración en un lote separado}';
 
-    protected $description = 'Ejecuta las migraciones exclusivas de V3 (auth, core, platform, fiscal, integration)';
+    protected $description = 'Ejecuta las migraciones exclusivas de V3 (auth, core, platform, fiscal, integration) en orden';
 
     public function handle(): int
     {
-        $options = $this->v3Options();
+        $extra = [];
 
         if ($this->option('pretend')) {
-            $options['--pretend'] = true;
+            $extra['--pretend'] = true;
         }
 
         if ($this->option('step')) {
-            $options['--step'] = true;
+            $extra['--step'] = true;
         }
 
-        return $this->call('migrate', $options);
+        return $this->runAcrossPaths('migrate', $extra);
     }
 }
