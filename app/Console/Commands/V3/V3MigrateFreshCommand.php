@@ -13,14 +13,14 @@ final class V3MigrateFreshCommand extends AbstractV3MigrationCommand
 
     public function handle(): int
     {
-        $options = $this->v3Options();
+        $extra = [];
 
         foreach (['drop-views', 'drop-types', 'step'] as $option) {
             if ($this->option($option)) {
-                $options["--{$option}"] = true;
+                $extra["--{$option}"] = true;
             }
         }
 
-        return $this->call('migrate:fresh', $options);
+        return $this->runAcrossPaths('migrate:fresh', $extra);
     }
 }

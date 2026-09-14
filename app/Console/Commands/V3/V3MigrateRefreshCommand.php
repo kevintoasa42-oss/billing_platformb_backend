@@ -11,12 +11,12 @@ final class V3MigrateRefreshCommand extends AbstractV3MigrationCommand
 
     public function handle(): int
     {
-        $options = $this->v3Options();
+        $extra = [];
 
         if ($this->option('step')) {
-            $options['--step'] = $this->option('step');
+            $extra['--step'] = $this->option('step');
         }
 
-        return $this->call('migrate:refresh', $options);
+        return $this->runAcrossPaths('migrate:refresh', $extra);
     }
 }

@@ -12,16 +12,16 @@ final class V3MigrateRollbackCommand extends AbstractV3MigrationCommand
 
     public function handle(): int
     {
-        $options = $this->v3Options();
+        $extra = [];
 
         if ($this->option('pretend')) {
-            $options['--pretend'] = true;
+            $extra['--pretend'] = true;
         }
 
         if ($this->option('step')) {
-            $options['--step'] = $this->option('step');
+            $extra['--step'] = $this->option('step');
         }
 
-        return $this->call('migrate:rollback', $options);
+        return $this->runAcrossPaths('migrate:rollback', $extra);
     }
 }

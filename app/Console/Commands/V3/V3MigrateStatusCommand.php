@@ -10,6 +10,6 @@ final class V3MigrateStatusCommand extends AbstractV3MigrationCommand
 
     public function handle(): int
     {
-        return $this->call('migrate:status', $this->v3Options(force: false));
+        return $this->runAcrossPaths('migrate:status', force: false);
     }
 }
