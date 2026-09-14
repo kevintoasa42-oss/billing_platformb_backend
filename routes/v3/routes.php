@@ -70,3 +70,22 @@ Route::prefix('core')
     });
 
 Route::group([], base_path('routes/v3/platform.php'));
+
+/**
+ * V3 Fiscal — bounded context for invoices and invoice drafts.
+ *
+ * All routes require auth.v3.cookie + tenant.v3.context middleware.
+ * Routes are mounted at the root prefix (no /fiscal) to preserve
+ * the reference API URIs (invoices, invoice-drafts).
+ */
+Route::middleware([auth.v3.cookie, tenant.v3.context])
+    ->group(function (): void {
+        // Invoices + invoice drafts (InvoiceController, InvoiceDraftController)
+        Route::group([], base_path(routes/v3/fiscal/invoices.php));
+
+        // SRI admin routes (SriController)
+        Route::group([], base_path(routes/v3/fiscal/sri.php));
+
+        // Bootstrap context routes
+        Route::get(bootstrap/nueva-factura, [InvoiceController::class, editorContext]);
+    });
