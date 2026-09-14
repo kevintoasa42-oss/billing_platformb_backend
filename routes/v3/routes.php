@@ -36,9 +36,6 @@ Route::prefix('core')
         // Companies (CompanyController) — core.companies, one per tenant
         Route::group([], base_path('routes/v3/core/companies.php'));
 
-        // Establishments + emission points (EstablishmentController, EmissionPointController)
-        Route::group([], base_path('routes/v3/core/establishments.php'));
-
         // Branches + issuance points (BranchController, IssuancePointController) — legacy_id surface
         Route::group([], base_path('routes/v3/core/branches.php'));
 
