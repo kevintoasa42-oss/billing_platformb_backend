@@ -4,59 +4,39 @@ namespace App\Context\V3\Modules\Core\Settings\Infrastructure\Postgres;
 
 use App\Context\V3\Modules\Core\Settings\Domain\Models\CustomerSettings;
 use App\Context\V3\Modules\Core\Settings\Domain\Repository\CustomerSettingsRepositoryInterface;
-use Illuminate\Support\Facades\DB;
+use App\Context\V3\Modules\Core\Settings\Infrastructure\Laravel\Eloquent\Models\TenantSettingsModel;
 
 class CustomerSettingsRepository implements CustomerSettingsRepositoryInterface
 {
     public function get(): CustomerSettings
     {
-        $row = DB::connection('master_v3')
-            ->table('core.tenant_settings')
-            ->first();
+        $row = TenantSettingsModel::query()->first();
 
-        $settings = [];
-        if ($row !== null && $row->customer_settings !== null) {
-            $settings = is_array($row->customer_settings)
-                ? $row->customer_settings
-                : (json_decode((string) $row->customer_settings, true) ?: []);
-        }
+        $settings = $row?->customer_settings ?? [];
 
-        return CustomerSettings::fromArray(['allow_multiple_plates' => $settings['allow_multiple_plates'] ?? false]);
+        return CustomerSettings::fromArray([
+            'allow_multiple_plates' => $settings['allow_multiple_plates'] ?? false,
+        ]);
     }
 
     public function save(CustomerSettings $settings): CustomerSettings
     {
-        DB::connection('master_v3')->transaction(function () use ($settings): void {
-            $row = DB::connection('master_v3')
-                ->table('core.tenant_settings')
-                ->first();
+        $row = TenantSettingsModel::query()->first();
 
-            $current = [];
-            if ($row !== null && $row->customer_settings !== null) {
-                $current = is_array($row->customer_settings)
-                    ? $row->customer_settings
-                    : (json_decode((string) $row->customer_settings, true) ?: []);
-            }
+        $current = $row?->customer_settings ?? [];
 
-            $merged = $current;
-            if ($settings->allowMultiplePlates !== null) {
-                $merged['allow_multiple_plates'] = $settings->allowMultiplePlates;
-            }
+        $merged = $current;
+        if ($settings->allowMultiplePlates !== null) {
+            $merged['allow_multiple_plates'] = $settings->allowMultiplePlates;
+        }
 
-            if ($row === null) {
-                DB::connection('master_v3')->table('core.tenant_settings')->insert([
-                    'customer_settings' => json_encode($merged, JSON_THROW_ON_ERROR),
-                    'updated_at' => now(),
-                ]);
-            } else {
-                DB::connection('master_v3')->table('core.tenant_settings')
-                    ->where('tenant_id', $row->tenant_id)
-                    ->update([
-                        'customer_settings' => json_encode($merged, JSON_THROW_ON_ERROR),
-                        'updated_at' => now(),
-                    ]);
-            }
-        });
+        if ($row === null) {
+            TenantSettingsModel::query()->create([
+                'customer_settings' => $merged,
+            ]);
+        } else {
+            $row->update(['customer_settings' => $merged]);
+        }
 
         return $this->get();
     }

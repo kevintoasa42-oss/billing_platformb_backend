@@ -4,22 +4,15 @@ namespace App\Context\V3\Modules\Core\Settings\Infrastructure\Postgres;
 
 use App\Context\V3\Modules\Core\Settings\Domain\Models\PaymentMethod;
 use App\Context\V3\Modules\Core\Settings\Domain\Repository\PaymentMethodSettingsRepositoryInterface;
-use Illuminate\Support\Facades\DB;
+use App\Context\V3\Modules\Core\Settings\Infrastructure\Laravel\Eloquent\Models\TenantSettingsModel;
 
 class PaymentMethodSettingsRepository implements PaymentMethodSettingsRepositoryInterface
 {
     public function all(): array
     {
-        $row = DB::connection('master_v3')
-            ->table('core.tenant_settings')
-            ->first();
+        $row = TenantSettingsModel::query()->first();
 
-        $stored = [];
-        if ($row !== null && $row->payment_method_settings !== null) {
-            $stored = is_array($row->payment_method_settings)
-                ? $row->payment_method_settings
-                : (json_decode((string) $row->payment_method_settings, true) ?: []);
-        }
+        $stored = $row?->payment_method_settings ?? [];
 
         if ($stored === []) {
             $stored = PaymentMethod::defaults();
@@ -31,70 +24,53 @@ class PaymentMethodSettingsRepository implements PaymentMethodSettingsRepository
 
     public function update(string $code, ?string $alias, ?bool $isActive): PaymentMethod
     {
-        return DB::connection('master_v3')->transaction(function () use ($code, $alias, $isActive): PaymentMethod {
-            $row = DB::connection('master_v3')
-                ->table('core.tenant_settings')
-                ->first();
+        $row = TenantSettingsModel::query()->first();
 
-            $methods = [];
-            if ($row !== null && $row->payment_method_settings !== null) {
-                $methods = is_array($row->payment_method_settings)
-                    ? $row->payment_method_settings
-                    : (json_decode((string) $row->payment_method_settings, true) ?: []);
+        $methods = $row?->payment_method_settings ?? [];
+
+        if ($methods === []) {
+            $methods = PaymentMethod::defaults();
+        }
+
+        $found = false;
+        $result = null;
+        foreach ($methods as &$method) {
+            if ((string) ($method['code'] ?? '') !== $code) {
+                continue;
             }
-
-            if ($methods === []) {
-                $methods = PaymentMethod::defaults();
+            if ($alias !== null) {
+                $method['alias'] = $alias;
             }
-
-            $found = false;
-            $result = null;
-            foreach ($methods as &$method) {
-                if ((string) ($method['code'] ?? '') !== $code) {
-                    continue;
-                }
-                if ($alias !== null) {
-                    $method['alias'] = $alias;
-                }
-                $method['display_name'] = $method['alias'] ?: $method['name'];
-                if ($isActive !== null) {
-                    $method['is_active'] = $isActive;
-                }
-                $found = true;
-                $result = $method;
-                break;
+            $method['display_name'] = $method['alias'] ?: $method['name'];
+            if ($isActive !== null) {
+                $method['is_active'] = $isActive;
             }
-            unset($method);
+            $found = true;
+            $result = $method;
+            break;
+        }
+        unset($method);
 
-            if (! $found) {
-                throw new \DomainException('El método de pago no existe.');
-            }
+        if (! $found) {
+            throw new \DomainException('El método de pago no existe.');
+        }
 
-            $this->persist(array_values($methods), $row);
+        $this->persist(array_values($methods), $row);
 
-            return PaymentMethod::fromArray($result);
-        });
+        return PaymentMethod::fromArray($result);
     }
 
     /**
      * @param  list<array<string, mixed>>  $methods
      */
-    private function persist(array $methods, ?object $row): void
+    private function persist(array $methods, ?TenantSettingsModel $row): void
     {
-        $payload = json_encode($methods, JSON_THROW_ON_ERROR);
-
         if ($row === null) {
-            DB::connection('master_v3')->table('core.tenant_settings')->insert([
-                'payment_method_settings' => $payload,
-                'updated_at' => now(),
+            TenantSettingsModel::query()->create([
+                'payment_method_settings' => $methods,
             ]);
         } else {
-            DB::connection('master_v3')->table('core.tenant_settings')
-                ->where('tenant_id', $row->tenant_id)
-                ->update([
-                    'payment_method_settings' => $payload,
-                    'updated_at' => now(),
-                ]);
+            $row->update(['payment_method_settings' => $methods]);
         }
     }
 }
