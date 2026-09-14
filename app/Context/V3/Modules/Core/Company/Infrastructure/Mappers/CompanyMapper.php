@@ -2,11 +2,10 @@
 
 namespace App\Context\V3\Modules\Core\Company\Infrastructure\Mappers;
 
-use App\Context\V3\Modules\Core\Company\Domain\Mappers\CompanyMapperInterface;
 use App\Context\V3\Modules\Core\Company\Domain\Models\Company;
 use App\Context\V3\Modules\Core\Company\Infrastructure\Laravel\Eloquent\Models\CompanyModel;
 
-class CompanyMapper implements CompanyMapperInterface
+class CompanyMapper
 {
     public function toDomain(CompanyModel $record): Company
     {

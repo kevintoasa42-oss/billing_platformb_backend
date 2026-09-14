@@ -2,11 +2,10 @@
 
 namespace App\Context\V3\Modules\Core\Establishment\Infrastructure\Mappers;
 
-use App\Context\V3\Modules\Core\Establishment\Domain\Mappers\EstablishmentMapperInterface;
 use App\Context\V3\Modules\Core\Establishment\Domain\Models\Establishment;
 use App\Context\V3\Modules\Core\Establishment\Infrastructure\Laravel\Eloquent\Models\EstablishmentModel;
 
-class EstablishmentMapper implements EstablishmentMapperInterface
+class EstablishmentMapper
 {
     public function toDomain(EstablishmentModel $record): Establishment
     {

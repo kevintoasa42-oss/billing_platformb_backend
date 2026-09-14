@@ -2,11 +2,10 @@
 
 namespace App\Context\V3\Modules\Core\Establishment\Infrastructure\Mappers;
 
-use App\Context\V3\Modules\Core\Establishment\Domain\Mappers\EmissionPointMapperInterface;
 use App\Context\V3\Modules\Core\Establishment\Domain\Models\EmissionPoint;
 use App\Context\V3\Modules\Core\Establishment\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
 
-class EmissionPointMapper implements EmissionPointMapperInterface
+class EmissionPointMapper
 {
     public function toDomain(EmissionPointModel $record): EmissionPoint
     {

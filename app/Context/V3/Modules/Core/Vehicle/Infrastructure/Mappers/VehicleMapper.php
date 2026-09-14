@@ -2,11 +2,10 @@
 
 namespace App\Context\V3\Modules\Core\Vehicle\Infrastructure\Mappers;
 
-use App\Context\V3\Modules\Core\Vehicle\Domain\Mappers\VehicleMapperInterface;
 use App\Context\V3\Modules\Core\Vehicle\Domain\Models\Vehicle;
 use App\Context\V3\Modules\Core\Vehicle\Infrastructure\Laravel\Eloquent\Models\VehicleModel;
 
-class VehicleMapper implements VehicleMapperInterface
+class VehicleMapper
 {
     public function toDomain(VehicleModel $record): Vehicle
     {

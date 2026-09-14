@@ -4,6 +4,22 @@ Base URL: `http://127.0.0.1:8000/api/v3`
 
 Autenticación: cookie de sesión (enviada automáticamente por el navegador/curl con `-b cookies.txt`).
 
+## Índice
+
+| # | Sección | Endpoints |
+|---|---------|-----------|
+| 1 | [Auth](#auth) | `POST /auth/challenges`, `POST /auth/session`, `DELETE /auth/session`, `GET /auth/me` |
+| 2 | [Carrier Establishments](#carrier-establishments) | `GET/POST /core/carrier-establishments`, `GET/PATCH /core/carrier-establishments/{id}` |
+| 3 | [Carrier Emission Points](#carrier-emission-points) | `GET/POST /core/carrier-emission-points`, `GET/PATCH /core/carrier-emission-points/{id}` |
+| 4 | [Carrier Affiliations](#carrier-affiliations) | `GET/POST /core/carrier-affiliations`, `GET/PATCH /core/carrier-affiliations/{id}` |
+| 5 | [Companies](#companies) | `GET/POST /core/companies`, `GET/PATCH /core/companies/{id}` |
+| 6 | [Establishments](#establishments) | `GET/POST /core/establishments`, `GET/PATCH /core/establishments/{id}`, `GET /core/establishments/{id}/emission-points` |
+| 7 | [Emission Points](#emission-points) | `GET/POST /core/emission-points`, `GET/PATCH /core/emission-points/{id}` |
+| 8 | [Vehicles](#vehicles) | `GET/POST /core/vehicles`, `GET/PATCH /core/vehicles/{id}` |
+| 9 | [Economic Activities](#economic-activities) | `GET/POST /core/economic-activities`, `GET/PATCH /core/economic-activities/{id}` |
+| 10 | [Notifications](#notifications) | `POST /core/notifications/test-email` |
+| 11 | [Notas](#notas) | Notas técnicas generales |
+
 ---
 
 ## Auth
@@ -476,6 +492,8 @@ Actualiza una afiliación carrier. Puede actualizar `validity`, `vehicle_assignm
 
 Lista las empresas del tenant (una por tenant).
 
+**Request body:** ninguno
+
 **Response 200:**
 ```json
 {
@@ -483,18 +501,18 @@ Lista las empresas del tenant (una por tenant).
   "message": "Companies loaded.",
   "data": [
     {
-      "id": "uuid",
-      "tenant_id": "uuid",
-      "name": "Mi Empresa Demo",
+      "id": "182db7da-9941-4864-83d4-d498416c31b9",
+      "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "name": "Transportes Demo S.A.",
       "ruc": "1790000000001",
-      "legal_name": "Mi Empresa Demo S.A.",
-      "trade_name": "Demo",
-      "matrix_address": "Av. Amazonas N1",
-      "operations_start_date": "2020-01-01",
+      "legal_name": "Transportes Demo Sociedad Anonima",
+      "trade_name": "TransDemo",
+      "matrix_address": "Av. Amazonas N34-451",
+      "operations_start_date": "2015-03-12",
       "city_id": null,
-      "phone": "022111111",
-      "corporate_email": null,
-      "activity_ids": []
+      "phone": "0998887776",
+      "corporate_email": "info@transdemo.com",
+      "activity_ids": ["A1234B"]
     }
   ]
 }
@@ -509,22 +527,44 @@ Crea una empresa (una por tenant — si ya existe, devuelve 500 por unique const
 **Request body:**
 ```json
 {
-  "name": "Mi Empresa (required, max 255)",
-  "ruc": "1790000000001 (required, max 13)",
-  "legal_name": "Mi Empresa S.A. (nullable, max 255)",
-  "trade_name": "Demo (nullable, max 255)",
-  "matrix_address": "Av. Amazonas N1 (nullable, max 255)",
+  "name": "Mi Empresa (required, string, max 255)",
+  "ruc": "1790000000001 (required, string, max 13)",
+  "legal_name": "Mi Empresa S.A. (nullable, string, max 255)",
+  "trade_name": "Demo (nullable, string, max 255)",
+  "matrix_address": "Av. Amazonas N1 (nullable, string, max 255)",
   "operations_start_date": "2020-01-01 (nullable, date)",
   "city_id": null,
-  "phone": "022111111 (nullable, max 30)",
+  "phone": "022111111 (nullable, string, max 30)",
   "corporate_email": "info@demo.local (nullable, email, max 150)",
   "activity_ids": ["A1234B"]
 }
 ```
 
-**Response 201:** igual al elemento del array de GET list.
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Company created.",
+  "data": {
+    "id": "uuid",
+    "tenant_id": "uuid",
+    "name": "Mi Empresa",
+    "ruc": "1790000000001",
+    "legal_name": "Mi Empresa S.A.",
+    "trade_name": "Demo",
+    "matrix_address": "Av. Amazonas N1",
+    "operations_start_date": "2020-01-01",
+    "city_id": null,
+    "phone": "022111111",
+    "corporate_email": "info@demo.local",
+    "activity_ids": ["A1234B"]
+  }
+}
+```
 
-**Response 422:** validation error.
+**Response 422:** validation error (campos faltantes o inválidos).
+
+**Response 500:** unique constraint violation si ya existe una empresa para el tenant.
 
 ---
 
@@ -532,35 +572,95 @@ Crea una empresa (una por tenant — si ya existe, devuelve 500 por unique const
 
 Muestra una empresa por ID.
 
-**Response 200:** igual al elemento del array de GET list.
+**URL param:** `id` (UUID)
 
-**Response 404:** not found.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Company loaded.",
+  "data": {
+    "id": "182db7da-9941-4864-83d4-d498416c31b9",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "name": "Transportes Demo S.A.",
+    "ruc": "1790000000001",
+    "legal_name": "Transportes Demo Sociedad Anonima",
+    "trade_name": "TransDemo",
+    "matrix_address": "Av. Amazonas N34-451",
+    "operations_start_date": "2015-03-12",
+    "city_id": null,
+    "phone": "0998887776",
+    "corporate_email": "info@transdemo.com",
+    "activity_ids": ["A1234B"]
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Company not found.",
+  "data": null
+}
+```
 
 ---
 
 ### PATCH /core/companies/{id}
 
-Actualiza una empresa.
+Actualiza una empresa. Acepta cualquier combinación de campos. Si se envía `activity_ids`, se sincronizan las actividades (reemplaza las existentes, manteniendo historial con daterange).
 
-**Request body (cualquier combinación de campos):**
+**URL param:** `id` (UUID)
+
+**Request body (cualquier combinación):**
 ```json
 {
-  "name": "Nuevo Nombre (sometimes, max 255)",
-  "ruc": "1790000000001 (sometimes, max 13)",
-  "phone": "099999999 (nullable, max 30)",
-  "legal_name": "...",
-  "trade_name": "...",
-  "matrix_address": "...",
-  "operations_start_date": "2020-01-01",
+  "name": "Nuevo Nombre (sometimes, string, max 255)",
+  "ruc": "1790000000001 (sometimes, string, max 13)",
+  "legal_name": "Nueva Razon Social (nullable, string, max 255)",
+  "trade_name": "Nuevo Trade (nullable, string, max 255)",
+  "matrix_address": "Nueva Direccion (nullable, string, max 255)",
+  "operations_start_date": "2020-01-01 (nullable, date)",
   "city_id": null,
-  "corporate_email": "...",
-  "activity_ids": ["A1234B"]
+  "phone": "099999999 (nullable, string, max 30)",
+  "corporate_email": "nuevo@demo.local (nullable, email, max 150)",
+  "activity_ids": ["A1234B", "C5678D"]
 }
 ```
 
-**Response 200:** empresa actualizada.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Company updated.",
+  "data": {
+    "id": "182db7da-9941-4864-83d4-d498416c31b9",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "name": "Transportes Demo S.A.",
+    "ruc": "1790000000001",
+    "legal_name": "Transportes Demo Sociedad Anonima",
+    "trade_name": "TransDemo",
+    "matrix_address": "Av. Amazonas N34-451",
+    "operations_start_date": "2015-03-12",
+    "city_id": null,
+    "phone": "0998887776",
+    "corporate_email": "info@transdemo.com",
+    "activity_ids": ["A1234B"]
+  }
+}
+```
 
-**Response 404:** not found.
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Company not found.",
+  "data": null
+}
+```
+
+**Response 422:** validation error (ej: ruc con más de 13 caracteres).
 
 ---
 
@@ -570,6 +670,8 @@ Actualiza una empresa.
 
 Lista los establecimientos del tenant.
 
+**Request body:** ninguno
+
 **Response 200:**
 ```json
 {
@@ -577,15 +679,15 @@ Lista los establecimientos del tenant.
   "message": "Establishments loaded.",
   "data": [
     {
-      "id": "uuid",
-      "tenant_id": "uuid",
-      "company_id": "uuid",
+      "id": "6d2b6e8c-6bae-4677-836b-715fe23abb5a",
+      "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "company_id": "182db7da-9941-4864-83d4-d498416c31b9",
       "sri_code": "001",
-      "name": "Matriz",
+      "name": "Updated Est",
       "legacy_id": "1",
       "branch_code": null,
       "address": "Av. Amazonas N1",
-      "phone": "022222222",
+      "phone": "0991112223",
       "email": "matriz@demo.local",
       "city_id": null,
       "is_active": true,
@@ -599,26 +701,49 @@ Lista los establecimientos del tenant.
 
 ### POST /core/establishments
 
-Crea un establecimiento.
+Crea un establecimiento. Si se envía `activity_ids`, se sincronizan las actividades (reemplaza las existentes, manteniendo historial con daterange).
 
 **Request body:**
 ```json
 {
-  "company_id": "uuid (nullable)",
-  "sri_code": "001 (required, max 10)",
-  "name": "Matriz (required, max 255)",
-  "legacy_id": "1 (nullable, max 255)",
-  "branch_code": "001 (nullable, max 50)",
-  "address": "Av. Amazonas N1 (nullable, max 255)",
-  "phone": "022222222 (nullable, max 30)",
-  "email": "matriz@demo.local (nullable, email, max 150)",
+  "company_id": "uuid (nullable, string, uuid)",
+  "sri_code": "002 (required, string, max 10)",
+  "name": "Sucursal Test (required, string, max 255)",
+  "legacy_id": "1 (nullable, string, max 255)",
+  "branch_code": "002 (nullable, string, max 50)",
+  "address": "Av. Test N2 (nullable, string, max 255)",
+  "phone": "022333444 (nullable, string, max 30)",
+  "email": "sucursal@demo.local (nullable, email, max 150)",
   "city_id": null,
   "is_active": true,
-  "activity_ids": ["A1234B"]
+  "activity_ids": ["A1234B", "C5678D"]
 }
 ```
 
-**Response 201:** igual al elemento del array de GET list.
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Establishment created.",
+  "data": {
+    "id": "01a0a0a7-8972-731c-8c1b-f8de209f6764",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "company_id": "182db7da-9941-4864-83d4-d498416c31b9",
+    "sri_code": "002",
+    "name": "Sucursal Test",
+    "legacy_id": null,
+    "branch_code": "002",
+    "address": "Av. Test N2",
+    "phone": "022333444",
+    "email": "sucursal@demo.local",
+    "city_id": null,
+    "is_active": true,
+    "activity_ids": ["A1234B", "C5678D"]
+  }
+}
+```
+
+**Response 422:** validation error (campos faltantes o inválidos).
 
 ---
 
@@ -626,38 +751,104 @@ Crea un establecimiento.
 
 Muestra un establecimiento por ID.
 
-**Response 200:** igual al elemento del array de GET list.
+**URL param:** `id` (UUID)
 
-**Response 404:** not found.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Establishment loaded.",
+  "data": {
+    "id": "01a0a0a7-8972-731c-8c1b-f8de209f6764",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "company_id": "182db7da-9941-4864-83d4-d498416c31b9",
+    "sri_code": "002",
+    "name": "Sucursal Actualizada",
+    "legacy_id": "2",
+    "branch_code": "002",
+    "address": "Av. Updated N2",
+    "phone": "0999998888",
+    "email": "updated@demo.local",
+    "city_id": null,
+    "is_active": true,
+    "activity_ids": ["A1234B"]
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Establishment not found.",
+  "data": null
+}
+```
 
 ---
 
 ### PATCH /core/establishments/{id}
 
-Actualiza un establecimiento.
+Actualiza un establecimiento. Acepta cualquier combinación de campos. Si se envía `activity_ids`, se sincronizan las actividades.
+
+**URL param:** `id` (UUID)
 
 **Request body (cualquier combinación):**
 ```json
 {
-  "sri_code": "001 (sometimes, max 10)",
-  "name": "Matriz Actualizada (sometimes, max 255)",
-  "branch_code": "001 (nullable, max 50)",
-  "address": "...",
-  "phone": "...",
-  "email": "...",
+  "sri_code": "002 (sometimes, string, max 10)",
+  "name": "Sucursal Actualizada (sometimes, string, max 255)",
+  "branch_code": "002 (nullable, string, max 50)",
+  "address": "Av. Updated N2 (nullable, string, max 255)",
+  "phone": "0991112222 (nullable, string, max 30)",
+  "email": "updated@demo.local (nullable, email, max 150)",
   "city_id": null,
   "is_active": true,
   "activity_ids": ["A1234B"]
 }
 ```
 
-**Response 200:** establecimiento actualizado.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Establishment updated.",
+  "data": {
+    "id": "01a0a0a7-8972-731c-8c1b-f8de209f6764",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "company_id": "182db7da-9941-4864-83d4-d498416c31b9",
+    "sri_code": "002",
+    "name": "Sucursal Actualizada",
+    "legacy_id": "2",
+    "branch_code": "002",
+    "address": "Av. Updated N2",
+    "phone": "0999998888",
+    "email": "updated@demo.local",
+    "city_id": null,
+    "is_active": true,
+    "activity_ids": ["A1234B"]
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Establishment not found.",
+  "data": null
+}
+```
+
+**Response 422:** validation error.
 
 ---
 
 ### GET /core/establishments/{id}/emission-points
 
-Lista los puntos de emisión de un establecimiento.
+Lista los puntos de emisión pertenecientes a un establecimiento.
+
+**URL param:** `id` (UUID del establishment)
 
 **Response 200:**
 ```json
@@ -666,17 +857,26 @@ Lista los puntos de emisión de un establecimiento.
   "message": "Emission points loaded.",
   "data": [
     {
-      "id": "uuid",
-      "tenant_id": "uuid",
-      "establishment_id": "uuid",
+      "id": "01a0a0a7-b73d-7061-9aa7-cd1e9029b475",
+      "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "establishment_id": "01a0a0a7-8972-731c-8c1b-f8de209f6764",
       "sri_code": "001",
-      "name": "Punto 1",
-      "legacy_id": "1",
-      "is_active": true,
-      "is_default": true,
+      "name": "Punto Actualizado",
+      "legacy_id": "2",
+      "is_active": false,
+      "is_default": false,
       "has_tax_validity": true
     }
   ]
+}
+```
+
+**Response 200 (sin emission points):**
+```json
+{
+  "status": true,
+  "message": "Emission points loaded.",
+  "data": []
 }
 ```
 
@@ -686,9 +886,30 @@ Lista los puntos de emisión de un establecimiento.
 
 ### GET /core/emission-points
 
-Lista los puntos de emisión del tenant.
+Lista todos los puntos de emisión del tenant.
 
-**Response 200:** igual al sub-recurso establishment emission-points.
+**Request body:** ninguno
+
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Emission points loaded.",
+  "data": [
+    {
+      "id": "89b2f5fa-b12c-477a-b3d4-c01fe62cefe9",
+      "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "establishment_id": "6d2b6e8c-6bae-4677-836b-715fe23abb5a",
+      "sri_code": "001",
+      "name": "Updated EP",
+      "legacy_id": "1",
+      "is_active": false,
+      "is_default": true,
+      "has_tax_validity": true
+    }
+  ]
+}
+```
 
 ---
 
@@ -699,17 +920,36 @@ Crea un punto de emisión.
 **Request body:**
 ```json
 {
-  "establishment_id": "uuid (required)",
-  "sri_code": "001 (required, max 10)",
-  "name": "Punto 1 (nullable, max 255)",
-  "legacy_id": "1 (nullable, max 255)",
+  "establishment_id": "uuid (required, string, uuid)",
+  "sri_code": "001 (required, string, max 10)",
+  "name": "Punto Emision Test (nullable, string, max 255)",
+  "legacy_id": "1 (nullable, string, max 255)",
   "is_active": true,
   "is_default": true,
   "has_tax_validity": true
 }
 ```
 
-**Response 201:** punto de emisión creado.
+**Response 201:**
+```json
+{
+  "status": true,
+  "message": "Emission point created.",
+  "data": {
+    "id": "01a0a0a7-b73d-7061-9aa7-cd1e9029b475",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "establishment_id": "01a0a0a7-8972-731c-8c1b-f8de209f6764",
+    "sri_code": "001",
+    "name": "Punto Emision Test",
+    "legacy_id": null,
+    "is_active": true,
+    "is_default": true,
+    "has_tax_validity": true
+  }
+}
+```
+
+**Response 422:** validation error (ej: `The establishment id field is required.`, `The sri code field is required.`).
 
 ---
 
@@ -717,28 +957,84 @@ Crea un punto de emisión.
 
 Muestra un punto de emisión por ID.
 
-**Response 200:** igual al elemento del array de GET list.
+**URL param:** `id` (UUID)
 
-**Response 404:** not found.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Emission point loaded.",
+  "data": {
+    "id": "01a0a0a7-b73d-7061-9aa7-cd1e9029b475",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "establishment_id": "01a0a0a7-8972-731c-8c1b-f8de209f6764",
+    "sri_code": "001",
+    "name": "Punto Actualizado",
+    "legacy_id": "2",
+    "is_active": false,
+    "is_default": false,
+    "has_tax_validity": true
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Emission point not found.",
+  "data": null
+}
+```
 
 ---
 
 ### PATCH /core/emission-points/{id}
 
-Actualiza un punto de emisión.
+Actualiza un punto de emisión. Acepta cualquier combinación de campos.
+
+**URL param:** `id` (UUID)
 
 **Request body (cualquier combinación):**
 ```json
 {
-  "sri_code": "001 (sometimes, max 10)",
-  "name": "Punto 1 Actualizado (sometimes, max 255)",
+  "sri_code": "001 (sometimes, string, max 10)",
+  "name": "Punto Actualizado (sometimes, string, max 255)",
   "is_active": false,
-  "is_default": true,
+  "is_default": false,
   "has_tax_validity": true
 }
 ```
 
-**Response 200:** punto de emisión actualizado.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Emission point updated.",
+  "data": {
+    "id": "01a0a0a7-b73d-7061-9aa7-cd1e9029b475",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "establishment_id": "01a0a0a7-8972-731c-8c1b-f8de209f6764",
+    "sri_code": "001",
+    "name": "Punto Actualizado",
+    "legacy_id": "2",
+    "is_active": false,
+    "is_default": false,
+    "has_tax_validity": true
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Emission point not found.",
+  "data": null
+}
+```
+
+**Response 422:** validation error.
 
 ---
 
@@ -748,6 +1044,8 @@ Actualiza un punto de emisión.
 
 Lista los vehículos del tenant.
 
+**Request body:** ninguno
+
 **Response 200:**
 ```json
 {
@@ -755,9 +1053,15 @@ Lista los vehículos del tenant.
   "message": "Vehicles loaded.",
   "data": [
     {
-      "id": "uuid",
-      "tenant_id": "uuid",
-      "plate": "ABC123",
+      "id": "01a0a058-d37d-7276-8973-2d390c20e626",
+      "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "plate": "NEW001",
+      "legacy_id": "3"
+    },
+    {
+      "id": "8967b09b-4857-4efb-8995-c614e9f94b84",
+      "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+      "plate": "XYZ789",
       "legacy_id": "1"
     }
   ]
@@ -773,8 +1077,8 @@ Crea un vehículo (placa única por tenant).
 **Request body:**
 ```json
 {
-  "plate": "ABC123 (required, max 20)",
-  "legacy_id": "1 (nullable, max 255)"
+  "plate": "ABC123 (required, string, max 20)",
+  "legacy_id": "V001 (nullable, string, max 255)"
 }
 ```
 
@@ -784,15 +1088,17 @@ Crea un vehículo (placa única por tenant).
   "status": true,
   "message": "Vehicle created.",
   "data": {
-    "id": "uuid",
-    "tenant_id": "uuid",
+    "id": "01a0a0ae-9d35-72c9-a3bf-e71e5f434ef3",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
     "plate": "ABC123",
     "legacy_id": null
   }
 }
 ```
 
-**Response 422:** validation error o placa duplicada.
+**Response 422:** validation error (ej: `The plate field is required.`).
+
+**Response 500:** unique constraint violation si la placa ya existe para el tenant (`vehicles_tenant_id_plate_key`).
 
 ---
 
@@ -800,9 +1106,30 @@ Crea un vehículo (placa única por tenant).
 
 Muestra un vehículo por ID.
 
-**Response 200:** igual al elemento del array de GET list.
+**URL param:** `id` (UUID)
 
-**Response 404:** not found.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Vehicle loaded.",
+  "data": {
+    "id": "01a0a0ae-9d35-72c9-a3bf-e71e5f434ef3",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "plate": "ABC123",
+    "legacy_id": "4"
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Vehicle not found.",
+  "data": null
+}
+```
 
 ---
 
@@ -810,15 +1137,42 @@ Muestra un vehículo por ID.
 
 Actualiza un vehículo.
 
-**Request body:**
+**URL param:** `id` (UUID)
+
+**Request body (cualquier combinación):**
 ```json
 {
-  "plate": "NEW123 (sometimes, max 20)",
-  "legacy_id": "2 (nullable, max 255)"
+  "plate": "NEW123 (sometimes, string, max 20)",
+  "legacy_id": "2 (nullable, string, max 255)"
 }
 ```
 
-**Response 200:** vehículo actualizado.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Vehicle updated.",
+  "data": {
+    "id": "01a0a0ae-9d35-72c9-a3bf-e71e5f434ef3",
+    "tenant_id": "0c7e54d5-f331-4eaf-adf6-afe726b27f16",
+    "plate": "ABC123",
+    "legacy_id": "4"
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Vehicle not found.",
+  "data": null
+}
+```
+
+**Response 500:** unique constraint si la placa ya existe para el tenant.
+
+> **Bug conocido:** `legacy_id` no se persiste en PATCH. El mapper `VehicleMapper::toDatabaseArray()` no incluye `legacy_id` en el array que envía a la BD.
 
 ---
 
@@ -826,7 +1180,9 @@ Actualiza un vehículo.
 
 ### GET /core/economic-activities
 
-Lista las actividades económicas del catálogo global.
+Lista las actividades económicas del catálogo global (no tenant-scoped).
+
+**Request body:** ninguno
 
 **Response 200:**
 ```json
@@ -835,8 +1191,13 @@ Lista las actividades económicas del catálogo global.
   "message": "Economic activities loaded.",
   "data": [
     {
+      "id": "C5678D",
+      "name": "Nueva Actividad",
+      "catalog_version": "synthetic-lab-v1"
+    },
+    {
       "id": "A1234B",
-      "name": "Comercio al por mayor y menor",
+      "name": "Updated Activity",
       "catalog_version": "synthetic-lab-v1"
     }
   ]
@@ -852,8 +1213,8 @@ Crea una actividad económica.
 **Request body:**
 ```json
 {
-  "id": "C5678D (nullable, max 100, si se omite se autogenera)",
-  "name": "Nueva Actividad (required, max 255)",
+  "id": "TEST001 (nullable, string, max 100, si se omite se autogenera)",
+  "name": "Test Activity (required, string, max 255)",
   "catalog_version": "synthetic-lab-v1 (nullable, in: synthetic-lab-v1, staging-legacy-v1)"
 }
 ```
@@ -864,24 +1225,46 @@ Crea una actividad económica.
   "status": true,
   "message": "Economic activity created.",
   "data": {
-    "id": "C5678D",
-    "name": "Nueva Actividad",
+    "id": "TEST001",
+    "name": "Test Activity",
     "catalog_version": "synthetic-lab-v1"
   }
 }
 ```
 
+**Response 422:** validation error (ej: `The name field is required.`, `The selected catalog version is invalid.`).
+
+**Response 500:** unique constraint si el `id` ya existe (`economic_activities_pkey`).
+
 ---
 
 ### GET /core/economic-activities/{id}
 
-Muestra una actividad económica por ID (string, no UUID).
+Muestra una actividad económica por ID (string alfanumérico, no UUID).
 
-**URL param:** `id` (string alfanumérico)
+**URL param:** `id` (string alfanumérico: `[0-9a-zA-Z_-]+`)
 
-**Response 200:** igual al elemento del array de GET list.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Economic activity loaded.",
+  "data": {
+    "id": "TEST001",
+    "name": "Updated Activity",
+    "catalog_version": "synthetic-lab-v1"
+  }
+}
+```
 
-**Response 404:** not found.
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Economic activity not found.",
+  "data": null
+}
+```
 
 ---
 
@@ -889,15 +1272,39 @@ Muestra una actividad económica por ID (string, no UUID).
 
 Actualiza una actividad económica.
 
-**Request body:**
+**URL param:** `id` (string alfanumérico: `[0-9a-zA-Z_-]+`)
+
+**Request body (cualquier combinación):**
 ```json
 {
-  "name": "Updated Activity (sometimes, max 255)",
-  "catalog_version": "synthetic-lab-v1 (nullable)"
+  "name": "Updated Activity (sometimes, string, max 255)",
+  "catalog_version": "synthetic-lab-v1 (nullable, in: synthetic-lab-v1, staging-legacy-v1)"
 }
 ```
 
-**Response 200:** actividad actualizada.
+**Response 200:**
+```json
+{
+  "status": true,
+  "message": "Economic activity updated.",
+  "data": {
+    "id": "TEST001",
+    "name": "Updated Activity",
+    "catalog_version": "synthetic-lab-v1"
+  }
+}
+```
+
+**Response 404:**
+```json
+{
+  "status": false,
+  "message": "Economic activity not found.",
+  "data": null
+}
+```
+
+> **Bug conocido:** Cambiar `catalog_version` de `synthetic-lab-v1` a `staging-legacy-v1` falla con HTTP 500 (`economic_activities_catalog_version_check` check constraint). La validación de la request permite ambos valores, pero la BD solo permite `synthetic-lab-v1` en updates.
 
 ---
 
