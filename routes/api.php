@@ -1,22 +1,22 @@
 <?php
 
-use App\Context\V1\BranchOffices\Infrastructure\Laravel\Http\Controllers\BranchOfficeController;
-use App\Context\V1\Carrier\Application\Http\Controllers\CarrierController;
-use App\Context\V1\Clients\Infrastructure\Laravel\Http\Controllers\ClientController;
-use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Http\Controllers\EmissionPointController;
-use App\Context\V1\Enterprise\Application\Http\Controllers\AuthController;
-use App\Context\V1\Enterprise\Application\Http\Controllers\EnterpriseController;
-use App\Context\V1\Enterprise\Application\Http\Controllers\UserController;
-use App\Context\V1\Invoice\Application\Http\Controllers\InvoiceController;
-use App\Context\V1\Invoice\Application\Http\Controllers\PaymentMethodController;
-use App\Context\V1\Menu\Application\Http\Controllers\MenuController;
-use App\Context\V1\Product\Application\Http\Controllers\ProductController;
-use App\Context\V1\Product\Application\Http\Controllers\TaxController;
-use App\Context\V1\Signature\Application\Http\Controllers\EnterpriseSignatureController;
-use App\Context\V1\Signature\Application\Http\Controllers\SignatureController;
-use App\Context\V1\SriAuthorization\Application\Http\Controllers\SriAuthorizationController;
-use App\Context\V1\SriVoucherTypes\Infrastructure\Laravel\Http\Controllers\SriVoucherTypeController;
-use App\Context\V1\XmlGeneration\Application\Http\Controllers\InvoiceXmlController;
+use App\Context\V1\Modules\BranchOffices\Infrastructure\Laravel\Http\Controllers\BranchOfficeController;
+use App\Context\V1\Modules\Carrier\Application\Http\Controllers\CarrierController;
+use App\Context\V1\Modules\Clients\Infrastructure\Laravel\Http\Controllers\ClientController;
+use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Http\Controllers\EmissionPointController;
+use App\Context\V1\Modules\Enterprise\Application\Http\Controllers\AuthController;
+use App\Context\V1\Modules\Enterprise\Application\Http\Controllers\EnterpriseController;
+use App\Context\V1\Modules\Enterprise\Application\Http\Controllers\UserController;
+use App\Context\V1\Modules\Invoice\Application\Http\Controllers\InvoiceController;
+use App\Context\V1\Modules\Invoice\Application\Http\Controllers\PaymentMethodController;
+use App\Context\V1\Modules\Menu\Application\Http\Controllers\MenuController;
+use App\Context\V1\Modules\Product\Application\Http\Controllers\ProductController;
+use App\Context\V1\Modules\Product\Application\Http\Controllers\TaxController;
+use App\Context\V1\Modules\Signature\Application\Http\Controllers\EnterpriseSignatureController;
+use App\Context\V1\Modules\Signature\Application\Http\Controllers\SignatureController;
+use App\Context\V1\Modules\SriAuthorization\Application\Http\Controllers\SriAuthorizationController;
+use App\Context\V1\Modules\SriVoucherTypes\Infrastructure\Laravel\Http\Controllers\SriVoucherTypeController;
+use App\Context\V1\Modules\XmlGeneration\Application\Http\Controllers\InvoiceXmlController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +28,9 @@ use Illuminate\Support\Facades\Route;
 | que delegan a los casos de uso correspondientes.
 |
 */
+
+Route::prefix('v1')->group(base_path('routes/v1/routes.php'));
+Route::prefix('v3')->group(base_path('routes/v3/routes.php'));
 
 // --- Autenticacion (sin auth) ---
 Route::post('/auth/login', [AuthController::class, 'loginInicial']);

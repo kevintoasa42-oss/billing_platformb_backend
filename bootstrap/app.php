@@ -1,10 +1,14 @@
 <?php
 
-use App\Context\V1\BranchOffices\Infrastructure\Laravel\Providers\BranchOfficeServiceProvider;
-use App\Context\V1\Clients\Infrastructure\Laravel\Providers\ClientServiceProvider;
-use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Providers\EmissionPointServiceProvider;
-use App\Context\V1\SriVoucherTypes\Infrastructure\Laravel\Providers\SriVoucherTypeServiceProvider;
-use App\Http\Middleware\SetTenantConnection;
+use App\Context\V1\Modules\BranchOffices\Infrastructure\Laravel\Providers\BranchOfficeServiceProvider;
+use App\Context\V1\Modules\Clients\Infrastructure\Laravel\Providers\ClientServiceProvider;
+use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Providers\EmissionPointServiceProvider;
+use App\Context\V1\Modules\SriVoucherTypes\Infrastructure\Laravel\Providers\SriVoucherTypeServiceProvider;
+use App\Context\V3\Modules\Authentication\Infrastructure\Laravel\Http\Middleware\AuthenticateV3SessionCookie;
+use App\Context\V3\Modules\Authentication\Infrastructure\Laravel\Providers\AuthenticationServiceProvider;
+use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Http\Middleware\CaptureTenantContext;
+use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Http\Middleware\SetTenantConnection;
+use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Providers\TenantServiceProvider;
 use App\Providers\ContextServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'tenant' => SetTenantConnection::class,
+            'auth.v3.cookie' => AuthenticateV3SessionCookie::class,
+            'tenant.v3.context' => CaptureTenantContext::class,
         ]);
         $middleware->redirectTo(fn (Request $request) => $request->expectsJson() ? null : '/login');
     })
@@ -35,5 +41,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ClientServiceProvider::class,
         EmissionPointServiceProvider::class,
         SriVoucherTypeServiceProvider::class,
+        TenantServiceProvider::class,
+        AuthenticationServiceProvider::class,
     ])
     ->create();

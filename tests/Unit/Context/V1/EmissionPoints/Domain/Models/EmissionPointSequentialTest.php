@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\Context\V1\EmissionPoints\Domain\Models;
 
-use App\Context\V1\EmissionPoints\Application\UseCases\GetNextSequentialUseCase;
-use App\Context\V1\EmissionPoints\Application\UseCases\TakeNextSequentialUseCase;
-use App\Context\V1\EmissionPoints\Domain\Models\EmissionPointSequential;
-use App\Context\V1\EmissionPoints\Domain\Ports\NextSequentialGeneratorInterface;
-use App\Context\V1\SriVoucherTypes\Application\Adapters\SriVoucherTypeCatalogInterface;
-use App\Context\V1\SriVoucherTypes\Application\DTOs\SriVoucherTypeDTO;
+use App\Context\V1\Modules\EmissionPoints\Application\UseCases\GetNextSequentialUseCase;
+use App\Context\V1\Modules\EmissionPoints\Application\UseCases\TakeNextSequentialUseCase;
+use App\Context\V1\Modules\EmissionPoints\Domain\Models\EmissionPointSequential;
+use App\Context\V1\Modules\EmissionPoints\Domain\Ports\NextSequentialGeneratorInterface;
+use App\Context\V1\Modules\SriVoucherTypes\Application\Adapters\SriVoucherTypeCatalogInterface;
+use App\Context\V1\Modules\SriVoucherTypes\Application\DTOs\SriVoucherTypeDTO;
 use PHPUnit\Framework\TestCase;
 
 final class EmissionPointSequentialTest extends TestCase

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders\tenant;
 
-use App\Context\V1\Clients\Infrastructure\Laravel\Eloquent\Models\ClientModel;
+use App\Context\V1\Modules\Clients\Infrastructure\Laravel\Eloquent\Models\ClientModel;
 use Illuminate\Database\Seeder;
 
 final class ClientSeeder extends Seeder

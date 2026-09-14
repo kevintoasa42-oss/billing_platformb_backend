@@ -15,110 +15,110 @@ class ContextServiceProvider extends ServiceProvider
 
         // Enterprise
         $this->app->bind(
-            \App\Context\V1\Enterprise\Domain\Mappers\EnterpriseMapperInterface::class,
-            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Mappers\EnterpriseMapper::class
+            \App\Context\V1\Modules\Enterprise\Domain\Mappers\EnterpriseMapperInterface::class,
+            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Mappers\EnterpriseMapper::class
         );
         $this->app->bind(
-            \App\Context\V1\Enterprise\Domain\Mappers\UserMapperInterface::class,
-            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Mappers\UserMapper::class
+            \App\Context\V1\Modules\Enterprise\Domain\Mappers\UserMapperInterface::class,
+            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Mappers\UserMapper::class
         );
         $this->app->bind(
-            \App\Context\V1\Enterprise\Domain\Mappers\RoleMapperInterface::class,
-            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Mappers\RoleMapper::class
+            \App\Context\V1\Modules\Enterprise\Domain\Mappers\RoleMapperInterface::class,
+            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Mappers\RoleMapper::class
         );
 
         // Menu
         $this->app->bind(
-            \App\Context\V1\Menu\Domain\Mappers\MenuMapperInterface::class,
-            \App\Context\V1\Menu\Infrastructure\Eloquent\Mappers\MenuMapper::class
+            \App\Context\V1\Modules\Menu\Domain\Mappers\MenuMapperInterface::class,
+            \App\Context\V1\Modules\Menu\Infrastructure\Eloquent\Mappers\MenuMapper::class
         );
 
         // === Repositories (interfaces -> implementaciones Eloquent) ===
 
         // Enterprise
         $this->app->bind(
-            \App\Context\V1\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface::class,
-            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories\EloquentEnterpriseRepository::class
+            \App\Context\V1\Modules\Enterprise\Domain\Repositories\EnterpriseRepositoryInterface::class,
+            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Repositories\EloquentEnterpriseRepository::class
         );
         $this->app->bind(
-            \App\Context\V1\Enterprise\Domain\Repositories\UserRepositoryInterface::class,
-            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories\EloquentUserRepository::class
+            \App\Context\V1\Modules\Enterprise\Domain\Repositories\UserRepositoryInterface::class,
+            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Repositories\EloquentUserRepository::class
         );
         $this->app->bind(
-            \App\Context\V1\Enterprise\Domain\Repositories\RoleRepositoryInterface::class,
-            \App\Context\V1\Enterprise\Infrastructure\Eloquent\Repositories\EloquentRoleRepository::class
+            \App\Context\V1\Modules\Enterprise\Domain\Repositories\RoleRepositoryInterface::class,
+            \App\Context\V1\Modules\Enterprise\Infrastructure\Eloquent\Repositories\EloquentRoleRepository::class
         );
 
         // Menu
         $this->app->bind(
-            \App\Context\V1\Menu\Domain\Repositories\MenuRepositoryInterface::class,
-            \App\Context\V1\Menu\Infrastructure\Eloquent\Repositories\EloquentMenuRepository::class
+            \App\Context\V1\Modules\Menu\Domain\Repositories\MenuRepositoryInterface::class,
+            \App\Context\V1\Modules\Menu\Infrastructure\Eloquent\Repositories\EloquentMenuRepository::class
         );
 
         // Product
         $this->app->bind(
-            \App\Context\V1\Product\Domain\Repositories\ProductRepositoryInterface::class,
-            \App\Context\V1\Product\Infrastructure\Eloquent\Repositories\EloquentProductRepository::class
+            \App\Context\V1\Modules\Product\Domain\Repositories\ProductRepositoryInterface::class,
+            \App\Context\V1\Modules\Product\Infrastructure\Eloquent\Repositories\EloquentProductRepository::class
         );
 
         // Carrier
         $this->app->bind(
-            \App\Context\V1\Carrier\Domain\Repositories\CarrierRepositoryInterface::class,
-            \App\Context\V1\Carrier\Infrastructure\Eloquent\Repositories\EloquentCarrierRepository::class
+            \App\Context\V1\Modules\Carrier\Domain\Repositories\CarrierRepositoryInterface::class,
+            \App\Context\V1\Modules\Carrier\Infrastructure\Eloquent\Repositories\EloquentCarrierRepository::class
         );
 
         // Signature
         $this->app->bind(
-            \App\Context\V1\Signature\Domain\Repositories\SignatureRepositoryInterface::class,
-            \App\Context\V1\Signature\Infrastructure\Eloquent\Repositories\EloquentSignatureRepository::class
+            \App\Context\V1\Modules\Signature\Domain\Repositories\SignatureRepositoryInterface::class,
+            \App\Context\V1\Modules\Signature\Infrastructure\Eloquent\Repositories\EloquentSignatureRepository::class
         );
 
         // Enterprise Signature
         $this->app->bind(
-            \App\Context\V1\Signature\Domain\Repositories\EnterpriseSignatureRepositoryInterface::class,
-            \App\Context\V1\Signature\Infrastructure\Eloquent\Repositories\EloquentEnterpriseSignatureRepository::class
+            \App\Context\V1\Modules\Signature\Domain\Repositories\EnterpriseSignatureRepositoryInterface::class,
+            \App\Context\V1\Modules\Signature\Infrastructure\Eloquent\Repositories\EloquentEnterpriseSignatureRepository::class
         );
 
 
         // Invoice
         $this->app->bind(
-            \App\Context\V1\Invoice\Domain\Repositories\InvoiceRepositoryInterface::class,
-            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentInvoiceRepository::class
+            \App\Context\V1\Modules\Invoice\Domain\Repositories\InvoiceRepositoryInterface::class,
+            \App\Context\V1\Modules\Invoice\Infrastructure\Eloquent\Repositories\EloquentInvoiceRepository::class
         );
 
         // SRI Catalog (central DB, used by Invoice domain service)
         $this->app->bind(
-            \App\Context\V1\Invoice\Domain\Repositories\SriCatalogRepositoryInterface::class,
-            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSriCatalogRepository::class
+            \App\Context\V1\Modules\Invoice\Domain\Repositories\SriCatalogRepositoryInterface::class,
+            \App\Context\V1\Modules\Invoice\Infrastructure\Eloquent\Repositories\EloquentSriCatalogRepository::class
         );
 
         // Signature config (resolves environment/emission_type from signature)
         $this->app->bind(
-            \App\Context\V1\Invoice\Domain\Repositories\SignatureConfigRepositoryInterface::class,
-            \App\Context\V1\Invoice\Infrastructure\Eloquent\Repositories\EloquentSignatureConfigRepository::class
+            \App\Context\V1\Modules\Invoice\Domain\Repositories\SignatureConfigRepositoryInterface::class,
+            \App\Context\V1\Modules\Invoice\Infrastructure\Eloquent\Repositories\EloquentSignatureConfigRepository::class
         );
 
         // Shared services
         $this->app->singleton(
-            \App\Context\V1\Shared\Domain\Services\AccessKeyGenerator::class
+            \App\Context\V1\Shared\AccessKey\Domain\Services\AccessKeyGenerator::class
         );
 
         // XmlGeneration - Invoice XML builder (needs provider RUC from config)
         $this->app->singleton(
-            \App\Context\V1\XmlGeneration\Domain\Services\InvoiceXmlBuilder::class,
-            fn ($app) => new \App\Context\V1\XmlGeneration\Domain\Services\InvoiceXmlBuilder(
+            \App\Context\V1\Modules\XmlGeneration\Domain\Services\InvoiceXmlBuilder::class,
+            fn ($app) => new \App\Context\V1\Modules\XmlGeneration\Domain\Services\InvoiceXmlBuilder(
                 config('sri.provider_ruc'),
             )
         );
 
         // SriAuthorization - SRI SOAP communication services
-        $this->app->singleton(\App\Context\V1\SriAuthorization\Domain\Services\SriReceptionService::class);
-        $this->app->singleton(\App\Context\V1\SriAuthorization\Domain\Services\SriAuthorizationService::class);
+        $this->app->singleton(\App\Context\V1\Modules\SriAuthorization\Domain\Services\SriReceptionService::class);
+        $this->app->singleton(\App\Context\V1\Modules\SriAuthorization\Domain\Services\SriAuthorizationService::class);
 
         // SriAuthorization - log repository
         $this->app->bind(
-            \App\Context\V1\SriAuthorization\Domain\Repositories\InvoiceSriLogRepositoryInterface::class,
-            \App\Context\V1\SriAuthorization\Infrastructure\Eloquent\Repositories\EloquentInvoiceSriLogRepository::class
+            \App\Context\V1\Modules\SriAuthorization\Domain\Repositories\InvoiceSriLogRepositoryInterface::class,
+            \App\Context\V1\Modules\SriAuthorization\Infrastructure\Eloquent\Repositories\EloquentInvoiceSriLogRepository::class
         );
     }
 

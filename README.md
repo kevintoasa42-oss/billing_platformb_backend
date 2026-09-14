@@ -1,3 +1,24 @@
+# Billing Platform Backend
+
+### V1 Commands
+
+```bash
+php artisan landlord --help
+php artisan tenant --help
+
+# migrations / seeders
+php artisan  tenant:migrate:fresh --seed --all
+php artisan  tenant:migrate:fresh --seed --enterprise=1
+```
+
+### V3 Commands
+
+```bash
+# migrations / seeders
+php artisan migrate --database=master_v3 --path=database/migrations/v3
+php artisan db:seed --database=master_v3 --class='Database\Seeders\v3\MasterV3DatabaseSeeder'
+```
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

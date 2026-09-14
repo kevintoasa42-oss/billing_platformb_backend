@@ -2,9 +2,9 @@
 
 namespace Database\Seeders\tenant;
 
-use App\Context\V1\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOfficeModel;
-use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
-use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointSequenceModel;
+use App\Context\V1\Modules\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOfficeModel;
+use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
+use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointSequenceModel;
 use Illuminate\Database\Seeder;
 
 final class EmissionPointSeeder extends Seeder

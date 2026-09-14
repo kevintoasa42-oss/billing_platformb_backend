@@ -99,6 +99,23 @@ return [
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 
+        // Central database for Context V3. It is intentionally separate from
+        // the V1 landlord connection (`pgsql`) and from dynamic tenants.
+        'master_v3' => [
+            'driver' => 'pgsql',
+            'url' => env('MASTER_V3_DB_URL'),
+            'host' => env('MASTER_V3_DB_HOST', '127.0.0.1'),
+            'port' => env('MASTER_V3_DB_PORT', '5432'),
+            'database' => env('MASTER_V3_DB_DATABASE', 'master_v3'),
+            'username' => env('MASTER_V3_DB_USERNAME', 'root'),
+            'password' => env('MASTER_V3_DB_PASSWORD', ''),
+            'charset' => env('DB_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => env('MASTER_V3_DB_SSLMODE', env('DB_SSLMODE', 'prefer')),
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),

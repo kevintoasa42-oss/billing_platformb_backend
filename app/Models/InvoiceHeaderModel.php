@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Context\V1\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOfficeModel;
-use App\Context\V1\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
+use App\Context\V1\Modules\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOfficeModel;
+use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
