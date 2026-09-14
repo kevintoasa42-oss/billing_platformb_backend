@@ -12,6 +12,7 @@ use App\Context\V3\Modules\Core\EconomicActivity\EconomicActivityServiceProvider
 use App\Context\V3\Modules\Core\Establishment\EstablishmentServiceProvider;
 use App\Context\V3\Modules\Core\Notification\NotificationServiceProvider;
 use App\Context\V3\Modules\Core\SriIva\SriIvaServiceProvider;
+use App\Context\V3\Modules\Core\Product\ProductServiceProvider;
 use App\Context\V3\Modules\Core\Vehicle\VehicleServiceProvider;
 use App\Context\V3\Shared\Mail\MailServiceProvider;
 use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Http\Middleware\CaptureTenantContext;
@@ -59,5 +60,6 @@ return Application::configure(basePath: dirname(__DIR__))
         MailServiceProvider::class,
         NotificationServiceProvider::class,
         SriIvaServiceProvider::class,
+        ProductServiceProvider::class,
     ])
     ->create();

@@ -50,4 +50,7 @@ Route::prefix('core')
 
         // SRI IVA types + percentages (SriIvaTypeController, SriIvaPercentageController)
         Route::group([], base_path('routes/v3/core/sri_iva_types.php'));
+
+        // Products + product settings + product taxes (ProductController, ProductSettingsController, ProductTaxController)
+        Route::group([], base_path('routes/v3/core/products.php'));
     });
