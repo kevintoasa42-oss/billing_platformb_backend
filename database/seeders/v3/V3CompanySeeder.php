@@ -57,7 +57,6 @@ final class V3CompanySeeder extends Seeder
                 $db->table('core.company_activities')->insert([
                     'id' => (string) Str::uuid(),
                     'tenant_id' => $tenantId,
-                    'company_id' => $companyId,
                     'activity_id' => $activityId,
                     'validity' => $db->raw("daterange(CURRENT_DATE, NULL, '[)')"),
                     'is_primary' => $index === 0,
