@@ -20,5 +20,7 @@ final class AuthenticationUserModel extends Model
     protected $casts = [
         'platform_admin' => 'boolean',
         'active' => 'boolean',
+        'mfa_enabled' => 'boolean',
+        'mfa_confirmed_at' => 'datetime',
     ];
 }

@@ -121,6 +121,18 @@ final class EloquentAuthenticationRepository implements AuthenticationRepository
             : null;
     }
 
+    /** @return list<array<string, mixed>> */
+    public function menuTreeForTenant(string $tenantId): array
+    {
+        return $this->withinTenantContext($tenantId, function () use ($tenantId): array {
+            $rawSettings = DB::connection('master_v3')->table('core.tenant_settings')->where('tenant_id', $tenantId)->value('iam_settings');
+            $settings = is_array($rawSettings) ? $rawSettings : json_decode((string) $rawSettings, true);
+            $menus = is_array($settings) ? array_values((array) ($settings['menus'] ?? [])) : [];
+
+            return $this->buildMenuTree($menus);
+        });
+    }
+
     public function revokeSession(string $tokenHash): void
     {
         $session = $this->resolveSession($tokenHash);
@@ -131,6 +143,20 @@ final class EloquentAuthenticationRepository implements AuthenticationRepository
         $this->withinTenantContext($session->tenantId, function () use ($tokenHash): void {
             AuthenticationSessionModel::query()->whereKey($tokenHash)->delete();
         });
+    }
+
+    /** @param list<array<string, mixed>> $menus @return list<array<string, mixed>> */
+    private function buildMenuTree(array $menus): array
+    {
+        $build = function (?int $parentId) use (&$build, $menus): array {
+            return array_values(array_map(function (array $menu) use (&$build): array {
+                $menu['children'] = $build(isset($menu['id']) ? (int) $menu['id'] : null);
+
+                return $menu;
+            }, array_filter($menus, static fn (array $menu): bool => ($menu['parent_id'] ?? null) === $parentId)));
+        };
+
+        return $build(null);
     }
 
     /** @template TResult */

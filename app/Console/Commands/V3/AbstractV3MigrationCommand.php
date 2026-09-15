@@ -17,6 +17,7 @@ abstract class AbstractV3MigrationCommand extends Command
      */
     protected const MIGRATION_PATHS = [
         'database/migrations/v3',
+        'database/migrations/v3/auth',
         'database/migrations/v3/core',
         'database/migrations/v3/platform',
         'database/migrations/v3/fiscal',

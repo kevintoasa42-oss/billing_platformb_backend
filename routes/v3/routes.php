@@ -15,6 +15,17 @@ Route::prefix('auth')->group(function (): void {
         Route::post('refresh', [AuthenticationController::class, 'refresh']);
         Route::post('switch-enterprise', [AuthenticationController::class, 'switchEnterprise']);
         Route::delete('session', [AuthenticationController::class, 'destroySession']);
+        Route::get('sessions', [AuthenticationController::class, 'activeSessions']);
+        Route::delete('sessions', [AuthenticationController::class, 'revokeOtherSessions']);
+        Route::delete('sessions/{id}', [AuthenticationController::class, 'revokeActiveSession'])->whereNumber('id');
+        Route::post('verify-password', [AuthenticationController::class, 'verifyPassword']);
+        Route::post('change-password', [AuthenticationController::class, 'changePassword']);
+        Route::get('mfa', [AuthenticationController::class, 'mfaStatus']);
+        Route::post('mfa', [AuthenticationController::class, 'beginMfa']);
+        Route::post('mfa/confirm', [AuthenticationController::class, 'confirmMfa']);
+        Route::get('preferences', [AuthenticationController::class, 'preferences']);
+        Route::patch('preferences', [AuthenticationController::class, 'savePreferences']);
+        Route::post('support/users/{id}/password-reset', [AuthenticationController::class, 'supportPasswordReset'])->whereNumber('id');
     });
 });
 
@@ -51,3 +62,5 @@ Route::prefix('core')
         // SRI IVA types + percentages (SriIvaTypeController, SriIvaPercentageController)
         Route::group([], base_path('routes/v3/core/sri_iva_types.php'));
     });
+
+Route::group([], base_path('routes/v3/platform.php'));

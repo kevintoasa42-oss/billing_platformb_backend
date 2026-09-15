@@ -19,12 +19,16 @@ final readonly class GetAuthenticationSessionUseCase
             throw new AuthenticationException('La sesión no es válida.', 'unauthenticated', 401);
         }
 
+        $permissions = $session->capabilities === [] ? $enterprise->capabilities : $session->capabilities;
+
         return new AuthenticationSessionDTO(
             token: null,
             user: $user,
             enterprise: $enterprise,
             expiresAt: $session->expiresAt,
             enterprises: $this->repository->enterprisesForUser($user->id),
+            menus: $this->repository->menuTreeForTenant($session->tenantId),
+            permissions: $permissions,
         );
     }
 }
