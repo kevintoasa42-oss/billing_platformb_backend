@@ -9,7 +9,7 @@ interface ProductRepositoryInterface
     /**
      * @return Product[]
      */
-    public function all(?string $search = null, int $limit = 500): array;
+    public function all(?string $search = null, int $limit = 500, ?bool $isActive = null): array;
 
     public function findByLegacyId(int $legacyId): ?Product;
 

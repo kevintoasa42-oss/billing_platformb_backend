@@ -16,9 +16,9 @@ class ProductUseCase
     /**
      * @return Product[]
      */
-    public function all(?string $search = null, int $limit = 500): array
+    public function all(?string $search = null, int $limit = 500, ?bool $isActive = null): array
     {
-        return $this->repository->all($search, $limit);
+        return $this->repository->all($search, $limit, $isActive);
     }
 
     public function find(int $legacyId): ?Product

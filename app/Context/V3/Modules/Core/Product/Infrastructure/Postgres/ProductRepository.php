@@ -14,12 +14,16 @@ class ProductRepository implements ProductRepositoryInterface
         private readonly ProductMapper $mapper,
     ) {}
 
-    public function all(?string $search = null, int $limit = 500): array
+    public function all(?string $search = null, int $limit = 500, ?bool $isActive = null): array
     {
         $query = ProductModel::query()->with('taxAssignments')->limit($limit);
 
         if ($search !== null && $search !== '') {
             $query->whereRaw('LOWER(name) LIKE LOWER(?)', ['%'.$search.'%']);
+        }
+
+        if ($isActive !== null) {
+            $query->where('is_active', $isActive);
         }
 
         $records = $query->orderBy('name')->get();
@@ -108,5 +112,4 @@ class ProductRepository implements ProductRepositoryInterface
                 ->exists(),
         ];
     }
-
 }

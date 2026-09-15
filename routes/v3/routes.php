@@ -65,8 +65,29 @@ Route::prefix('core')
         // Products + product settings + product taxes (ProductController, ProductSettingsController, ProductTaxController)
         Route::group([], base_path('routes/v3/core/products.php'));
 
+        // Third parties — identity availability and tenant-scoped catalog resources
+        Route::group([], base_path('routes/v3/core/third_parties.php'));
+
         // Settings — customer settings, payment method settings, additional info presets
         Route::group([], base_path('routes/v3/core/settings.php'));
+    });
+
+/**
+ * Root catalog endpoints kept for compatibility with the V3 frontend.
+ * They reuse the Core application controllers and tenant context.
+ */
+Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
+    ->group(function (): void {
+        Route::group([], base_path('routes/v3/catalog.php'));
+    });
+
+/**
+ * V3 Fiscal — resources that are tenant-bound but do not belong to the core
+ * catalog prefix.
+ */
+Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
+    ->group(function (): void {
+        Route::group([], base_path('routes/v3/fiscal/invoice_drafts.php'));
     });
 
 Route::group([], base_path('routes/v3/platform.php'));
