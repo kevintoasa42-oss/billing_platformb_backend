@@ -48,9 +48,6 @@ Route::prefix('core')
         // Companies (CompanyController) — core.companies, one per tenant
         Route::group([], base_path('routes/v3/core/companies.php'));
 
-        // Branches + issuance points (BranchController, IssuancePointController) — legacy_id surface
-        Route::group([], base_path('routes/v3/core/branches.php'));
-
         // Vehicles (VehicleController) — core.vehicles, tenant-scoped unique plate
         Route::group([], base_path('routes/v3/core/vehicles.php'));
 
@@ -77,6 +74,13 @@ Route::prefix('core')
         // Carriers (CarrierController) - canonical carrier profile, documents, allocations
         Route::group([], base_path("routes/v3/core/carriers.php"));
     });
+
+    Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
+    ->group(function (): void {
+        // Branches + issuance points (BranchController, IssuancePointController) — legacy_id surface
+        Route::group([], base_path('routes/v3/core/branches.php'));
+    }); 
+
 
 /**
  * Root catalog endpoints kept for compatibility with the V3 frontend.

@@ -7,8 +7,8 @@ Complete reference of all V3 API endpoints. All endpoints are under the `api/v3`
 | Group | Prefix | Routes | Documentation |
 |---|---|---|---|
 | Authentication | `auth` | 17 | [Authentication](#authentication) |
-| Core - Branches | `core/branches` | 7 | [Core - Branches](#core---branches) |
-| Core - Issuance Points | `core/issuance-points` | 2 | [Core - Issuance Points](#core---issuance-points) |
+| Branches | `branches` | 7 | [Branches](#branches) |
+| Issuance Points | `issuance-points` | 2 | [Issuance Points](#issuance-points) |
 | Core - Carrier Establishments | `core/carrier-establishments` | 4 | [Core - Carrier Establishments](#core---carrier-establishments) |
 | Core - Carrier Emission Points | `core/carrier-emission-points` | 3 | [Core - Carrier Emission Points](#core---carrier-emission-points) |
 | Core - Carrier Affiliations | `core/carrier-affiliations` | 4 | [Core - Carrier Affiliations](#core---carrier-affiliations) |
@@ -372,11 +372,11 @@ Admin-initiated password reset for a user.
 
 ---
 
-## Core - Branches
+## Branches
 
-Prefix: `api/v3/core/branches`
+Prefix: `api/v3/branches`
 
-### GET `core/branches`
+### GET `branches`
 
 List branches.
 
@@ -391,7 +391,7 @@ List branches.
 }
 ```
 
-### POST `core/branches`
+### POST `branches`
 
 Create a branch.
 
@@ -421,7 +421,7 @@ Create a branch.
 }
 ```
 
-### PATCH `core/branches/{id}`
+### PATCH `branches/{id}`
 
 Update a branch.
 
@@ -453,7 +453,7 @@ Update a branch.
 ```
 404 if not found: `{ "code": "branch_not_found" }`
 
-### DELETE `core/branches/{id}`
+### DELETE `branches/{id}`
 
 Delete (deactivate) a branch.
 
@@ -471,7 +471,7 @@ Delete (deactivate) a branch.
 ```
 404 if not found: `{ "code": "branch_not_found" }`
 
-### GET `core/branches/{branch}/issuance-points`
+### GET `branches/{branch}/issuance-points`
 
 List issuance points for a branch.
 
@@ -488,7 +488,7 @@ List issuance points for a branch.
 }
 ```
 
-### POST `core/branches/{branch}/issuance-points`
+### POST `branches/{branch}/issuance-points`
 
 Create an issuance point for a branch.
 
@@ -513,7 +513,7 @@ Create an issuance point for a branch.
 ```
 404 if branch not found: `{ "code": "branch_not_found" }`
 
-### GET `core/branches/{branch}/issuance-points/{point}/next-sequential`
+### GET `branches/{branch}/issuance-points/{point}/next-sequential`
 
 Get next sequential number for an issuance point.
 
@@ -533,11 +533,11 @@ Get next sequential number for an issuance point.
 
 ---
 
-## Core - Issuance Points
+## Issuance Points
 
-Prefix: `api/v3/core/issuance-points`
+Prefix: `api/v3/issuance-points`
 
-### PATCH `core/issuance-points/{id}`
+### PATCH `issuance-points/{id}`
 
 Update an issuance point.
 
@@ -562,7 +562,7 @@ Update an issuance point.
 ```
 404 if not found: `{ "code": "issuance_point_not_found" }`
 
-### DELETE `core/issuance-points/{id}`
+### DELETE `issuance-points/{id}`
 
 Delete (deactivate) an issuance point.
 
