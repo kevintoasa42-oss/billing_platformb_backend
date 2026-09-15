@@ -62,6 +62,8 @@ Route::prefix('core')
 
         // Carriers (CarrierController) - canonical carrier profile, documents, allocations
         Route::group([], base_path("routes/v3/core/carriers.php"));
+        // Third parties (ThirdPartyController) - customers, carriers, custom fields
+        Route::group([], base_path("routes/v3/core/third_parties.php"));
     });
 
     Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
