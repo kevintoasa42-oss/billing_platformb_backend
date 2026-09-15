@@ -21,7 +21,11 @@ use App\Context\V3\Modules\Core\Vehicle\VehicleServiceProvider;
 use App\Context\V3\Modules\Fiscal\InvoiceDraft\Domain\Exceptions\InvoiceDraftException;
 use App\Context\V3\Modules\Fiscal\InvoiceDraft\InvoiceDraftServiceProvider;
 use App\Context\V3\Modules\Platform\Domain\Exceptions\PlatformAdministrationException;
+use App\Context\V3\Modules\Core\ThirdParty\ThirdPartyServiceProvider;
 use App\Context\V3\Modules\Platform\PlatformServiceProvider;
+use App\Context\V3\Modules\Fiscal\Invoice\InvoiceServiceProvider;
+use App\Context\V3\Modules\Fiscal\Sri\SriServiceProvider;
+use App\Context\V3\Modules\Fiscal\Worker\WorkerServiceProvider;
 use App\Context\V3\Shared\Mail\MailServiceProvider;
 use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Http\Middleware\CaptureTenantContext;
 use App\Context\V3\Shared\Tenant\Infrastructure\Laravel\Http\Middleware\SetTenantConnection;
@@ -95,5 +99,9 @@ return Application::configure(basePath: dirname(__DIR__))
         PlatformServiceProvider::class,
         ProductServiceProvider::class,
         SettingsServiceProvider::class,
+        ThirdPartyServiceProvider::class,
+        InvoiceServiceProvider::class,
+        WorkerServiceProvider::class,
+        SriServiceProvider::class,
     ])
     ->create();
