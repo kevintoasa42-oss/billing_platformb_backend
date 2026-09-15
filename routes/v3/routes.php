@@ -47,8 +47,8 @@ Route::prefix('core')
         // Companies (CompanyController) — core.companies, one per tenant
         Route::group([], base_path('routes/v3/core/companies.php'));
 
-        // Establishments + emission points (EstablishmentController, EmissionPointController)
-        Route::group([], base_path('routes/v3/core/establishments.php'));
+        // Branches + issuance points (BranchController, IssuancePointController) — legacy_id surface
+        Route::group([], base_path('routes/v3/core/branches.php'));
 
         // Vehicles (VehicleController) — core.vehicles, tenant-scoped unique plate
         Route::group([], base_path('routes/v3/core/vehicles.php'));
@@ -61,6 +61,12 @@ Route::prefix('core')
 
         // SRI IVA types + percentages (SriIvaTypeController, SriIvaPercentageController)
         Route::group([], base_path('routes/v3/core/sri_iva_types.php'));
+
+        // Products + product settings + product taxes (ProductController, ProductSettingsController, ProductTaxController)
+        Route::group([], base_path('routes/v3/core/products.php'));
+
+        // Settings — customer settings, payment method settings, additional info presets
+        Route::group([], base_path('routes/v3/core/settings.php'));
     });
 
 Route::group([], base_path('routes/v3/platform.php'));

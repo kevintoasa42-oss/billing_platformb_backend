@@ -13,6 +13,8 @@ use App\Context\V3\Modules\Core\EconomicActivity\EconomicActivityServiceProvider
 use App\Context\V3\Modules\Core\Establishment\EstablishmentServiceProvider;
 use App\Context\V3\Modules\Core\Notification\NotificationServiceProvider;
 use App\Context\V3\Modules\Core\SriIva\SriIvaServiceProvider;
+use App\Context\V3\Modules\Core\Product\ProductServiceProvider;
+use App\Context\V3\Modules\Core\Settings\SettingsServiceProvider;
 use App\Context\V3\Modules\Core\Vehicle\VehicleServiceProvider;
 use App\Context\V3\Modules\Platform\Domain\Exceptions\PlatformAdministrationException;
 use App\Context\V3\Modules\Platform\PlatformServiceProvider;
@@ -83,5 +85,7 @@ return Application::configure(basePath: dirname(__DIR__))
         NotificationServiceProvider::class,
         SriIvaServiceProvider::class,
         PlatformServiceProvider::class,
+        ProductServiceProvider::class,
+        SettingsServiceProvider::class,
     ])
     ->create();

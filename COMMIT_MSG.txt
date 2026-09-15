@@ -1,0 +1,36 @@
+Add Settings DDD module: customer-settings, payment-method-settings, additional-info-presets (8 routes, no IAM).
+
+New module under Core/Settings:
+- 3 Domain models (CustomerSettings, PaymentMethod, AdditionalInfoPreset)
+- 3 Repository interfaces
+- 2 Eloquent models (TenantSettingsModel, AdditionalInfoPresetModel)
+- 3 Postgres repositories (CustomerSettings, PaymentMethodSettings, AdditionalInfoPreset)
+- 4 DTOs (CustomerSettings, PaymentMethodUpdate, AdditionalInfoPresetCreate, AdditionalInfoPresetUpdate)
+- 4 Form Requests
+- 3 UseCases (CustomerSettings, PaymentMethodSettings, AdditionalInfoPreset)
+- 3 Controllers (CustomerSettings, PaymentMethodSettings, AdditionalInfoPreset)
+- 1 ServiceProvider
+
+8 routes with URIs preserved from ArtraFiscalBackEnd reference:
+- PATCH customer-settings — saves allow_multiple_plates in core.tenant_settings.customer_settings
+- GET payment-method-settings — lists methods, seeds 2 defaults if empty
+- PATCH payment-method-settings/{code} — updates alias/is_active
+- GET additional-info-presets — lists all presets
+- GET additional-info-presets/available — lists active presets only
+- POST additional-info-presets — creates preset, 201
+- PATCH additional-info-presets/{id} — updates preset by legacy_id
+- DELETE additional-info-presets/{id} — soft delete, returns {deleted: true}
+
+Response shapes match reference exactly:
+- Payment methods: code, name, alias, display_name, requires_term, is_active, is_default
+- Presets: id (legacy_id), code, name, default_value, auto_apply, value_editable,
+  is_required, is_active, sort_order, access_rules, can_view, can_edit, can_delete
+- DELETE returns {deleted: true}
+
+AdditionalInfoPresetRepository uses Eloquent AdditionalInfoPresetModel.
+No new tables, no migrations needed.
+No capabilities, no IAM.
+
+Generated with [Devin](https://devin.ai)
+
+Co-Authored-By: Devin <158243242+devin-ai-integration[bot]@users.noreply.github.com>
