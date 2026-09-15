@@ -87,15 +87,6 @@ Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
         Route::group([], base_path('routes/v3/catalog.php'));
     });
 
-/**
- * V3 Fiscal — resources that are tenant-bound but do not belong to the core
- * catalog prefix.
- */
-Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
-    ->group(function (): void {
-        Route::group([], base_path('routes/v3/fiscal/invoice_drafts.php'));
-    });
-
 Route::group([], base_path('routes/v3/platform.php'));
 
 /**

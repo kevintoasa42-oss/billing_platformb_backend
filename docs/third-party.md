@@ -106,23 +106,11 @@ The identification value is normalized to `UPPERCASE` with all whitespace remove
 
 All endpoints are under `api/v3/core/third-parties` and require `auth.v3.cookie` + `tenant.v3.context` middleware.
 
-### Third Party CRUD
+### Third Party Creation
 
 | Method | Path | Description |
 |---|---|---|
-| GET | `/third-parties` | List all third parties (with roles, activities, custom fields) |
 | POST | `/third-parties` | Create a third party |
-| GET | `/third-parties/{id}` | Get a third party by ID |
-| PATCH | `/third-parties/{id}` | Update a third party |
-
-### Role-based Queries
-
-| Method | Path | Description |
-|---|---|---|
-| GET | `/third-parties/roles` | List available roles (`carrier`, `customer`) |
-| GET | `/third-parties/customers` | List customers (optionally filtered by `?role=`) |
-| GET | `/third-parties/carriers` | List carriers (with carrier_company_id and plate) |
-| GET | `/third-parties/{id}/customer` | Get a customer by third party ID |
 
 ### Identification Availability
 
@@ -140,13 +128,6 @@ Query params: `identification` (or `identification_number`), `identification_typ
 | POST | `/third-parties/field-definitions` | Create a field definition |
 | PATCH | `/third-parties/field-definitions/{definition}` | Update a field definition |
 | DELETE | `/third-parties/field-definitions/{definition}` | Deactivate a field definition |
-
-### Custom Field Values
-
-| Method | Path | Description |
-|---|---|---|
-| GET | `/third-parties/{id}/fields` | Get custom field values for a third party |
-| PATCH | `/third-parties/{id}/fields` | Replace custom field values for a third party |
 
 ## Request/Response Examples
 
@@ -202,14 +183,41 @@ POST /api/v3/core/third-parties/field-definitions
 }
 ```
 
-### Update Custom Field Values
+**Response (201):**
+```json
+{
+  "status": true,
+  "message": "Campo configurable creado.",
+  "data": {
+    "id": "uuid",
+    "code": "credit_limit",
+    "label": "Límite de Crédito",
+    "scope": "customer",
+    "data_type": "number",
+    "validation": { "min": 0, "max": 100000 },
+    "is_required": false,
+    "sort_order": 10,
+    "is_active": true
+  }
+}
+```
+
+### Check Identification Availability
 
 **Request:**
+```
+GET /api/v3/core/third-parties/availability?identification=1712345678&identification_type=05
+```
+
+**Response (200):**
 ```json
-PATCH /api/v3/core/third-parties/{id}/fields
 {
-  "custom_fields": {
-    "credit_limit": 5000
+  "status": true,
+  "message": "Disponibilidad de identificación verificada.",
+  "data": {
+    "available": true,
+    "identification": "1712345678",
+    "identification_type": "05"
   }
 }
 ```
