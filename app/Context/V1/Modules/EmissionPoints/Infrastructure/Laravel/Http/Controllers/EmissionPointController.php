@@ -5,20 +5,15 @@ namespace App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Http\Cont
 use App\Context\V1\Modules\EmissionPoints\Application\Adapters\EmissionPointSequentialServiceInterface;
 use App\Context\V1\Modules\EmissionPoints\Application\DTOs\EmissionPointDTO;
 use App\Context\V1\Modules\EmissionPoints\Application\UseCases\EmissionPointCrudService;
-use App\Context\V1\Modules\EmissionPoints\Domain\Exceptions\EmissionPointNotFoundException;
 use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Http\Requests\CreateEmissionPointRequest;
 use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Http\Requests\NextSequentialRequest;
 use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Http\Requests\UpdateEmissionPointRequest;
-use App\Context\V1\Modules\SriVoucherTypes\Domain\Exceptions\SriVoucherTypeNotFoundException;
 use App\Http\Controllers\Controller;
-use App\Http\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 final class EmissionPointController extends Controller
 {
-    use ApiResponse;
-
     public function __construct(
         private readonly EmissionPointCrudService $service,
         private readonly EmissionPointSequentialServiceInterface $sequentialService,
@@ -33,7 +28,16 @@ final class EmissionPointController extends Controller
             'default' => $request->has('default') ? $request->boolean('default') : null,
         ], static fn ($value) => $value !== null && $value !== '');
 
-        return $this->successResponse($this->service->list(max(1, (int) $request->query('page', 1)), min(100, max(1, (int) $request->query('perPage', 15))), $filters));
+        $data = $this->service->list(
+            max(1, (int) $request->query('page', 1)),
+            min(100, max(1, (int) $request->query('perPage', 15))),
+            $filters,
+        );
+
+        return response()->json([
+            'status' => true,
+            'response' => $data,
+        ]);
     }
 
     public function nextSequential(NextSequentialRequest $request): JsonResponse
@@ -43,26 +47,23 @@ final class EmissionPointController extends Controller
 
     private function sequentialResponse(NextSequentialRequest $request, bool $take): JsonResponse
     {
-        $data = $request->validated();
+        $validated = $request->validated();
+        $arguments = [
+            (int) $validated['branch_office_id'],
+            isset($validated['emission_point_id']) ? (int) $validated['emission_point_id'] : null,
+            $validated['emission_point'] ?? null,
+            isset($validated['carrier_id']) ? (int) $validated['carrier_id'] : null,
+            $validated['document_code'],
+        ];
+        $result = $take
+            ? $this->sequentialService->takeNextSequential(...$arguments)
+            : $this->sequentialService->nextSequential(...$arguments);
+        $data = $result->toArray();
 
-        try {
-            $arguments = [
-                (int) $data['branch_office_id'],
-                isset($data['emission_point_id']) ? (int) $data['emission_point_id'] : null,
-                $data['emission_point'] ?? null,
-                isset($data['carrier_id']) ? (int) $data['carrier_id'] : null,
-                $data['document_code'],
-            ];
-            $result = $take
-                ? $this->sequentialService->takeNextSequential(...$arguments)
-                : $this->sequentialService->nextSequential(...$arguments);
-
-            return $this->successResponse($result->toArray());
-        } catch (EmissionPointNotFoundException) {
-            return $this->errorResponse('Emission point not found for the supplied branch office.', 404);
-        } catch (SriVoucherTypeNotFoundException) {
-            return $this->errorResponse('SRI voucher type not found or is not currently valid.', 404);
-        }
+        return response()->json([
+            'status' => true,
+            'response' => $data,
+        ]);
     }
 
     public function takeNextSequential(NextSequentialRequest $request): JsonResponse
@@ -74,27 +75,61 @@ final class EmissionPointController extends Controller
     {
         $point = $this->service->get($id);
 
-        return $point ? $this->successResponse($point->toArray()) : $this->errorResponse('Emission point not found.', 404);
+        if (! $point) {
+            $data = 'Emission point not found.';
+
+            return response()->json([
+                'status' => false,
+                'response' => $data,
+            ], 404);
+        }
+
+        $data = $point->toArray();
+
+        return response()->json([
+            'status' => true,
+            'response' => $data,
+        ]);
     }
 
     public function store(CreateEmissionPointRequest $request): JsonResponse
     {
-        return $this->successResponse($this->service->create(EmissionPointDTO::fromArray($request->validated()))->toArray(), 201);
+        $data = $this->service->create(EmissionPointDTO::fromArray($request->validated()))->toArray();
+
+        return response()->json([
+            'status' => true,
+            'response' => $data,
+        ], 201);
     }
 
     public function update(int $id, UpdateEmissionPointRequest $request): JsonResponse
     {
-        try {
-            return $this->successResponse($this->service->update(EmissionPointDTO::fromArray([...$request->validated(), 'id' => $id]))->toArray());
-        } catch (EmissionPointNotFoundException) {
-            return $this->errorResponse('Emission point not found.', 404);
-        }
+        $data = $this->service->update(EmissionPointDTO::fromArray([...$request->validated(), 'id' => $id]))->toArray();
+
+        return response()->json([
+            'status' => true,
+            'response' => $data,
+        ]);
     }
 
     public function destroy(int $id): JsonResponse
     {
-        return $this->service->delete($id)
-            ? $this->successResponse('Emission point deleted successfully.')
-            : $this->errorResponse('Emission point not found.', 404);
+        $deleted = $this->service->delete($id);
+
+        if (! $deleted) {
+            $data = 'Emission point not found.';
+
+            return response()->json([
+                'status' => false,
+                'response' => $data,
+            ], 404);
+        }
+
+        $data = 'Emission point deleted successfully.';
+
+        return response()->json([
+            'status' => true,
+            'response' => $data,
+        ]);
     }
 }

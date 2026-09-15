@@ -4,56 +4,46 @@ declare(strict_types=1);
 
 namespace App\Context\V3\Modules\Core\ThirdParty\Application\DTOs;
 
-class ThirdPartyCreateDTO
+final readonly class ThirdPartyCreateDTO
 {
     /**
-     * @param  array<int, string>  $roles
-     * @param  array<int, array<string, mixed>>  $activities
+     * @param  list<string>  $roles
      * @param  array<string, mixed>  $customFields
      */
     public function __construct(
-        public readonly string $name,
-        public readonly ?string $id = null,
-        public readonly ?string $tenantId = null,
-        public readonly ?string $identification = null,
-        public readonly ?bool $mustInvoice = null,
-        public readonly ?string $legacyId = null,
-        public readonly ?string $identificationType = null,
-        public readonly ?string $address = null,
-        public readonly ?string $phone = null,
-        public readonly ?string $email = null,
-        public readonly ?int $customerTypeId = null,
-        public readonly ?bool $isActive = null,
-        public readonly ?string $role = null,
-        public readonly array $roles = [],
-        public readonly array $activities = [],
-        public readonly ?string $plate = null,
-        public readonly array $customFields = [],
+        public string $name,
+        public string $identification,
+        public string $identificationType,
+        public ?bool $mustInvoice,
+        public ?string $personType,
+        public ?int $legacyId,
+        public ?string $address,
+        public ?string $phone,
+        public ?string $email,
+        public ?int $customerTypeId,
+        public ?bool $isActive,
+        public ?string $role,
+        public array $roles,
+        public array $customFields,
     ) {}
 
-    /** @param  array<string, mixed>  $data */
+    /** @param array<string, mixed> $data */
     public static function fromArray(array $data): self
     {
         return new self(
-            id: $data['id'] ?? null,
-            tenantId: $data['tenant_id'] ?? null,
-            name: $data['name'],
-            identification: $data['identification'] ?? null,
-            mustInvoice: $data['must_invoice'] ?? null,
-            legacyId: $data['legacy_id'] ?? null,
-            identificationType: $data['identification_type'] ?? null,
-            address: $data['address'] ?? null,
-            phone: $data['phone'] ?? null,
-            email: $data['email'] ?? null,
-            customerTypeId: $data['customer_type_id'] ?? null,
-            isActive: $data['is_active'] ?? null,
-            role: $data['role'] ?? null,
-            roles: array_values(array_unique(array_filter(
-                is_array($data['roles'] ?? null) ? $data['roles'] : (($data['role'] ?? null) !== null ? [$data['role']] : []),
-                static fn ($role): bool => is_string($role) && trim($role) !== '',
-            ))),
-            activities: $data['activities'] ?? [],
-            plate: $data['plate'] ?? null,
+            name: (string) $data['name'],
+            identification: (string) $data['identification'],
+            identificationType: (string) $data['identification_type'],
+            mustInvoice: array_key_exists('must_invoice', $data) ? (bool) $data['must_invoice'] : null,
+            personType: isset($data['person_type']) ? (string) $data['person_type'] : null,
+            legacyId: isset($data['legacy_id']) ? (int) $data['legacy_id'] : null,
+            address: isset($data['address']) ? (string) $data['address'] : null,
+            phone: isset($data['phone']) ? (string) $data['phone'] : null,
+            email: isset($data['email']) ? (string) $data['email'] : null,
+            customerTypeId: isset($data['customer_type_id']) ? (int) $data['customer_type_id'] : null,
+            isActive: array_key_exists('is_active', $data) ? (bool) $data['is_active'] : null,
+            role: isset($data['role']) ? (string) $data['role'] : null,
+            roles: is_array($data['roles'] ?? null) ? array_values($data['roles']) : [],
             customFields: is_array($data['custom_fields'] ?? null) ? $data['custom_fields'] : [],
         );
     }
@@ -62,13 +52,12 @@ class ThirdPartyCreateDTO
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'tenant_id' => $this->tenantId,
             'name' => $this->name,
             'identification' => $this->identification,
-            'must_invoice' => $this->mustInvoice,
-            'legacy_id' => $this->legacyId,
             'identification_type' => $this->identificationType,
+            'must_invoice' => $this->mustInvoice,
+            'person_type' => $this->personType,
+            'legacy_id' => $this->legacyId,
             'address' => $this->address,
             'phone' => $this->phone,
             'email' => $this->email,
@@ -76,7 +65,6 @@ class ThirdPartyCreateDTO
             'is_active' => $this->isActive,
             'role' => $this->role,
             'roles' => $this->roles,
-            'activities' => $this->activities,
             'custom_fields' => $this->customFields,
         ];
     }

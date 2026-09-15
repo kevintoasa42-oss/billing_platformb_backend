@@ -4,6 +4,7 @@ namespace App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Eloquent\
 
 use App\Context\V1\Modules\BranchOffices\Infrastructure\Laravel\Eloquent\Models\BranchOfficeModel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class EmissionPointModel extends Model
@@ -16,7 +17,7 @@ final class EmissionPointModel extends Model
 
     protected $fillable = ['branch_office_id', 'name', 'emission_point', 'status', 'default'];
 
-    public function branchOffice()
+    public function branchOffice(): BelongsTo
     {
         return $this->belongsTo(BranchOfficeModel::class, 'branch_office_id');
     }

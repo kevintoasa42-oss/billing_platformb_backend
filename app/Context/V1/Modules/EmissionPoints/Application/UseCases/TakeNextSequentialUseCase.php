@@ -10,11 +10,11 @@ use App\Context\V1\Modules\SriVoucherTypes\Domain\Exceptions\SriVoucherTypeNotFo
 /**
  * Takes a sequential for a document and advances the counter atomically.
  */
-final class TakeNextSequentialUseCase
+final readonly class TakeNextSequentialUseCase
 {
     public function __construct(
         private NextSequentialGeneratorInterface $generator,
-        private SriVoucherTypeCatalogInterface $voucherTypes,
+        private SriVoucherTypeCatalogInterface   $voucherTypes,
     ) {}
 
     public function execute(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $carrierId = null, string $documentCode = '01'): NextSequentialDTO

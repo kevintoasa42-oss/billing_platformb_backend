@@ -7,11 +7,7 @@ namespace App\Context\V3\Modules\Core\ThirdParty\Domain\ValueObjects;
 use InvalidArgumentException;
 
 /**
- * Canonical representation of an Ecuadorian fiscal identity.
- *
- * The database uniqueness rule is tenant + identification type + this value.
- * Keeping the normalization here prevents each adapter from inventing a
- * slightly different comparison rule.
+ * Canonical fiscal identification used by the tenant-bound uniqueness rule.
  */
 final class CanonicalIdentification
 {
@@ -25,6 +21,7 @@ final class CanonicalIdentification
     public static function from(?string $type, ?string $value): ?self
     {
         $normalized = self::normalize($value);
+
         if ($normalized === '') {
             return null;
         }
@@ -42,7 +39,7 @@ final class CanonicalIdentification
         $value = strtoupper(trim((string) $type));
         $value = match ($value) {
             'RUC' => '04',
-            'CED', 'CI', 'CÉDULA' => '05',
+            'CED', 'CI', 'CÉDULA', 'CEDULA' => '05',
             'PAS', 'PASSPORT' => '06',
             'CF', 'CONSUMIDOR FINAL' => '07',
             default => $value,
@@ -57,14 +54,5 @@ final class CanonicalIdentification
         }
 
         return $value;
-    }
-
-    /** @return array{identification_type:string,identification:string} */
-    public function toArray(): array
-    {
-        return [
-            'identification_type' => $this->type,
-            'identification' => $this->value,
-        ];
     }
 }

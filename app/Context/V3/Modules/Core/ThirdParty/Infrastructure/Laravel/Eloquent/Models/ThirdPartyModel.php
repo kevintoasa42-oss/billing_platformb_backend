@@ -7,8 +7,10 @@ namespace App\Context\V3\Modules\Core\ThirdParty\Infrastructure\Laravel\Eloquent
 use App\Context\V3\Shared\Infrastructure\Laravel\Eloquent\Models\TenantScopedModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ThirdPartyModel extends TenantScopedModel
+final class ThirdPartyModel extends TenantScopedModel
 {
+    public $timestamps = false;
+
     protected $connection = 'master_v3';
 
     protected $table = 'core.third_parties';
@@ -17,31 +19,32 @@ class ThirdPartyModel extends TenantScopedModel
 
     public $incrementing = false;
 
-    public $timestamps = false;
-
     protected $fillable = [
-        'tenant_id', 'id', 'name', 'identification', 'must_invoice',
-        'legacy_id', 'identification_type', 'person_type', 'address', 'phone', 'email',
-        'customer_type_id', 'is_active',
+        'name',
+        'identification',
+        'identification_type',
+        'person_type',
+        'must_invoice',
+        'legacy_id',
+        'address',
+        'phone',
+        'email',
+        'customer_type_id',
+        'is_active',
     ];
 
-    protected $attributes = [
-        'is_active' => true,
-        'must_invoice' => true,
-    ];
-
-    protected $casts = [
-        'must_invoice' => 'boolean',
-        'is_active' => 'boolean',
-    ];
-
-    public function activities(): HasMany
+    protected function casts(): array
     {
-        return $this->hasMany(ThirdPartyActivityModel::class, 'third_party_id');
+        return [
+            'must_invoice' => 'boolean',
+            'is_active' => 'boolean',
+            'legacy_id' => 'integer',
+            'customer_type_id' => 'integer',
+        ];
     }
 
     public function roles(): HasMany
     {
-        return $this->hasMany(ThirdPartyRoleModel::class, 'third_party_id');
+        return $this->hasMany(ThirdPartyRoleModel::class, 'third_party_id', 'id');
     }
 }

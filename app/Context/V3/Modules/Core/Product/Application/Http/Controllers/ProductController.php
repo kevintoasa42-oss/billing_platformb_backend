@@ -5,6 +5,7 @@ namespace App\Context\V3\Modules\Core\Product\Application\Http\Controllers;
 use App\Context\V3\Modules\Core\Product\Application\DTOs\ProductCreateDTO;
 use App\Context\V3\Modules\Core\Product\Application\DTOs\ProductUpdateDTO;
 use App\Context\V3\Modules\Core\Product\Application\Http\Requests\ProductCreateRequest;
+use App\Context\V3\Modules\Core\Product\Application\Http\Requests\ProductIndexRequest;
 use App\Context\V3\Modules\Core\Product\Application\Http\Requests\ProductUpdateRequest;
 use App\Context\V3\Modules\Core\Product\Application\UseCases\ProductUseCase;
 use App\Context\V3\Shared\Infrastructure\Laravel\Http\Responses\ApiResponse;
@@ -20,11 +21,13 @@ final class ProductController
         private readonly ProductUseCase $useCase,
     ) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(ProductIndexRequest $request): JsonResponse
     {
-        $search = $request->query('search') ?: $request->query('q');
-        $limit = (int) $request->query('per_page', 500);
-        $products = $this->useCase->all($search, $limit);
+        $products = $this->useCase->all(
+            $request->searchTerm(),
+            $request->perPage(),
+            $request->activeFilter(),
+        );
 
         return $this->success(
             array_map(fn ($p): array => $p->toArray(), $products),

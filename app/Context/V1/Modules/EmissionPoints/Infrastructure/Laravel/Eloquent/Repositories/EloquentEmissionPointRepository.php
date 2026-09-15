@@ -12,31 +12,43 @@ use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Eloquent\Models
 use App\Context\V1\Modules\EmissionPoints\Infrastructure\Laravel\Eloquent\Models\EmissionPointSequenceModel;
 use Illuminate\Support\Facades\DB;
 
-final class EloquentEmissionPointRepository implements EmissionPointRepositoryInterface, NextSequentialGeneratorInterface
+final readonly class EloquentEmissionPointRepository implements EmissionPointRepositoryInterface, NextSequentialGeneratorInterface
 {
-    public function __construct(private readonly EmissionPointMapperInterface $mapper) {}
+    public function __construct(private EmissionPointMapperInterface $mapper)
+    {
+    }
 
     public function listPaginated(int $page = 1, int $perPage = 15, array $filters = []): array
     {
         $query = EmissionPointModel::query();
+
         if (! empty($filters['search'])) {
             $value = '%'.$filters['search'].'%';
             $query->where(fn ($q) => $q->where('name', 'like', $value)->orWhere('emission_point', 'like', $value));
         }
+
         if (! empty($filters['branch_office_id'])) {
             $query->where('branch_office_id', (int) $filters['branch_office_id']);
         }
+
         foreach (['status', 'default'] as $field) {
             if (array_key_exists($field, $filters) && $filters[$field] !== null) {
                 $query->where($field, (bool) $filters[$field]);
             }
         }
-        $paginator = $query->orderByDesc('id')->paginate($perPage, ['*'], 'page', $page);
+
+        $paginator = $query
+            ->orderByDesc('id')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        $data = $paginator->getCollection()->map(fn(EmissionPointModel $model) => $this->mapper->toDomain($model->toArray()))->all();
 
         return [
-            'data' => $paginator->getCollection()->map(fn (EmissionPointModel $model) => $this->mapper->toDomain($model->toArray()))->all(),
-            'total' => $paginator->total(), 'page' => $paginator->currentPage(),
-            'perPage' => $paginator->perPage(), 'lastPage' => $paginator->lastPage(),
+            'data' => $data,
+            'total' => $paginator->total(),
+            'page' => $paginator->currentPage(),
+            'perPage' => $paginator->perPage(),
+            'lastPage' => $paginator->lastPage(),
         ];
     }
 
@@ -49,7 +61,7 @@ final class EloquentEmissionPointRepository implements EmissionPointRepositoryIn
 
     public function delete(int $id): bool
     {
-        return EmissionPointModel::find($id)?->delete() ?? false;
+        return EmissionPointModel::findOrFail($id)->delete();
     }
 
     public function nextSequential(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $carrierId = null, string $documentCode = '01', string $documentLabel = 'Factura'): EmissionPointSequential
