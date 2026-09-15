@@ -38,4 +38,7 @@ interface InvoiceRepositoryInterface
     public function readiness(int $branchId, int $issuancePointId): InvoiceReadiness;
 
     public function artifact(int $legacyId, string $kind): ?string;
+
+    /** @return array<string, mixed> */
+    public function editorContext(string $tenantId): array;
 }

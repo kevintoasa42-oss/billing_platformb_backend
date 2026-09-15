@@ -83,4 +83,10 @@ final class InvoiceUseCase
     {
         return $this->repository->artifact($legacyId, $kind);
     }
+
+    /** @return array<string, mixed> */
+    public function editorContext(string $tenantId): array
+    {
+        return $this->repository->editorContext($tenantId);
+    }
 }

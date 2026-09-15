@@ -91,5 +91,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ProductServiceProvider::class,
         SettingsServiceProvider::class,
         InvoiceServiceProvider::class,
+        WorkerServiceProvider::class,
+        SriServiceProvider::class,
     ])
     ->create();

@@ -178,6 +178,22 @@ final class InvoiceController
         return new JsonResponse($readiness->toArray());
     }
 
+    public function editorContext(Request $request): JsonResponse
+    {
+        $tenantId = $this->resolveTenantId($request);
+        if ($tenantId === null) {
+            return new JsonResponse(['status' => false, 'message' => 'No autorizado.', 'error' => ['code' => 'unauthorized']], 401);
+        }
+
+        $context = $this->useCase->editorContext($tenantId);
+
+        return new JsonResponse([
+            'status' => true,
+            'message' => 'Contexto consolidado cargado.',
+            'data' => $context,
+        ]);
+    }
+
     private function resolveUserId(Request $request): string
     {
         $session = $request->attributes->get('v3.authentication_session');
@@ -189,5 +205,23 @@ final class InvoiceController
         }
 
         return '';
+    }
+
+    private function resolveTenantId(Request $request): ?string
+    {
+        $session = $request->attributes->get('v3.authentication_session');
+        if ($session === null) {
+            return null;
+        }
+
+        if (method_exists($session, 'getTenantId')) {
+            return (string) $session->getTenantId();
+        }
+
+        if (isset($session->tenantId)) {
+            return (string) $session->tenantId;
+        }
+
+        return null;
     }
 }

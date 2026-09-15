@@ -1,6 +1,7 @@
 <?php
 
 use App\Context\V3\Modules\Authentication\Infrastructure\Laravel\Http\Controllers\AuthenticationController;
+use App\Context\V3\Modules\Fiscal\Invoice\Application\Http\Controllers\InvoiceController;
 use Illuminate\Support\Facades\Route;
 
 /**
