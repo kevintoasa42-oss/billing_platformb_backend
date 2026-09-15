@@ -2,6 +2,7 @@
 
 namespace Database\Seeders\v3;
 
+use App\Context\V3\Modules\Platform\Domain\Services\DefaultIamSettings;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -52,14 +53,32 @@ final class V3AuthenticationSeeder extends Seeder
                 ->first(['id']);
 
             if (! $membership) {
+
                 $database->table('auth.tenant_memberships')->insert([
+
                     'tenant_id' => $tenant->id,
+
                     'user_id' => $user->id,
+
                     'id' => (string) Str::uuid(),
+
                     'active' => true,
+
                     'authorization_version' => 1,
+
                     'capabilities' => '{*}',
+
                 ]);
+
+            }
+
+            $rawIamSettings = $database->table('core.tenant_settings')->where('tenant_id', $tenant->id)->value('iam_settings');
+            $iamSettings = is_array($rawIamSettings) ? $rawIamSettings : json_decode((string) $rawIamSettings, true);
+            if (! is_array($iamSettings) || (array) ($iamSettings['menus'] ?? []) === []) {
+                $database->table('core.tenant_settings')->updateOrInsert(
+                    ['tenant_id' => $tenant->id],
+                    ['iam_settings' => json_encode((new DefaultIamSettings)->value(), JSON_THROW_ON_ERROR), 'updated_at' => now()],
+                );
             }
         });
     }

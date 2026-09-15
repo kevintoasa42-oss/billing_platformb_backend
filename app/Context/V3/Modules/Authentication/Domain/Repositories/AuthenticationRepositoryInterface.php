@@ -27,4 +27,7 @@ interface AuthenticationRepositoryInterface
     public function resolveSession(string $tokenHash): ?AuthenticationSession;
 
     public function revokeSession(string $tokenHash): void;
+
+    /** @return list<array<string, mixed>> */
+    public function menuTreeForTenant(string $tenantId): array;
 }

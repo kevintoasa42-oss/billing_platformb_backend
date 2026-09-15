@@ -2,15 +2,17 @@
 
 namespace App\Context\V3\Modules\Authentication\Infrastructure\Laravel\Http\Middleware;
 
+use App\Context\V3\Modules\Authentication\Domain\Models\AuthenticationSession;
 use App\Context\V3\Modules\Authentication\Domain\Repositories\AuthenticationRepositoryInterface;
 use Closure;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /** Resolves the V3 HttpOnly/Bearer session against auth.sessions. */
 final class AuthenticateV3SessionCookie
 {
-    public function __construct(private readonly AuthenticationRepositoryInterface $repository) {}
+    public function __construct(private readonly AuthenticationRepositoryInterface $repository, private readonly Container $container) {}
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -26,6 +28,10 @@ final class AuthenticateV3SessionCookie
         }
 
         $request->attributes->set('v3.authentication_session', $session);
+        $this->container->scoped(
+            AuthenticationSession::class,
+            static fn (): AuthenticationSession => $session,
+        );
         $request->attributes->set('v3.tenant_id', $session->tenantId);
 
         return $next($request);

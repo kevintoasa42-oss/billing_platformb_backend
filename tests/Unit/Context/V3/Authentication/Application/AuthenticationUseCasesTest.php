@@ -193,6 +193,11 @@ final class AuthenticationUseCasesTest extends TestCase
             }
 
             public function revokeSession(string $tokenHash): void {}
+
+            public function menuTreeForTenant(string $tenantId): array
+            {
+                return [];
+            }
         };
     }
 }
