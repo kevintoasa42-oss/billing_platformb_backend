@@ -59,6 +59,7 @@ class Product
             'auxiliary_code' => $this->auxiliaryCode,
             'other_code' => $this->otherCode,
             'description' => $this->description,
+            'activity_id' => $this->activityId,
             'taxes' => $this->taxes,
         ];
     }

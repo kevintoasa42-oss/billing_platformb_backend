@@ -66,6 +66,9 @@ class ProductUpdateDTO
         if ($this->isActive !== null) {
             $data['is_active'] = $this->isActive;
         }
+        if ($this->sriIvaTypeIds !== null) {
+            $data['sri_iva_type_ids'] = $this->sriIvaTypeIds;
+        }
 
         return $data;
     }

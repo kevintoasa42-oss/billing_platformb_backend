@@ -57,20 +57,9 @@ Route::prefix('core')
         // Notifications (NotificationController) — email via Mail facade
         Route::group([], base_path('routes/v3/core/notifications.php'));
 
-        // SRI IVA types + percentages (SriIvaTypeController, SriIvaPercentageController)
-        Route::group([], base_path('routes/v3/core/sri_iva_types.php'));
-
         // Products + product settings + product taxes (ProductController, ProductSettingsController, ProductTaxController)
         Route::group([], base_path('routes/v3/core/products.php'));
 
-        // Third parties — identity availability and tenant-scoped catalog resources
-        Route::group([], base_path('routes/v3/core/third_parties.php'));
-
-        // Settings — customer settings, payment method settings, additional info presets
-        Route::group([], base_path('routes/v3/core/settings.php'));
-
-        // Third parties (ThirdPartyController) - customers, carriers, custom fields
-        Route::group([], base_path("routes/v3/core/third_parties.php"));
         // Carriers (CarrierController) - canonical carrier profile, documents, allocations
         Route::group([], base_path("routes/v3/core/carriers.php"));
     });
@@ -79,7 +68,7 @@ Route::prefix('core')
     ->group(function (): void {
         // Branches + issuance points (BranchController, IssuancePointController) — legacy_id surface
         Route::group([], base_path('routes/v3/core/branches.php'));
-    }); 
+    });
 
 
 /**
@@ -90,6 +79,19 @@ Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
     ->group(function (): void {
         Route::group([], base_path('routes/v3/catalog.php'));
     });
+
+Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
+    ->group(function (): void {
+// Settings — customer settings, payment method settings, additional info presets
+        Route::group([], base_path('routes/v3/core/settings.php'));
+    });
+
+Route::middleware(['auth.v3.cookie', 'tenant.v3.context'])
+    ->group(function (): void {
+        // SRI IVA types + percentages (SriIvaTypeController, SriIvaPercentageController)
+        Route::group([], base_path('routes/v3/core/sri_iva_types.php'));
+    });
+
 
 Route::group([], base_path('routes/v3/platform.php'));
 

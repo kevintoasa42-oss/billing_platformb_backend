@@ -38,7 +38,7 @@ class ProductCreateDTO
 
     public function toDatabaseArray(): array
     {
-        return array_filter([
+        $data = array_filter([
             'name' => $this->name,
             'unit_price' => $this->referencePrice,
             'activity_id' => $this->activityId,
@@ -49,5 +49,11 @@ class ProductCreateDTO
             'type' => $this->type ?? 'product',
             'is_active' => $this->isActive ?? true,
         ], fn ($value): bool => $value !== null);
+
+        if ($this->sriIvaTypeIds !== null) {
+            $data['sri_iva_type_ids'] = $this->sriIvaTypeIds;
+        }
+
+        return $data;
     }
 }

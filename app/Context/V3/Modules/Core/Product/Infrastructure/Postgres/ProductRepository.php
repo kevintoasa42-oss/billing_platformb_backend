@@ -5,7 +5,9 @@ namespace App\Context\V3\Modules\Core\Product\Infrastructure\Postgres;
 use App\Context\V3\Modules\Core\Product\Domain\Models\Product;
 use App\Context\V3\Modules\Core\Product\Domain\Repository\ProductRepositoryInterface;
 use App\Context\V3\Modules\Core\Product\Infrastructure\Laravel\Eloquent\Models\ProductModel;
+use App\Context\V3\Modules\Core\Product\Infrastructure\Laravel\Eloquent\Models\ProductTaxAssignmentModel;
 use App\Context\V3\Modules\Core\Product\Infrastructure\Mappers\ProductMapper;
+use App\Context\V3\Modules\Core\SriIva\Infrastructure\Laravel\Eloquent\Models\SriIvaTypeModel;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository implements ProductRepositoryInterface
@@ -43,8 +45,16 @@ class ProductRepository implements ProductRepositoryInterface
     public function create(array $data): Product
     {
         return DB::connection('master_v3')->transaction(function () use ($data): Product {
+            $sriIvaTypeIds = $data['sri_iva_type_ids'] ?? null;
+            unset($data['sri_iva_type_ids']);
+
             $record = ProductModel::query()->create($data);
             $record->refresh();
+
+            if ($sriIvaTypeIds !== null) {
+                $this->syncTaxAssignments($record, $sriIvaTypeIds);
+            }
+
             $record->load('taxAssignments');
 
             return $this->mapper->toDomain($record);
@@ -60,12 +70,55 @@ class ProductRepository implements ProductRepositoryInterface
                 return null;
             }
 
+            $sriIvaTypeIds = $data['sri_iva_type_ids'] ?? null;
+            unset($data['sri_iva_type_ids']);
+
             $record->update($data);
             $record->refresh();
+
+            if ($sriIvaTypeIds !== null) {
+                $this->syncTaxAssignments($record, $sriIvaTypeIds);
+            }
+
             $record->load('taxAssignments');
 
             return $this->mapper->toDomain($record);
         });
+    }
+
+    /**
+     * Replace the product's IVA tax assignments with the given SRI IVA type IDs.
+     *
+     * @param  array<int>  $sriIvaTypeIds
+     */
+    private function syncTaxAssignments(ProductModel $record, array $sriIvaTypeIds): void
+    {
+        $record->taxAssignments()->delete();
+
+        if ($sriIvaTypeIds === []) {
+            return;
+        }
+
+        $ivaTypes = SriIvaTypeModel::query()
+            ->whereIn('id', $sriIvaTypeIds)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($sriIvaTypeIds as $typeId) {
+            $ivaType = $ivaTypes->get($typeId);
+            if ($ivaType === null) {
+                continue;
+            }
+
+            ProductTaxAssignmentModel::query()->create([
+                'product_id' => $record->id,
+                'sri_iva_type_id' => $ivaType->id,
+                'tax_name' => $ivaType->name,
+                'percentage' => $ivaType->percentage,
+                'sri_code' => $ivaType->sri_code,
+                'is_active' => true,
+            ]);
+        }
     }
 
     public function setActive(int $legacyId, bool $isActive): ?Product
