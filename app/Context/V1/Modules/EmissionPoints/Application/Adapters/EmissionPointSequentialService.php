@@ -6,7 +6,7 @@ use App\Context\V1\Modules\EmissionPoints\Application\DTOs\NextSequentialDTO;
 use App\Context\V1\Modules\EmissionPoints\Application\UseCases\GetNextSequentialUseCase;
 use App\Context\V1\Modules\EmissionPoints\Application\UseCases\TakeNextSequentialUseCase;
 
-final class EmissionPointSequentialService implements EmissionPointSequentialServiceInterface
+final readonly class EmissionPointSequentialService implements EmissionPointSequentialServiceInterface
 {
     public function __construct(
         private GetNextSequentialUseCase $getNextSequentialUseCase,

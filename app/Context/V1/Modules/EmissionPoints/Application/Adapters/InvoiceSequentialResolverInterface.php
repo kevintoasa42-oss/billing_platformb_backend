@@ -2,6 +2,8 @@
 
 namespace App\Context\V1\Modules\EmissionPoints\Application\Adapters;
 
+use App\Context\V1\Modules\EmissionPoints\Domain\Exceptions\EmissionPointNotFoundException;
+
 /**
  * Application-facing contract for the Invoice bounded context.
  *
@@ -24,7 +26,7 @@ interface InvoiceSequentialResolverInterface
      * @param int|null $excludeInvoiceId  Exclude this invoice ID when checking duplicates (for updates)
      * @return array{establishment: string, emission_point: string, sequential: string}
      *
-     * @throws \App\Context\V1\Modules\EmissionPoints\Domain\Exceptions\EmissionPointNotFoundException
+     * @throws EmissionPointNotFoundException
      */
     public function resolve(
         int $branchOfficeId,

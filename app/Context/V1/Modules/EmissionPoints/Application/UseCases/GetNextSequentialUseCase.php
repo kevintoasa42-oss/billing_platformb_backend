@@ -7,11 +7,11 @@ use App\Context\V1\Modules\EmissionPoints\Domain\Ports\NextSequentialGeneratorIn
 use App\Context\V1\Modules\SriVoucherTypes\Application\Adapters\SriVoucherTypeCatalogInterface;
 use App\Context\V1\Modules\SriVoucherTypes\Domain\Exceptions\SriVoucherTypeNotFoundException;
 
-final class GetNextSequentialUseCase
+final readonly class GetNextSequentialUseCase
 {
     public function __construct(
         private NextSequentialGeneratorInterface $generator,
-        private SriVoucherTypeCatalogInterface $voucherTypes,
+        private SriVoucherTypeCatalogInterface   $voucherTypes,
     ) {}
 
     public function execute(int $branchOfficeId, ?int $emissionPointId = null, ?string $emissionPoint = null, ?int $carrierId = null, string $documentCode = '01'): NextSequentialDTO

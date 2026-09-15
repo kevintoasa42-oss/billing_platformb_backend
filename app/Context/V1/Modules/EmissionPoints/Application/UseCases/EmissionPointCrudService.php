@@ -41,7 +41,7 @@ final readonly class EmissionPointCrudService
     {
         $existing = $this->repository->findById((int)$dto->id);
         if (!$existing) {
-            throw new EmissionPointNotFoundException((int)($dto->branch_office_id ?? 0), $dto->id);
+            throw new EmissionPointNotFoundException($dto->branch_office_id ?? 0, $dto->id);
         }
         $point = $this->mapper->toDomain(array_merge($this->mapper->toArray($existing), $dto->inputArray()));
 
