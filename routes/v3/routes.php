@@ -71,6 +71,8 @@ Route::prefix('core')
 
         // Third parties (ThirdPartyController) - customers, carriers, custom fields
         Route::group([], base_path("routes/v3/core/third_parties.php"));
+        // Carriers (CarrierController) - canonical carrier profile, documents, allocations
+        Route::group([], base_path("routes/v3/core/carriers.php"));
     });
 
 Route::group([], base_path('routes/v3/platform.php'));

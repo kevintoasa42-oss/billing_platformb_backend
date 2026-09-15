@@ -11,6 +11,7 @@ Complete reference of all V3 API endpoints. All endpoints are under the `api/v3`
 | Core - Carrier Establishments | `core/carrier-establishments` | 4 | [Core - Carrier](#core---carrier) |
 | Core - Carrier Emission Points | `core/carrier-emission-points` | 3 | [Core - Carrier](#core---carrier) |
 | Core - Carrier Affiliations | `core/carrier-affiliations` | 4 | [Core - Carrier](#core---carrier) |
+| Core - Carriers | `core/carriers` | 12 | [docs/carrier.md](carrier.md) |
 | Core - Companies | `core/companies` | 4 | [Core - Companies](#core---companies) |
 | Core - Economic Activities | `core/economic-activities` | 3 | [Core - Economic Activities](#core---economic-activities) |
 | Core - Notifications | `core/notifications` | 1 | [Core - Notifications](#core---notifications) |
@@ -95,6 +96,29 @@ Prefix: `api/v3/core/carrier-*`
 | POST | `core/carrier-affiliations` | Create a carrier affiliation |
 | GET | `core/carrier-affiliations/{id}` | Get a carrier affiliation |
 | PATCH | `core/carrier-affiliations/{id}` | Update a carrier affiliation |
+
+---
+
+## Core - Carriers
+
+Prefix: `api/v3/core/carriers`
+
+Full documentation: [docs/carrier.md](carrier.md)
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `core/carriers` | List carriers with optional filters |
+| POST | `core/carriers/onboard` | Onboard a new or existing carrier (idempotent) |
+| GET | `core/carriers/{id}` | Get full carrier detail by ThirdParty UUID |
+| PATCH | `core/carriers/{id}` | Update carrier profile |
+| PATCH | `core/carriers/{id}/payment-account` | Update payment account |
+| PATCH | `core/carriers/{id}/signature` | Update signature metadata |
+| POST | `core/carriers/{id}/documents` | Record a received document |
+| DELETE | `core/carriers/{id}/documents/{documentId}` | Cancel a received document |
+| POST | `core/carriers/{id}/allocations` | Create a settlement allocation (idempotent) |
+| DELETE | `core/carriers/{id}/allocations/{allocationId}` | Reverse an allocation |
+| POST | `core/carriers/{id}/operations/{operationId}/settlement-review/clear` | Clear pending credit note review |
+| GET | `core/carriers/{id}/audit` | Get carrier audit trail |
 
 ---
 
@@ -410,5 +434,6 @@ All V3 routes (except `auth/challenges` and `auth/sessions`) require:
 ## Related Documentation
 
 - [ThirdParty Module](third-party.md)
+- [Carrier Module](carrier.md)
 - [Fiscal Worker + SRI](fiscal-worker.md)
 - [Worker Documentation](../documentation_worker.md)
