@@ -68,6 +68,9 @@ Route::prefix('core')
 
         // Settings — customer settings, payment method settings, additional info presets
         Route::group([], base_path('routes/v3/core/settings.php'));
+
+        // Third parties (ThirdPartyController) - customers, carriers, custom fields
+        Route::group([], base_path("routes/v3/core/third_parties.php"));
     });
 
 Route::group([], base_path('routes/v3/platform.php'));
@@ -79,14 +82,14 @@ Route::group([], base_path('routes/v3/platform.php'));
  * Routes are mounted at the root prefix (no /fiscal) to preserve
  * the reference API URIs (invoices, invoice-drafts).
  */
-Route::middleware([auth.v3.cookie, tenant.v3.context])
+Route::middleware(["auth.v3.cookie", "tenant.v3.context"])
     ->group(function (): void {
         // Invoices + invoice drafts (InvoiceController, InvoiceDraftController)
-        Route::group([], base_path(routes/v3/fiscal/invoices.php));
+        Route::group([], base_path("routes/v3/fiscal/invoices.php"));
 
         // SRI admin routes (SriController)
-        Route::group([], base_path(routes/v3/fiscal/sri.php));
+        Route::group([], base_path("routes/v3/fiscal/sri.php"));
 
         // Bootstrap context routes
-        Route::get(bootstrap/nueva-factura, [InvoiceController::class, editorContext]);
+        Route::get("bootstrap/nueva-factura", [InvoiceController::class, "editorContext"]);
     });
