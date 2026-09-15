@@ -8,6 +8,7 @@ use App\Context\V3\Modules\Fiscal\Invoice\Domain\Models\Invoice;
 use App\Context\V3\Modules\Fiscal\Invoice\Domain\Models\InvoiceLine;
 use App\Context\V3\Modules\Fiscal\Invoice\Domain\Models\InvoicePayment;
 use App\Context\V3\Modules\Fiscal\Invoice\Domain\Models\InvoiceReadiness;
+use App\Context\V3\Modules\Core\Establishment\Domain\Repository\EmissionPointRepositoryInterface;
 use App\Context\V3\Modules\Fiscal\Invoice\Domain\Repository\InvoiceRepositoryInterface;
 use App\Context\V3\Modules\Fiscal\Invoice\Infrastructure\Laravel\Eloquent\Models\DocumentArtifactModel;
 use App\Context\V3\Modules\Fiscal\Invoice\Infrastructure\Laravel\Eloquent\Models\DocumentModel;
@@ -25,6 +26,7 @@ final class InvoiceRepository implements InvoiceRepositoryInterface
     public function __construct(
         private readonly InvoiceMapper $mapper,
         private readonly DispatchInvoiceJobsUseCase $dispatchJobsUseCase,
+        private readonly EmissionPointRepositoryInterface $emissionPoints,
     ) {}
 
     public function all(array $filters = []): array
@@ -316,11 +318,16 @@ final class InvoiceRepository implements InvoiceRepositoryInterface
             $blockers[] = 'tenant_data_frozen';
         }
 
+        // The editor passes the legacy numeric ids of the branch and the
+        // emission point; the establishment repository resolves the next
+        // sequential from fiscal.sequences and formats the document number.
+        $sequential = $this->emissionPoints->nextSequential($branchId, $issuancePointId);
+
         return new InvoiceReadiness(
             ready: $blockers === [],
             mode: 'mock',
             blockers: $blockers,
-            sequential: null,
+            sequential: $sequential,
         );
     }
 
@@ -381,17 +388,23 @@ final class InvoiceRepository implements InvoiceRepositoryInterface
         );
 
         $company = DB::connection('master_v3')->selectOne(
-            'SELECT id, legal_name, tradename, ruc FROM core.companies WHERE tenant_id = ? LIMIT 1',
+            'SELECT id, legal_name, trade_name, ruc FROM core.companies WHERE tenant_id = ? LIMIT 1',
             [$tenantId],
         );
 
+        $tenant = DB::connection('master_v3')->selectOne(
+            'SELECT legacy_id FROM platform.tenants WHERE id = ? LIMIT 1',
+            [$tenantId],
+        );
+        $enterpriseLegacyId = $tenant !== null ? (int) $tenant->legacy_id : 0;
+
         $branches = DB::connection('master_v3')->select(
-            'SELECT id, sri_code, name, address, is_active FROM core.establishments WHERE tenant_id = ? ORDER BY sri_code',
+            'SELECT id, legacy_id, sri_code, name, address, is_active FROM core.establishments WHERE tenant_id = ? ORDER BY sri_code',
             [$tenantId],
         );
 
         $issuancePoints = DB::connection('master_v3')->select(
-            'SELECT ep.id, ep.sri_code, ep.name, ep.is_active, e.sri_code AS establishment_code FROM core.emission_points ep JOIN core.establishments e ON ep.establishment_id = e.id WHERE ep.tenant_id = ? ORDER BY ep.sri_code',
+            'SELECT ep.id, ep.legacy_id, ep.sri_code, ep.name, ep.is_active, ep.is_default, ep.has_tax_validity, e.sri_code AS establishment_code, e.legacy_id AS establishment_legacy_id FROM core.emission_points ep JOIN core.establishments e ON ep.establishment_id = e.id WHERE ep.tenant_id = ? ORDER BY ep.sri_code',
             [$tenantId],
         );
 
@@ -400,13 +413,59 @@ final class InvoiceRepository implements InvoiceRepositoryInterface
             [$tenantId],
         );
 
+        // Build emissionConfig: pick the first active branch with an active
+        // emission point that has tax validity, then resolve its next invoice
+        // sequential from fiscal.sequences (defaults to 1 when no row exists).
+        $emissionConfig = null;
+        $sequenceByPoint = [];
+        foreach ($sequences as $seq) {
+            if ($seq->document_type === 'invoice') {
+                $sequenceByPoint[$seq->emission_point_id] = (int) $seq->last_number;
+            }
+        }
+        foreach ($branches as $branch) {
+            if (! $branch->is_active) continue;
+            foreach ($issuancePoints as $ep) {
+                if ($ep->establishment_code !== $branch->sri_code) continue;
+                if (! $ep->is_active || ! $ep->has_tax_validity) continue;
+
+                $last = $sequenceByPoint[$ep->id] ?? 0;
+                $next = $last + 1;
+                $emissionConfig = [
+                    'label' => $branch->sri_code.'-'.$ep->sri_code.' · '.$branch->name,
+                    'name' => $branch->name,
+                    'ready' => true,
+                    'blocker' => '',
+                    'nextSequential' => sprintf('%s-%s-%09d', $branch->sri_code, $ep->sri_code, $next),
+                    'branchId' => (int) $branch->legacy_id,
+                    'issuancePointId' => (int) $ep->legacy_id,
+                ];
+                break 2;
+            }
+        }
+        if ($emissionConfig === null) {
+            $emissionConfig = [
+                'label' => 'Configura sucursal y punto de emisión',
+                'name' => '',
+                'ready' => false,
+                'blocker' => 'Configura una sucursal y un punto de emisión activos.',
+                'nextSequential' => '',
+                'branchId' => null,
+                'issuancePointId' => null,
+            ];
+        }
+
         return [
             'company' => $company ? [
                 'id' => $company->id,
                 'legal_name' => $company->legal_name,
-                'tradename' => $company->tradename,
+                'trade_name' => $company->trade_name,
                 'ruc' => $company->ruc,
             ] : null,
+            'catalogScope' => [
+                'enterpriseId' => $enterpriseLegacyId,
+                'version' => 1,
+            ],
             'branches' => array_map(static fn ($b): array => [
                 'id' => $b->id,
                 'sri_code' => $b->sri_code,
@@ -426,6 +485,7 @@ final class InvoiceRepository implements InvoiceRepositoryInterface
                 'document_type' => $s->document_type,
                 'last_number' => $s->last_number,
             ], $sequences),
+            'emissionConfig' => $emissionConfig,
         ];
     }
 }

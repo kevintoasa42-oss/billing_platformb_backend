@@ -7,9 +7,11 @@ namespace App\Context\V3\Modules\Core\ThirdParty\Application\UseCases;
 use App\Context\V3\Modules\Core\ThirdParty\Application\DTOs\ThirdPartyCreateDTO;
 use App\Context\V3\Modules\Core\ThirdParty\Application\DTOs\ThirdPartyUpdateDTO;
 use App\Context\V3\Modules\Core\ThirdParty\Domain\Models\ThirdParty;
+use App\Context\V3\Modules\Core\ThirdParty\Domain\Repository\ThirdPartyAvailabilityRepositoryInterface;
 use App\Context\V3\Modules\Core\ThirdParty\Domain\Repository\ThirdPartyFieldRepositoryInterface;
 use App\Context\V3\Modules\Core\ThirdParty\Domain\Repository\ThirdPartyQueryRepositoryInterface;
 use App\Context\V3\Modules\Core\ThirdParty\Domain\Repository\ThirdPartyRepositoryInterface;
+use App\Context\V3\Modules\Core\ThirdParty\Domain\ValueObjects\CanonicalIdentification;
 
 /**
  * Read-side orchestration for the ThirdParty directory.

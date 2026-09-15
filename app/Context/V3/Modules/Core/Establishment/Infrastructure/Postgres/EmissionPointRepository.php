@@ -114,7 +114,37 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             'has_tax_validity' => (bool) ($data['has_tax_validity'] ?? true),
         ]);
 
+        $this->seedSequences($record, $data['initial_sequences'] ?? []);
+
         return $this->mapper->toBranchDomain($record->fresh('establishment'));
+    }
+
+    /**
+     * Initialize fiscal.sequences rows for a freshly created emission point.
+     *
+     * @param  array<int, array{document_type: string, last_number: int}>  $initialSequences
+     */
+    private function seedSequences(EmissionPointModel $point, array $initialSequences): void
+    {
+        // Default: seed invoice starting at 1 (last_number=0 → next=1) so the
+        // editor always has a sequential to show even without explicit input.
+        $rows = $initialSequences !== []
+            ? $initialSequences
+            : [['document_type' => 'invoice', 'last_number' => 0]];
+
+        foreach ($rows as $row) {
+            SequenceModel::query()->firstOrCreate(
+                [
+                    'tenant_id' => $point->tenant_id,
+                    'emission_point_id' => $point->id,
+                    'document_type' => $row['document_type'],
+                ],
+                [
+                    'environment' => 'lab',
+                    'last_number' => (int) ($row['last_number'] ?? 0),
+                ],
+            );
+        }
     }
 
     public function updateByLegacyId(int $legacyId, array $data): ?EmissionPoint
@@ -140,7 +170,33 @@ class EmissionPointRepository implements EmissionPointRepositoryInterface
             $record->update($values);
         }
 
+        if (isset($data['sequences']) && is_array($data['sequences'])) {
+            $this->syncSequences($record, $data['sequences']);
+        }
+
         return $this->mapper->toBranchDomain($record->fresh('establishment'));
+    }
+
+    /**
+     * Update or create fiscal.sequences rows for an existing emission point.
+     *
+     * @param  array<int, array{document_type: string, last_number: int}>  $sequences
+     */
+    private function syncSequences(EmissionPointModel $point, array $sequences): void
+    {
+        foreach ($sequences as $row) {
+            SequenceModel::query()->updateOrCreate(
+                [
+                    'tenant_id' => $point->tenant_id,
+                    'emission_point_id' => $point->id,
+                    'document_type' => $row['document_type'],
+                ],
+                [
+                    'environment' => 'lab',
+                    'last_number' => (int) ($row['last_number'] ?? 0),
+                ],
+            );
+        }
     }
 
     public function nextSequential(int $branchLegacyId, int $pointLegacyId): ?array
