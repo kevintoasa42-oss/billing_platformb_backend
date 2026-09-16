@@ -17,7 +17,9 @@ final class V3EstablishmentSeeder extends Seeder
     {
         $db = DB::connection('master_v3');
 
-        $tenant = $db->table('platform.tenants')->where('ruc', '1790000000001')->first(['id']);
+        $tenant = $db->table('platform.tenants')
+            ->where('ruc', V3AuthenticationSeeder::TENANT_RUC)
+            ->first(['id']);
         if (! $tenant) {
             $this->command->warn('V3EstablishmentSeeder: tenant not found. Run V3AuthenticationSeeder first.');
 
@@ -41,24 +43,11 @@ final class V3EstablishmentSeeder extends Seeder
                 'name' => 'Matriz',
                 'legacy_id' => '1',
                 'branch_code' => null,
-                'address' => 'Av. Amazonas N1',
-                'phone' => '022222222',
-                'email' => 'matriz@demo.local',
+                'address' => 'Caupicho',
+                'phone' => '0998813666',
+                'email' => 'kevintoasa43@gmail.com',
                 'emission_points' => [
                     ['sri_code' => '001', 'name' => 'Punto de Emisión 1', 'legacy_id' => '1', 'is_active' => true, 'is_default' => true, 'has_tax_validity' => true],
-                ],
-            ],
-            [
-                'sri_code' => '002',
-                'name' => 'Sucursal Norte',
-                'legacy_id' => '2',
-                'branch_code' => '002',
-                'address' => 'Av. Norte N45',
-                'phone' => '023333333',
-                'email' => 'norte@demo.local',
-                'emission_points' => [
-                    ['sri_code' => '001', 'name' => 'Punto Norte 1', 'legacy_id' => '2', 'is_active' => true, 'is_default' => true, 'has_tax_validity' => true],
-                    ['sri_code' => '002', 'name' => 'Punto Norte 2', 'legacy_id' => '3', 'is_active' => true, 'is_default' => false, 'has_tax_validity' => true],
                 ],
             ],
         ];
@@ -95,12 +84,12 @@ final class V3EstablishmentSeeder extends Seeder
                     'is_active' => true,
                 ]);
 
-                // Assign activity A1234B
+                // Assign activity 494110 (Transporte de carga por carretera).
                 $db->table('core.establishment_activities')->insert([
                     'id' => (string) Str::uuid(),
                     'tenant_id' => $tenantId,
                     'establishment_id' => $estId,
-                    'activity_id' => 'A1234B',
+                    'activity_id' => '494110',
                     'validity' => $db->raw("daterange(CURRENT_DATE, NULL, '[)')"),
                 ]);
 

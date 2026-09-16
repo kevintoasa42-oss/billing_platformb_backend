@@ -11,34 +11,40 @@ use Illuminate\Support\Str;
 /** Seeds a minimal, idempotent V3 master tenant and administrator. */
 final class V3AuthenticationSeeder extends Seeder
 {
+    /**
+     * RUC of the default demo tenant. This is a real RUC registered with
+     * the SRI Ecuador and is used consistently across all V3 seeders.
+     */
+    public const TENANT_RUC = '175233170001';
+
     public function run(): void
     {
         $database = DB::connection('master_v3');
 
-        $tenant = $database->table('platform.tenants')->where('ruc', '1790000000001')->first(['id']);
+        $tenant = $database->table('platform.tenants')->where('ruc', self::TENANT_RUC)->first(['id']);
         if (! $tenant) {
             $database->table('platform.tenants')->insert([
                 'id' => (string) Str::uuid(),
-                'ruc' => '1790000000001',
-                'name' => 'Empresa V3 Demo',
+                'ruc' => self::TENANT_RUC,
+                'name' => 'KEVIN XAVIER TOASA ANRANGO',
                 'synthetic' => true,
             ]);
-            $tenant = $database->table('platform.tenants')->where('ruc', '1790000000001')->first(['id']);
+            $tenant = $database->table('platform.tenants')->where('ruc', self::TENANT_RUC)->first(['id']);
         }
 
-        $user = $database->table('auth.users')->whereRaw('lower(email) = ?', ['admin@billing-v3.local'])->first(['id']);
+        $user = $database->table('auth.users')->whereRaw('lower(email) = ?', ['kevintoasa43@gmail.com'])->first(['id']);
         if (! $user) {
             $database->table('auth.users')->insert([
                 'id' => (string) Str::uuid(),
-                'email' => 'admin@billing-v3.local',
-                'name' => 'Administrador V3',
-                'first_name' => 'Administrador',
-                'last_name' => 'V3',
+                'email' => 'kevintoasa43@gmail.com',
+                'name' => 'KEVIN XAVIER TOASA ANRANGO',
+                'first_name' => 'KEVIN XAVIER',
+                'last_name' => 'TOASA ANRANGO',
                 'password_hash' => Hash::make('Admin123!'),
                 'platform_admin' => true,
                 'active' => true,
             ]);
-            $user = $database->table('auth.users')->whereRaw('lower(email) = ?', ['admin@billing-v3.local'])->first(['id']);
+            $user = $database->table('auth.users')->whereRaw('lower(email) = ?', ['kevintoasa43@gmail.com'])->first(['id']);
         }
 
         if (! $tenant || ! $user) {

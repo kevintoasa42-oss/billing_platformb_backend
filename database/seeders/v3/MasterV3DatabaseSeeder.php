@@ -9,16 +9,16 @@ use Illuminate\Database\Seeder;
  *
  * Runs all V3 seeders in dependency order:
  *   1. Authentication (tenant + admin user + membership)
- *   2. Economic activities (global catalog)
+ *   2. Economic activities (global catalog, CIIU 4.1)
  *   3. Company (one per tenant + activities)
  *   4. Establishments + emission points
- *   5. Vehicles
- *   6. SRI IVA types + percentages
- *   7. Third parties (clientes/proveedores)
- *   8. Carrier companies (needs third parties)
- *   9. Carrier establishments + emission points (needs carrier companies)
- *  10. Carrier affiliations + vehicle assignments (needs third parties + vehicles)
- *  11. Products + tax assignments (needs economic activities + SRI IVA types)
+ *   5. SRI IVA types + percentages
+ *   6. Third parties (clientes/proveedores)
+ *   7. Products + tax assignments (needs economic activities + SRI IVA types)
+ *
+ * Note: Carrier seeders are intentionally omitted. The default demo
+ * company starts without carriers/socios. Carrier data should be
+ * created through the Carrier onboarding API when needed.
  */
 final class MasterV3DatabaseSeeder extends Seeder
 {
@@ -29,12 +29,8 @@ final class MasterV3DatabaseSeeder extends Seeder
             V3EconomicActivitiesSeeder::class,
             V3CompanySeeder::class,
             V3EstablishmentSeeder::class,
-            V3VehicleSeeder::class,
             V3SriIvaSeeder::class,
             V3ThirdPartySeeder::class,
-            V3CarrierCompanySeeder::class,
-            V3CarrierEstablishmentSeeder::class,
-            V3CarrierAffiliationSeeder::class,
             V3ProductSeeder::class,
         ]);
     }

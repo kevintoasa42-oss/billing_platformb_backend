@@ -9,6 +9,13 @@ use Illuminate\Support\Str;
 /**
  * Seeds the tenant-bound Company (one per tenant) with activities.
  *
+ * The default demo company uses real SRI-registered data:
+ *   RUC:           175233170001
+ *   Razón social:  KEVIN XAVIER TOASA ANRANGO
+ *   Dirección:     Caupicho
+ *   Actividad:     494110 (Transporte de carga por carretera — cooperativas)
+ *   Régimen:       RIMPE (inicio de actividades 2026-08-25)
+ *
  * Idempotent: skips if a company already exists for the tenant.
  */
 final class V3CompanySeeder extends Seeder
@@ -17,7 +24,9 @@ final class V3CompanySeeder extends Seeder
     {
         $db = DB::connection('master_v3');
 
-        $tenant = $db->table('platform.tenants')->where('ruc', '1790000000001')->first(['id']);
+        $tenant = $db->table('platform.tenants')
+            ->where('ruc', V3AuthenticationSeeder::TENANT_RUC)
+            ->first(['id']);
         if (! $tenant) {
             $this->command->warn('V3CompanySeeder: tenant not found. Run V3AuthenticationSeeder first.');
 
@@ -41,19 +50,20 @@ final class V3CompanySeeder extends Seeder
             $db->table('core.companies')->insert([
                 'id' => $companyId,
                 'tenant_id' => $tenantId,
-                'name' => 'Transportes Demo S.A.',
-                'ruc' => '1790000000001',
-                'legal_name' => 'Transportes Demo Sociedad Anonima',
-                'trade_name' => 'TransDemo',
-                'matrix_address' => 'Av. Amazonas N34-451 y Nnuqui',
-                'operations_start_date' => '2015-03-12',
+                'name' => 'KEVIN XAVIER TOASA ANRANGO',
+                'ruc' => V3AuthenticationSeeder::TENANT_RUC,
+                'legal_name' => 'KEVIN XAVIER TOASA ANRANGO',
+                'trade_name' => 'KEVIN XAVIER TOASA ANRANGO',
+                'matrix_address' => 'Caupicho',
+                'operations_start_date' => '2026-08-25',
                 'city_id' => null,
-                'phone' => '0998887776',
-                'corporate_email' => 'info@transdemo.com',
+                'phone' => '0998813666',
+                'corporate_email' => 'kevintoasa43@gmail.com',
             ]);
 
-            // Assign activities (A1234B, C5678D)
-            foreach (['A1234B', 'C5678D'] as $index => $activityId) {
+            // Assign activities (real CIIU codes: 494110 transporte de carga
+            // por carretera — cooperativas, 522510 paquetería y mensajería).
+            foreach (['494110', '522510'] as $index => $activityId) {
                 $db->table('core.company_activities')->insert([
                     'id' => (string) Str::uuid(),
                     'tenant_id' => $tenantId,

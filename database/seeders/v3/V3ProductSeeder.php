@@ -2,12 +2,16 @@
 
 namespace Database\Seeders\v3;
 
+use Database\Seeders\v3\V3AuthenticationSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
  * Seeds products with tax assignments for the demo tenant.
+ *
+ * Uses the official SRI IVA code '4' (IVA 15%, tarifa general vigente desde
+ * 2024-01-01) and real CIIU activity codes from V3EconomicActivitiesSeeder.
  *
  * Idempotent: skips products that already exist by name.
  */
@@ -17,7 +21,7 @@ final class V3ProductSeeder extends Seeder
     {
         $db = DB::connection('master_v3');
 
-        $tenant = $db->table('platform.tenants')->where('ruc', '1790000000001')->first(['id']);
+        $tenant = $db->table('platform.tenants')->where("ruc", V3AuthenticationSeeder::TENANT_RUC)->first(['id']);
         if (! $tenant) {
             $this->command->warn('V3ProductSeeder: tenant not found.');
 
@@ -26,19 +30,22 @@ final class V3ProductSeeder extends Seeder
 
         $tenantId = (string) $tenant->id;
 
+        // Use a real CIIU activity code seeded by V3EconomicActivitiesSeeder.
+        // 494110 = Transporte de carga por carretera — cooperativas.
         $activity = $db->table('core.economic_activities')
-            ->where('id', 'A1234B')
+            ->where('id', '494110')
             ->first(['id']);
 
         if (! $activity) {
-            $this->command->warn('V3ProductSeeder: economic activity A1234B not found. Run V3EconomicActivitiesSeeder first.');
+            $this->command->warn('V3ProductSeeder: economic activity 494110 not found. Run V3EconomicActivitiesSeeder first.');
 
             return;
         }
 
+        // SRI IVA type code '4' = IVA 15% (tarifa general vigente desde 2024).
         $ivaType = $db->table('core.sri_iva_types')
             ->where('tenant_id', $tenantId)
-            ->where('sri_code', 'IVA15')
+            ->where('sri_code', '4')
             ->first(['id']);
 
         $products = [
@@ -76,7 +83,7 @@ final class V3ProductSeeder extends Seeder
                     'is_active' => true,
                 ]);
 
-                // Assign IVA tax if type exists
+                // Assign IVA 15% (SRI code '4') if the type exists.
                 if ($ivaType) {
                     $taxExists = $db->table('core.product_tax_assignments')
                         ->where('tenant_id', $tenantId)
@@ -92,7 +99,7 @@ final class V3ProductSeeder extends Seeder
                             'sri_iva_type_id' => $ivaType->id,
                             'tax_name' => 'IVA 15%',
                             'percentage' => 15,
-                            'sri_code' => 'IVA15',
+                            'sri_code' => '4',
                             'is_active' => true,
                         ]);
                     }
