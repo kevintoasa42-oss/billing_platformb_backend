@@ -1,0 +1,86 @@
+services:
+  db_v3:
+    ports: !override []
+    user: "70:70"
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 200
+    mem_limit: 320m
+    cpus: "0.75"
+    networks:
+      - default
+
+  challenge-redis:
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 100
+    mem_limit: 96m
+    cpus: "0.25"
+
+  app:
+    build:
+      network: default
+    entrypoint: !override []
+    command: ["php-fpm", "-F"]
+    user: "82:82"
+    read_only: true
+    tmpfs: !override
+      - /tmp:uid=82,gid=82,mode=1770
+      - /usr/local/var/run:uid=82,gid=82,mode=0750
+      - /var/www/html/bootstrap/cache:uid=82,gid=82,mode=0770
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 150
+    mem_limit: 224m
+    cpus: "0.75"
+    volumes: !override
+      - ./.env:/var/www/html/.env:ro
+      - signature_storage_v3:/var/www/html/storage
+      - ./docker/openbao/runtime/app:/run/secrets/openbao:ro
+    ports: []
+    networks:
+      - default
+      - key_custody
+      - challenge_cache
+
+  web:
+    build:
+      network: default
+    volumes: !override []
+    user: "101:101"
+    read_only: true
+    tmpfs: !override
+      - /tmp:uid=101,gid=101,mode=1770
+      - /var/cache/nginx:uid=101,gid=101,mode=0750
+      - /var/run:uid=101,gid=101,mode=0750
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    pids_limit: 75
+    mem_limit: 80m
+    cpus: "0.25"
+    ports: []
+    networks:
+      - default
+      - tickets_back_proxy
+
+  openbao:
+    read_only: true
+    tmpfs:
+      - /tmp:uid=100,gid=1000,mode=1770
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - IPC_LOCK
+    pids_limit: 150
+    mem_limit: 256m
+    cpus: "0.50"
+
+volumes:
+  signature_storage_v3:
+    name: billing_v3_storage

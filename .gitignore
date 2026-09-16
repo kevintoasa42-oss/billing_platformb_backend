@@ -26,3 +26,5 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 public/firma_prueba/
+docker/openbao/runtime/
+.env.docker.local
