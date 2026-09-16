@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
  * Seeds the tenant-bound Company (one per tenant) with activities.
  *
  * The default demo company uses real SRI-registered data:
- *   RUC:           175233170001
+ *   RUC:           1752331700001
  *   Razón social:  KEVIN XAVIER TOASA ANRANGO
  *   Dirección:     Caupicho
  *   Actividad:     494110 (Transporte de carga por carretera — cooperativas)

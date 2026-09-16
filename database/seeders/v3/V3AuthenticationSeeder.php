@@ -15,7 +15,7 @@ final class V3AuthenticationSeeder extends Seeder
      * RUC of the default demo tenant. This is a real RUC registered with
      * the SRI Ecuador and is used consistently across all V3 seeders.
      */
-    public const TENANT_RUC = '175233170001';
+    public const TENANT_RUC = '1752331700001';
 
     public function run(): void
     {
