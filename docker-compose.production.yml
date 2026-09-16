@@ -19,7 +19,7 @@ services:
 
   app:
     build:
-      network: default
+      network: tickets_back_egress
     entrypoint: !override []
     command: ["php-fpm", "-F"]
     user: "82:82"
@@ -47,7 +47,7 @@ services:
 
   web:
     build:
-      network: default
+      network: tickets_back_egress
     volumes: !override []
     user: "101:101"
     read_only: true
