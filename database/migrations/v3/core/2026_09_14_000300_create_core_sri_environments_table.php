@@ -7,8 +7,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement(<<<'SQL'
-            CREATE TABLE IF NOT EXISTS core.sri_environments (
+        $db = DB::connection('master_v3');
+
+        $db->statement('DROP TABLE IF EXISTS core.sri_environments');
+        $db->statement(<<<'SQL'
+            CREATE TABLE core.sri_environments (
                 tenant_id uuid NOT NULL,
                 id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
                 name text NOT NULL,
@@ -19,17 +22,18 @@ return new class extends Migration
             );
         SQL);
 
-        DB::statement('ALTER TABLE core.sri_environments ENABLE ROW LEVEL SECURITY');
-        DB::statement(<<<'SQL'
+        $db->statement('ALTER TABLE core.sri_environments ENABLE ROW LEVEL SECURITY');
+        $db->statement('DROP POLICY IF EXISTS tenant_isolation ON core.sri_environments');
+        $db->statement(<<<'SQL'
             CREATE POLICY tenant_isolation ON core.sri_environments
             USING (tenant_id = auth.tenant_id())
             WITH CHECK (tenant_id = auth.tenant_id());
         SQL);
-        DB::statement('ALTER TABLE core.sri_environments FORCE ROW LEVEL SECURITY');
+        $db->statement('ALTER TABLE core.sri_environments FORCE ROW LEVEL SECURITY');
 
-        $tenants = DB::table('platform.tenants')->pluck('id');
+        $tenants = $db->table('platform.tenants')->pluck('id');
         foreach ($tenants as $tenantId) {
-            DB::table('core.sri_environments')->insert([
+            $db->table('core.sri_environments')->insert([
                 ['tenant_id' => $tenantId, 'name' => 'Pruebas', 'code' => '1'],
                 ['tenant_id' => $tenantId, 'name' => 'Produccion', 'code' => '2'],
             ]);
@@ -38,6 +42,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement('DROP TABLE IF EXISTS core.sri_environments');
+        DB::connection('master_v3')->statement('DROP TABLE IF EXISTS core.sri_environments');
     }
 };
