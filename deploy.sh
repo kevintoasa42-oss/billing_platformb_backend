@@ -67,7 +67,16 @@ fi
 
 # Step 5: Build and start containers
 echo "[5/6] Building and starting containers..."
-ssh "$SSH_TARGET" "cd $REMOTE_DIR && docker compose $COMPOSE_FILES up --build -d"
+# Build images with --network=host (server DNS requires it)
+ssh "$SSH_TARGET" "cd $REMOTE_DIR && DOCKER_BUILDKIT=0 docker build --network=host -t backend-v3-app -f Dockerfile . && DOCKER_BUILDKIT=0 docker build --network=host -t backend-v3-web -f docker/nginx.Dockerfile . && DOCKER_BUILDKIT=0 docker build --network=host -t backend-v3-db_v3 -f docker/postgres.Dockerfile ."
+# Start containers (without --build, using pre-built images)
+ssh "$SSH_TARGET" "cd $REMOTE_DIR && docker compose $COMPOSE_FILES up -d"
+
+# Step 5b: Run migrations and seeders (entrypoint is overridden in production)
+echo "[5b/6] Running V3 migrations..."
+ssh "$SSH_TARGET" "docker exec billing_app_v3 php artisan v3:migrate 2>&1 | tail -5"
+echo "[5b/6] Running V3 seeders..."
+ssh "$SSH_TARGET" "docker exec billing_app_v3 php artisan v3:seed 2>&1 | tail -5"
 
 # Step 6: Wait for entrypoint to finish and verify
 echo "[6/6] Waiting for entrypoint to finish (migrations + seeders)..."
