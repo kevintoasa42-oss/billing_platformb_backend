@@ -51,6 +51,10 @@ services:
       context: .
       dockerfile: Dockerfile
       network: tickets_back_egress
+      args:
+        HTTP_PROXY: http://egress-proxy:3128
+        HTTPS_PROXY: http://egress-proxy:3128
+        NO_PROXY: localhost,127.0.0.1,db_v3,openbao,challenge-redis
     container_name: billing_app_v3
     volumes:
       - .:/var/www/html

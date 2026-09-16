@@ -1,5 +1,13 @@
 FROM php:8.4-fpm-alpine@sha256:6cb5e4ffa03a7c1b01bb5b120ab3684ef76b75aa5ca417e343936db3f71f419f
 
+# Proxy args for builds behind egress proxy
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV NO_PROXY=${NO_PROXY}
+
 # Apply current Alpine security fixes while keeping the immutable base digest,
 # then install only the runtime/build dependencies required by PHP extensions.
 RUN apk upgrade --no-cache \
@@ -28,6 +36,11 @@ RUN apk upgrade --no-cache \
        pcntl \
        soap \
     && apk del $PHPIZE_DEPS linux-headers
+
+# Clear proxy env vars so they don't leak into the runtime
+ENV HTTP_PROXY=
+ENV HTTPS_PROXY=
+ENV NO_PROXY=
 
 # Composer
 COPY --from=composer:2@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 /usr/bin/composer /usr/bin/composer
